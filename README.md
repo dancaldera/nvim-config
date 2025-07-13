@@ -189,6 +189,20 @@ nvim
 2. Check LSP status: `:LspInfo`
 3. Restart LSP: `:LspRestart`
 
+### Mason LSP Server Missing Binary Symlinks
+If you get errors like "language server is either not installed, missing from PATH, or not executable":
+
+```bash
+# Create missing symlink for lua-language-server
+ln -sf ~/.local/share/nvim/mason/packages/lua-language-server/lua-language-server ~/.local/share/nvim/mason/bin/lua-language-server
+
+# For other servers, find the executable and create symlink:
+# Example for typescript-language-server:
+ln -sf ~/.local/share/nvim/mason/packages/typescript-language-server/node_modules/.bin/typescript-language-server ~/.local/share/nvim/mason/bin/typescript-language-server
+```
+
+This issue occurs when Mason doesn't properly create symlinks in the bin directory.
+
 ### Treesitter Issues
 ```bash
 # Update parsers
