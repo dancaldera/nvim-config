@@ -70,7 +70,18 @@ Before installing this configuration, ensure you have:
    sudo pacman -S ripgrep
    ```
 
-9. **fd** (optional, for better file finding)
+9. **OpenAI API Key** (for AI code completion)
+   ```bash
+   # Set your OpenAI API key as an environment variable
+   export OPENAI_API_KEY="your-api-key-here"
+   
+   # Add to your shell profile (~/.bashrc, ~/.zshrc, etc.) for persistence
+   echo 'export OPENAI_API_KEY="your-api-key-here"' >> ~/.bashrc
+   ```
+   
+   **Note:** AI code completion features require a valid OpenAI API key. Without it, only traditional LSP-based completion will be available.
+
+10. **fd** (optional, for better file finding)
    ```bash
    # Ubuntu/Debian
    sudo apt install fd-find
