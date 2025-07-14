@@ -9,13 +9,14 @@ A modern, well-documented Neovim configuration optimized for full-stack developm
 - **🔎 Fuzzy Finding**: [Telescope](https://github.com/nvim-telescope/telescope.nvim) for blazing-fast file and text search
 - **💻 LSP Support**: Full Language Server Protocol support for multiple languages
 - **🎨 Syntax Highlighting**: [Treesitter](https://github.com/nvim-treesitter/nvim-treesitter) for advanced syntax highlighting
-- **⚡ Autocompletion**: Intelligent code completion with snippets
+- **⚡ Autocompletion**: Intelligent code completion with snippets and AI-powered suggestions
 - **🎯 Code Formatting**: Automatic code formatting on save
 - **🔧 Git Integration**: Built-in git signs and commands
 - **📚 Which-Key**: Discover and learn keybindings
 - **🌙 Beautiful Theme**: Catppuccin colorscheme
 - **🔧 Modern Formatting**: Conform.nvim for code formatting
 - **🔍 Enhanced Diagnostics**: Better error and warning display
+- **🤖 AI Code Completion**: Minuet AI for intelligent code suggestions and completions
 
 ## 🛠️ Supported Languages
 
@@ -140,6 +141,7 @@ Before installing this configuration, ensure you have:
 │       ├── treesitter.lua    # Syntax highlighting
 │       ├── autocompletion.lua # Completion engine
 │       ├── formatting.lua    # Code formatting
+│       ├── minuet.lua        # AI code completion
 │       └── utilities.lua     # Additional utilities
 ├── README.md
 └── KEYBINDINGS.md
