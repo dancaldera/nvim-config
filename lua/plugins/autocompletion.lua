@@ -41,16 +41,14 @@ return {
         ["<C-f>"] = cmp.mapping.scroll_docs(4),
         ["<C-Space>"] = cmp.mapping.complete(), -- show completion suggestions
         ["<C-e>"] = cmp.mapping.abort(),        -- close completion window
-        ["<CR>"] = cmp.mapping.confirm({ select = false }),
-        ["<A-y>"] = require('minuet').make_cmp_map()
+        ["<CR>"] = cmp.mapping.confirm({ select = false })
       }),
       -- sources for autocompletion
       sources = cmp.config.sources({
         { name = "nvim_lsp" },
         { name = "luasnip" }, -- snippets
         { name = "buffer" },  -- text within current buffer
-        { name = "path" },    -- file system paths
-        { name = "minuet" },  -- ai autocompletion
+        { name = "path" }     -- file system paths
       }),
 
       performance = {

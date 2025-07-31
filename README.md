@@ -9,14 +9,13 @@ A modern, well-documented Neovim configuration optimized for full-stack developm
 - **🔎 Fuzzy Finding**: [Telescope](https://github.com/nvim-telescope/telescope.nvim) for blazing-fast file and text search
 - **💻 LSP Support**: Full Language Server Protocol support for multiple languages
 - **🎨 Syntax Highlighting**: [Treesitter](https://github.com/nvim-treesitter/nvim-treesitter) for advanced syntax highlighting
-- **⚡ Autocompletion**: Intelligent code completion with snippets and AI-powered suggestions
+- **⚡ Autocompletion**: Intelligent code completion with snippets
 - **🎯 Code Formatting**: Automatic code formatting on save
 - **🔧 Git Integration**: Built-in git signs and commands
 - **📚 Which-Key**: Discover and learn keybindings
 - **🌙 Beautiful Theme**: Catppuccin colorscheme
 - **🔧 Modern Formatting**: Conform.nvim for code formatting
 - **🔍 Enhanced Diagnostics**: Better error and warning display
-- **🤖 AI Code Completion**: Minuet AI for intelligent code suggestions and completions
 
 ## 🛠️ Supported Languages
 
@@ -70,18 +69,8 @@ Before installing this configuration, ensure you have:
    sudo pacman -S ripgrep
    ```
 
-9. **OpenAI API Key** (for AI code completion)
-   ```bash
-   # Set your OpenAI API key as an environment variable
-   export OPENAI_API_KEY="your-api-key-here"
-   
-   # Add to your shell profile (~/.bashrc, ~/.zshrc, etc.) for persistence
-   echo 'export OPENAI_API_KEY="your-api-key-here"' >> ~/.bashrc
-   ```
-   
-   **Note:** AI code completion features require a valid OpenAI API key. Without it, only traditional LSP-based completion will be available.
 
-10. **fd** (optional, for better file finding)
+9. **fd** (optional, for better file finding)
    ```bash
    # Ubuntu/Debian
    sudo apt install fd-find
@@ -152,7 +141,6 @@ Before installing this configuration, ensure you have:
 │       ├── treesitter.lua    # Syntax highlighting
 │       ├── autocompletion.lua # Completion engine
 │       ├── formatting.lua    # Code formatting
-│       ├── minuet.lua        # AI code completion
 │       └── utilities.lua     # Additional utilities
 ├── README.md
 └── KEYBINDINGS.md
@@ -238,6 +226,118 @@ sudo apt update
 sudo apt install neovim
 ```
 
+
+## 🔄 Package Management & Updates
+
+### Updating Plugins
+
+This configuration uses [lazy.nvim](https://github.com/folke/lazy.nvim) as the plugin manager. Here's how to manage your plugins:
+
+#### Update All Plugins
+```bash
+# Open Neovim and run:
+:Lazy update
+```
+
+#### Update Specific Plugin
+```bash
+# In Neovim:
+:Lazy update <plugin-name>
+```
+
+#### Check Plugin Status
+```bash
+# View all plugins and their status:
+:Lazy
+```
+
+#### Sync Plugins (Clean + Update)
+```bash
+# Remove unused plugins and update existing ones:
+:Lazy sync
+```
+
+### Updating LSP Servers
+
+LSP servers are managed by [Mason](https://github.com/williamboman/mason.nvim):
+
+#### Update All LSP Servers
+```bash
+# In Neovim:
+:MasonUpdate
+```
+
+#### Install/Update Specific Server
+```bash
+# Open Mason interface:
+:Mason
+# Navigate and press 'i' to install or 'u' to update
+```
+
+#### Update via Command Line
+```bash
+# Install specific server:
+:MasonInstall typescript-language-server
+```
+
+### Updating Treesitter Parsers
+
+Keep syntax highlighting parsers up to date:
+
+```bash
+# Update all parsers:
+:TSUpdate
+
+# Update specific parser:
+:TSUpdate javascript
+
+# Install new parser:
+:TSInstall python
+```
+
+### Configuration Maintenance
+
+#### Update This Configuration
+```bash
+# Navigate to your Neovim config directory
+cd ~/.config/nvim
+
+# Pull latest changes (if using git)
+git pull origin main
+
+# Restart Neovim to apply changes
+```
+
+#### Clean Up Old Data
+```bash
+# Remove plugin cache (will reinstall on next start):
+rm -rf ~/.local/share/nvim/lazy
+
+# Remove LSP cache:
+rm -rf ~/.local/share/nvim/mason
+
+# Remove all Neovim data (nuclear option):
+rm -rf ~/.local/share/nvim ~/.cache/nvim
+```
+
+### Automated Updates
+
+You can create a script to automate updates:
+
+```bash
+#!/bin/bash
+# save as ~/bin/nvim-update.sh and make executable
+
+echo "Updating Neovim configuration..."
+cd ~/.config/nvim && git pull
+
+echo "Starting Neovim to update plugins..."
+nvim --headless "+Lazy! sync" +qa
+nvim --headless "+MasonUpdate" +qa
+nvim --headless "+TSUpdate" +qa
+
+echo "Neovim configuration updated!"
+```
 
 ## 📖 Learning Resources
 
