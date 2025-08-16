@@ -215,9 +215,11 @@ return {
         { "<leader>f", group = "Find/Search" },
         { "<leader>h", group = "Git Hunks" },
         { "<leader>m", group = "Format" },
+        { "<leader>q", group = "Session" },
         { "<leader>r", group = "Rename/Restart" },
-        { "<leader>s", group = "Split Windows" },
+        { "<leader>s", group = "Split Windows/Search" },
         { "<leader>t", group = "Tab/Toggle" },
+        { "<leader>x", group = "Trouble/Diagnostics" },
       })
     end,
   },

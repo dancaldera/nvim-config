@@ -15,3 +15,4 @@ require("config.keymaps")
 
 -- Plugin management
 require("config.lazy")
+

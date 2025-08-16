@@ -75,7 +75,7 @@ return {
           keymap.set("n", "gi", "<cmd>Telescope lsp_implementations<CR>", opts)
 
           opts.desc = "Show LSP type definitions"
-          keymap.set("n", "gt", "<cmd>Telescope lsp_type_definitions<CR>", opts)
+          keymap.set("n", "gy", "<cmd>Telescope lsp_type_definitions<CR>", opts)
 
           opts.desc = "See available code actions"
           keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts)
@@ -104,12 +104,38 @@ return {
       })
 
       local capabilities = cmp_nvim_lsp.default_capabilities()
+      
+      -- Enable folding capability for nvim-ufo
+      capabilities.textDocument.foldingRange = {
+        dynamicRegistration = false,
+        lineFoldingOnly = true,
+      }
 
-      local signs = { Error = " ", Warn = " ", Hint = "󰠠 ", Info = " " }
-      for type, icon in pairs(signs) do
-        local hl = "DiagnosticSign" .. type
-        vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
-      end
+      -- Configure diagnostic signs using modern approach
+      vim.diagnostic.config({
+        signs = {
+          text = {
+            [vim.diagnostic.severity.ERROR] = " ",
+            [vim.diagnostic.severity.WARN] = " ",
+            [vim.diagnostic.severity.HINT] = "󰠠 ",
+            [vim.diagnostic.severity.INFO] = " ",
+          },
+        },
+        virtual_text = {
+          spacing = 4,
+          source = "if_many",
+          prefix = "●",
+        },
+        float = {
+          focusable = false,
+          style = "minimal",
+          border = "rounded",
+          source = "always",
+          header = "",
+          prefix = "",
+        },
+        severity_sort = true,
+      })
 
       -- Configure individual servers
       local servers = {

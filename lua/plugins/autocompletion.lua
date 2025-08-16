@@ -8,10 +8,16 @@ return {
   dependencies = {
     "hrsh7th/cmp-buffer", -- source for text in buffer
     "hrsh7th/cmp-path",   -- source for file system paths
+    "hrsh7th/cmp-nvim-lsp", -- LSP completion source
     {
       "L3MON4D3/LuaSnip",
       version = "v2.*",
       build = "make install_jsregexp",
+      event = "InsertEnter",
+      dependencies = { "rafamadriz/friendly-snippets" },
+      config = function()
+        require("luasnip.loaders.from_vscode").lazy_load()
+      end,
     },
     "saadparwaiz1/cmp_luasnip",     -- for autocompletion
     "rafamadriz/friendly-snippets", -- useful snippets
@@ -22,8 +28,7 @@ return {
     local luasnip = require("luasnip")
     local lspkind = require("lspkind")
 
-    -- loads vscode style snippets from installed plugins (e.g. friendly-snippets)
-    require("luasnip.loaders.from_vscode").lazy_load()
+    -- Note: snippet loading is now handled in LuaSnip config
 
     cmp.setup({
       completion = {
@@ -52,7 +57,15 @@ return {
       }),
 
       performance = {
-        fetching_timeout = 2000,
+        debounce = 60,
+        throttle = 30,
+        fetching_timeout = 500,
+      },
+
+      experimental = {
+        ghost_text = {
+          hl_group = "CmpGhostText",
+        },
       },
 
       -- configure lspkind for vs-code like pictograms in completion menu

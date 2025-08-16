@@ -79,6 +79,11 @@ Three-layer approach for language support:
 - **Gitsigns**: Git integration with hunk management
 - **Which-key**: Keybinding discovery and documentation
 - **Catppuccin**: Color scheme with plugin integrations
+- **Trouble**: Advanced diagnostics and LSP symbol navigation
+- **nvim-spectre**: Global search and replace functionality
+- **persistence.nvim**: Session management and restoration
+- **indent-blankline**: Visual indentation guides
+- **nvim-colorizer**: Highlight color codes in files
 
 ## Working with This Configuration
 
@@ -108,6 +113,9 @@ Three-layer approach for language support:
 - Code exploration: `gd` (definition) → `K` (hover docs) → `<leader>ca` (code actions)
 - Git workflow: `]c` (next hunk) → `<leader>hp` (preview) → `<leader>hs` (stage)
 - Window management: `<leader>sv` (vertical split) → `<C-h/j/k/l>` (navigate)
+- Diagnostics: `<leader>xx` (Trouble diagnostics) → `]d`/`[d` (navigate) → `<leader>ca` (fix)
+- Search and replace: `<leader>sr` (global search/replace) or `<leader>fs` + `<C-q>` (quickfix)
+- Session management: `<leader>qs` (restore session) → `<leader>qd` (stop saving)
 
 ### Error Recovery
 - LSP issues: `:LspRestart` or check `:Mason` for server installation
