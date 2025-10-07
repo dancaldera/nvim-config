@@ -13,13 +13,17 @@ opt.tabstop = 2
 opt.shiftwidth = 2
 opt.expandtab = true
 opt.autoindent = true
+opt.smartindent = true
 
 -- Line wrapping
 opt.wrap = false
+opt.breakindent = true
 
 -- Search settings
 opt.ignorecase = true
 opt.smartcase = true
+opt.hlsearch = true
+opt.incsearch = true
 
 -- Cursor line
 opt.cursorline = true
@@ -28,6 +32,7 @@ opt.cursorline = true
 opt.termguicolors = true
 opt.background = "dark"
 opt.signcolumn = "yes"
+opt.colorcolumn = "80"
 
 -- Backspace
 opt.backspace = "indent,eol,start"
@@ -38,6 +43,7 @@ opt.clipboard:append("unnamedplus")
 -- Split windows
 opt.splitright = true
 opt.splitbelow = true
+opt.splitkeep = "screen" -- Keep screen stable on splits
 
 -- Consider string-string as whole word
 opt.iskeyword:append("-")
@@ -55,24 +61,49 @@ opt.undofile = true
 opt.undodir = vim.fn.stdpath("data") .. "/undo"
 
 -- Update time
-opt.updatetime = 300
+opt.updatetime = 250
+opt.timeoutlen = 300
 
 -- Completion
 opt.completeopt = "menu,menuone,noselect"
+opt.pumheight = 10
+opt.pumblend = 10 -- Popup transparency
 
 -- File encoding
 opt.fileencoding = "utf-8"
 
 -- Command line
 opt.cmdheight = 1
+opt.showcmd = true
+opt.laststatus = 3 -- Global statusline
 
--- Pop up menu
-opt.pumheight = 10
+-- Scrolling
+opt.scrolloff = 8
+opt.sidescrolloff = 8
 
--- Time to wait for mapped sequence
-opt.timeoutlen = 500
+-- Performance
+opt.lazyredraw = false
+opt.ttyfast = true
 
--- Folding
-opt.foldmethod = "expr"
-opt.foldexpr = "nvim_treesitter#foldexpr()"
+-- Folding (using nvim-ufo)
+opt.foldcolumn = "1"
 opt.foldlevel = 99
+opt.foldlevelstart = 99
+opt.foldenable = true
+
+-- Better diffs
+opt.diffopt:append("linematch:60")
+
+-- Spellcheck
+opt.spell = false
+opt.spelllang = { "en_us" }
+
+-- Concealing
+opt.conceallevel = 2
+opt.concealcursor = ""
+
+-- Formatting
+opt.formatoptions = "jcroqlnt"
+
+-- Session options
+opt.sessionoptions = { "buffers", "curdir", "tabpages", "winsize", "help", "globals", "skiprtp", "folds" }

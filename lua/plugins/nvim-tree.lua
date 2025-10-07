@@ -52,5 +52,15 @@ return {
     keymap.set("n", "<leader>ef", "<cmd>NvimTreeFindFileToggle<CR>", { desc = "Toggle file explorer on current file" })
     keymap.set("n", "<leader>ec", "<cmd>NvimTreeCollapse<CR>", { desc = "Collapse file explorer" })
     keymap.set("n", "<leader>er", "<cmd>NvimTreeRefresh<CR>", { desc = "Refresh file explorer" })
+    keymap.set("n", "<leader>eo", "<cmd>NvimTreeFocus<CR>", { desc = "Focus file explorer" })
+    
+    -- Toggle between file explorer and current buffer
+    keymap.set("n", "<C-e>", function()
+      if vim.bo.filetype == "NvimTree" then
+        vim.cmd("wincmd p") -- Go to previous window (your file buffer)
+      else
+        vim.cmd("NvimTreeFocus") -- Focus the file explorer
+      end
+    end, { desc = "Toggle focus between file explorer and buffer" })
   end,
 }
