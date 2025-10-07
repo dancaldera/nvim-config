@@ -46,7 +46,6 @@ keymap.set("v", "p", '"_dP', { desc = "Paste without overwriting register" })
 keymap.set("v", "<", "<gv", { desc = "Indent left and reselect" })
 keymap.set("v", ">", ">gv", { desc = "Indent right and reselect" })
 
-
 -- Search and replace
 keymap.set("n", "n", "nzzzv", { desc = "Next search result and center" })
 keymap.set("n", "N", "Nzzzv", { desc = "Previous search result and center" })
