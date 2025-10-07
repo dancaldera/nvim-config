@@ -420,12 +420,13 @@ echo "Neovim configuration updated!"
 ```
 
 ### First Steps After Install
-1. `:Codeium Auth` - Setup AI completion
-2. `:Mason` - Verify LSP servers installed
-3. `:checkhealth` - Check everything is working
+1. `:Codeium Auth` - Setup AI completion (required)
+2. `:checkhealth` - Check everything is working
+3. `:Mason` - Verify LSP servers installed
 4. `:Lazy` - See installed plugins
 5. `nvim --startuptime startup.log` - Verify performance (~76ms)
-6. Read `CODEIUM_SETUP.md` - Learn AI completion
+6. Install formatters (optional) - See `SETUP_FORMATTERS.md`
+7. Read `CODEIUM_SETUP.md` - Learn AI completion
 
 ## 📊 Performance Comparison
 
@@ -446,12 +447,17 @@ echo "Neovim configuration updated!"
 
 ## 📚 Documentation Files
 
-- **CODEIUM_SETUP.md** - AI completion quick start ⭐
-- **AI_COMPLETION_GUIDE.md** - Detailed AI usage guide
-- **CLAUDE.md** - Developer guide & architecture
-- **KEYBINDINGS.md** - Complete keybinding reference
-- **OPTIMIZATION_SUMMARY.md** - All optimizations made
-- **FIRST_LAUNCH.md** - First-time setup walkthrough
+### Setup & Configuration
+- **FIRST_LAUNCH.md** - 🚀 Complete first-time setup guide
+- **CODEIUM_SETUP.md** - ⭐ AI completion quick start
+- **SETUP_FORMATTERS.md** - 🔧 Install formatters (optional)
+- **HEALTH_CHECK_SUMMARY.md** - ✅ Health check interpretation
+
+### Usage & Reference
+- **AI_COMPLETION_GUIDE.md** - 🤖 Detailed AI usage guide
+- **KEYBINDINGS.md** - ⌨️ Complete keybinding reference
+- **CLAUDE.md** - 📖 Developer guide & architecture
+- **OPTIMIZATION_SUMMARY.md** - ⚡ All optimizations made
 
 ## 🤝 Contributing
 
