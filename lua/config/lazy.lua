@@ -23,12 +23,20 @@ require("lazy").setup({
     notify = false,
   },
   change_detection = {
+    enabled = true,
     notify = false,
   },
   install = {
     colorscheme = { "catppuccin", "habamax" },
   },
+  ui = {
+    border = "rounded",
+    backdrop = 60,
+  },
   performance = {
+    cache = {
+      enabled = true,
+    },
     rtp = {
       disabled_plugins = {
         "gzip",
@@ -39,6 +47,10 @@ require("lazy").setup({
         "tohtml",
         "tutor",
         "zipPlugin",
+        "rplugin",
+        "builtins",
+        "compiler",
+        "optwin",
       },
     },
   },
