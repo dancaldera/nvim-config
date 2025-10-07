@@ -10,7 +10,7 @@ A modern, well-documented Neovim configuration optimized for full-stack developm
 - **🔎 Fuzzy Finding**: [Telescope](https://github.com/nvim-telescope/telescope.nvim) with enhanced UI and hidden file support
 - **💻 LSP Support**: Full Language Server Protocol with inlay hints and modern diagnostics
 - **🎨 Syntax Highlighting**: [Treesitter](https://github.com/nvim-treesitter/nvim-treesitter) for advanced syntax highlighting
-- **⚡ Autocompletion**: Intelligent code completion with Tab/S-Tab navigation
+- **⚡ Autocompletion**: Dual completion system with AI suggestions (Codeium) + LSP/snippets (nvim-cmp)
 - **🎯 Code Formatting**: Automatic code formatting on save with language-specific formatters
 
 ### Git & Version Control
@@ -122,7 +122,16 @@ Before installing this configuration, ensure you have:
 
 4. **Install plugins:** Lazy.nvim will automatically install all plugins on first launch.
 
-5. **Install LSP servers:** Open Neovim and the language servers will be automatically installed via Mason. You can also manually install additional servers by running:
+5. **Setup AI Completion (Codeium):**
+   ```vim
+   :Codeium Auth
+   ```
+   - This will open your browser for authentication
+   - Sign in (it's free for individual use!)
+   - Copy the token and paste it in Neovim
+   - Done! AI completion is now active 🎉
+
+6. **Install LSP servers:** Open Neovim and the language servers will be automatically installed via Mason. You can also manually install additional servers by running:
    ```
    :Mason
    ```
@@ -371,6 +380,43 @@ echo "Neovim configuration updated!"
 - **Plugin Documentation**: Use `:help <plugin-name>` for specific plugins
 - **Key Bindings**: See `KEYBINDINGS.md` for detailed shortcut explanations
 
+## ⚡ Quick Reference
+
+### AI Completion (Must Read!)
+```vim
+:Codeium Auth         " First-time setup (authenticate)
+<Ctrl-g>             " Accept AI suggestion (INSERT MODE)
+<Ctrl-;>             " Next AI suggestion
+<Ctrl-x>             " Clear AI suggestion
+```
+📚 **Full guide**: See `CODEIUM_SETUP.md`
+
+### Essential Keybindings
+```vim
+<leader>ff           " Find files
+<leader>fs           " Search in files
+<leader>ee           " Toggle file explorer
+<leader>gg           " Open Git UI (Neogit)
+<leader>xx           " Show diagnostics
+<Ctrl-g>            " Accept AI completion
+<Ctrl-Space>        " Trigger LSP completion
+```
+
+### First Steps After Install
+1. `:Codeium Auth` - Setup AI completion
+2. `:Mason` - Verify LSP servers installed
+3. `:checkhealth` - Check everything is working
+4. `:Lazy` - See installed plugins
+5. Read `CODEIUM_SETUP.md` - Learn AI completion
+
+## 📚 Documentation Files
+
+- **CODEIUM_SETUP.md** - AI completion quick start ⭐
+- **AI_COMPLETION_GUIDE.md** - Detailed AI usage guide
+- **CLAUDE.md** - Developer guide & architecture
+- **KEYBINDINGS.md** - Complete keybinding reference
+- **OPTIMIZATION_SUMMARY.md** - All optimizations made
+
 ## 🤝 Contributing
 
 Feel free to submit issues and enhancement requests!
@@ -381,4 +427,4 @@ This configuration is open source and available under the MIT License.
 
 ---
 
-Happy coding! 🎉
+Happy coding with AI superpowers! 🎉🚀

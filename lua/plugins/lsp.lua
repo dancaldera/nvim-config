@@ -55,32 +55,34 @@ return {
       local cmp_nvim_lsp = require("cmp_nvim_lsp")
       local keymap = vim.keymap
 
-      -- Configure diagnostics BEFORE setting up LSP
-      vim.diagnostic.config({
-        signs = {
-          text = {
-            [vim.diagnostic.severity.ERROR] = " ",
-            [vim.diagnostic.severity.WARN] = " ",
-            [vim.diagnostic.severity.HINT] = "󰠠 ",
-            [vim.diagnostic.severity.INFO] = " ",
+      -- Defer diagnostic configuration to avoid buffer issues
+      vim.schedule(function()
+        vim.diagnostic.config({
+          signs = {
+            text = {
+              [vim.diagnostic.severity.ERROR] = " ",
+              [vim.diagnostic.severity.WARN] = " ",
+              [vim.diagnostic.severity.HINT] = "󰠠 ",
+              [vim.diagnostic.severity.INFO] = " ",
+            },
           },
-        },
-        virtual_text = {
-          spacing = 4,
-          source = "if_many",
-          prefix = "●",
-        },
-        float = {
-          focusable = false,
-          style = "minimal",
-          border = "rounded",
-          source = "always",
-          header = "",
-          prefix = "",
-        },
-        severity_sort = true,
-        update_in_insert = false,
-      })
+          virtual_text = {
+            spacing = 4,
+            source = "if_many",
+            prefix = "●",
+          },
+          float = {
+            focusable = false,
+            style = "minimal",
+            border = "rounded",
+            source = "always",
+            header = "",
+            prefix = "",
+          },
+          severity_sort = true,
+          update_in_insert = false,
+        })
+      end)
 
       vim.api.nvim_create_autocmd("LspAttach", {
         group = vim.api.nvim_create_augroup("UserLspConfig", {}),

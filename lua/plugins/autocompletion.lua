@@ -1,28 +1,58 @@
 -- ============================================================================
 -- Autocompletion Configuration
+-- Combines AI completion (Windsurf) + LSP/Snippet completion (nvim-cmp)
 -- ============================================================================
 
 return {
-  "hrsh7th/nvim-cmp",
-  event = "InsertEnter",
-  dependencies = {
-    "hrsh7th/cmp-buffer", -- source for text in buffer
-    "hrsh7th/cmp-path",   -- source for file system paths
-    "hrsh7th/cmp-nvim-lsp", -- LSP completion source
-    {
-      "L3MON4D3/LuaSnip",
-      version = "v2.*",
-      build = "make install_jsregexp",
-      event = "InsertEnter",
-      dependencies = { "rafamadriz/friendly-snippets" },
-      config = function()
-        require("luasnip.loaders.from_vscode").lazy_load()
-      end,
-    },
-    "saadparwaiz1/cmp_luasnip",     -- for autocompletion
-    "rafamadriz/friendly-snippets", -- useful snippets
-    "onsails/lspkind.nvim",         -- vs-code like pictograms
+  -- AI-Powered Completion (Windsurf/Codeium)
+  {
+    "Exafunction/codeium.vim",
+    event = "BufEnter",
+    config = function()
+      -- Disable default bindings to use custom ones
+      vim.g.codeium_disable_bindings = 1
+
+      -- AI completion keybindings
+      vim.keymap.set("i", "<C-g>", function()
+        return vim.fn["codeium#Accept"]()
+      end, { expr = true, silent = true, desc = "Accept AI suggestion" })
+
+      vim.keymap.set("i", "<C-;>", function()
+        return vim.fn["codeium#CycleCompletions"](1)
+      end, { expr = true, silent = true, desc = "Next AI suggestion" })
+
+      vim.keymap.set("i", "<C-,>", function()
+        return vim.fn["codeium#CycleCompletions"](-1)
+      end, { expr = true, silent = true, desc = "Previous AI suggestion" })
+
+      vim.keymap.set("i", "<C-x>", function()
+        return vim.fn["codeium#Clear"]()
+      end, { expr = true, silent = true, desc = "Clear AI suggestion" })
+    end,
   },
+
+  -- LSP/Snippet Completion
+  {
+    "hrsh7th/nvim-cmp",
+    event = "InsertEnter",
+    dependencies = {
+      "hrsh7th/cmp-buffer",       -- source for text in buffer
+      "hrsh7th/cmp-path",         -- source for file system paths
+      "hrsh7th/cmp-nvim-lsp",     -- LSP completion source
+      {
+        "L3MON4D3/LuaSnip",
+        version = "v2.*",
+        build = "make install_jsregexp",
+        event = "InsertEnter",
+        dependencies = { "rafamadriz/friendly-snippets" },
+        config = function()
+          require("luasnip.loaders.from_vscode").lazy_load()
+        end,
+      },
+      "saadparwaiz1/cmp_luasnip", -- for autocompletion
+      "rafamadriz/friendly-snippets", -- useful snippets
+      "onsails/lspkind.nvim",     -- vs-code like pictograms
+    },
   config = function()
     local cmp = require("cmp")
     local luasnip = require("luasnip")
@@ -81,9 +111,7 @@ return {
       },
 
       experimental = {
-        ghost_text = {
-          hl_group = "CmpGhostText",
-        },
+        ghost_text = false, -- Disabled to avoid conflict with AI ghost text
       },
 
       -- configure lspkind for vs-code like pictograms in completion menu
@@ -95,4 +123,5 @@ return {
       },
     })
   end,
+  },
 }

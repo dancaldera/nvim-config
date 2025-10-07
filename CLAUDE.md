@@ -62,9 +62,11 @@ Three-layer approach for language support:
    - Telescope integration for definitions, references, diagnostics
 
 2. **Completion Layer** (`autocompletion.lua`):
-   - nvim-cmp with multiple sources (LSP, buffer, path, snippets)
+   - **AI Completion**: Codeium/Windsurf for intelligent code suggestions (ghost text)
+   - **LSP Completion**: nvim-cmp with multiple sources (LSP, buffer, path, snippets)
    - LuaSnip for snippet expansion
    - VS Code-style pictograms via lspkind
+   - Dual completion system: AI suggestions + traditional completions work together
 
 3. **Formatting Layer** (`formatting.lua`):
    - Conform.nvim for code formatting
