@@ -1,6 +1,6 @@
--- ============================================================================
+-- -------------------------------------------------------------------------------=
 -- Telescope (Fuzzy Finder) Configuration
--- ============================================================================
+-- -------------------------------------------------------------------------------=
 
 return {
 	"nvim-telescope/telescope.nvim",
@@ -17,7 +17,7 @@ return {
 		telescope.setup({
 			defaults = {
 				prompt_prefix = " ",
-				selection_caret = " ",
+				selection_caret = "░",
 				path_display = { "truncate" },
 				sorting_strategy = "ascending",
 				layout_config = {
@@ -25,6 +25,9 @@ return {
 						prompt_position = "top",
 						preview_width = 0.55,
 						results_width = 0.8,
+						width = 0.87,
+						height = 0.80,
+						preview_cutoff = 120,
 					},
 					vertical = {
 						mirror = false,
