@@ -52,15 +52,46 @@ return {
       { "folke/neodev.nvim", opts = {} }, -- Better Lua LSP for Neovim config
     },
     config = function()
-      local lspconfig = require("lspconfig")
       local cmp_nvim_lsp = require("cmp_nvim_lsp")
-
       local keymap = vim.keymap
+
+      -- Configure diagnostics BEFORE setting up LSP
+      vim.diagnostic.config({
+        signs = {
+          text = {
+            [vim.diagnostic.severity.ERROR] = " ",
+            [vim.diagnostic.severity.WARN] = " ",
+            [vim.diagnostic.severity.HINT] = "󰠠 ",
+            [vim.diagnostic.severity.INFO] = " ",
+          },
+        },
+        virtual_text = {
+          spacing = 4,
+          source = "if_many",
+          prefix = "●",
+        },
+        float = {
+          focusable = false,
+          style = "minimal",
+          border = "rounded",
+          source = "always",
+          header = "",
+          prefix = "",
+        },
+        severity_sort = true,
+        update_in_insert = false,
+      })
 
       vim.api.nvim_create_autocmd("LspAttach", {
         group = vim.api.nvim_create_augroup("UserLspConfig", {}),
         callback = function(ev)
           local opts = { buffer = ev.buf, silent = true }
+          local client = vim.lsp.get_client_by_id(ev.data.client_id)
+
+          -- Enable inlay hints if supported
+          if client and client.supports_method("textDocument/inlayHint") then
+            vim.lsp.inlay_hint.enable(true, { bufnr = ev.buf })
+          end
 
           opts.desc = "Show LSP references"
           keymap.set("n", "gR", "<cmd>Telescope lsp_references<CR>", opts)
@@ -98,81 +129,72 @@ return {
           opts.desc = "Show documentation for what is under cursor"
           keymap.set("n", "K", vim.lsp.buf.hover, opts)
 
+          opts.desc = "Toggle inlay hints"
+          keymap.set("n", "<leader>th", function()
+            vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = 0 }), { bufnr = 0 })
+          end, opts)
+
           opts.desc = "Restart LSP"
           keymap.set("n", "<leader>rs", ":LspRestart<CR>", opts)
         end,
       })
 
       local capabilities = cmp_nvim_lsp.default_capabilities()
-      
+
       -- Enable folding capability for nvim-ufo
       capabilities.textDocument.foldingRange = {
         dynamicRegistration = false,
         lineFoldingOnly = true,
       }
 
-      -- Configure diagnostic signs using modern approach
-      vim.diagnostic.config({
-        signs = {
-          text = {
-            [vim.diagnostic.severity.ERROR] = " ",
-            [vim.diagnostic.severity.WARN] = " ",
-            [vim.diagnostic.severity.HINT] = "󰠠 ",
-            [vim.diagnostic.severity.INFO] = " ",
-          },
-        },
-        virtual_text = {
-          spacing = 4,
-          source = "if_many",
-          prefix = "●",
-        },
-        float = {
-          focusable = false,
-          style = "minimal",
-          border = "rounded",
-          source = "always",
-          header = "",
-          prefix = "",
-        },
-        severity_sort = true,
-      })
-
-      -- Configure individual servers
-      local servers = {
-        "ts_ls",
-        "html",
-        "cssls",
-        "tailwindcss",
-        "emmet_ls",
-        "pyright",
-        "gopls",
-        "clangd",
-        "rust_analyzer",
-        "jsonls",
-        "yamlls",
-        "bashls",
-      }
-
-      for _, server in ipairs(servers) do
-        lspconfig[server].setup({
-          capabilities = capabilities,
-        })
+      -- Suppress deprecation warning (will migrate when lspconfig v3.0.0 is released)
+      local notify = vim.notify
+      vim.notify = function(msg, ...)
+        if msg:match("lspconfig.*deprecated") then
+          return
+        end
+        notify(msg, ...)
       end
 
-      -- Special configuration for lua_ls
-      lspconfig["lua_ls"].setup({
-        capabilities = capabilities,
-        settings = {
-          Lua = {
-            diagnostics = {
-              globals = { "vim" },
-            },
-            completion = {
-              callSnippet = "Replace",
+      -- Configure individual servers
+      local lspconfig = require("lspconfig")
+
+      local servers = {
+        ts_ls = {},
+        html = {},
+        cssls = {},
+        tailwindcss = {},
+        emmet_ls = {},
+        pyright = {},
+        gopls = {},
+        clangd = {},
+        rust_analyzer = {},
+        jsonls = {},
+        yamlls = {},
+        bashls = {},
+        lua_ls = {
+          settings = {
+            Lua = {
+              diagnostics = {
+                globals = { "vim" },
+              },
+              completion = {
+                callSnippet = "Replace",
+              },
             },
           },
         },
-      })
+      }
+
+      for server, config in pairs(servers) do
+        local final_config = vim.tbl_deep_extend("force", {
+          capabilities = capabilities,
+        }, config)
+        lspconfig[server].setup(final_config)
+      end
+
+      -- Restore original notify
+      vim.notify = notify
     end,
   },
 }

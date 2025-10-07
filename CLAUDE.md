@@ -73,14 +73,45 @@ Three-layer approach for language support:
 
 ### Key Plugin Responsibilities
 
+#### Core Functionality
 - **nvim-tree**: File explorer with git integration
-- **Telescope**: Fuzzy finder for files, text, LSP symbols, diagnostics
+- **Telescope**: Fuzzy finder for files, text, LSP symbols, diagnostics (enhanced with better UI)
 - **Treesitter**: Syntax highlighting, text objects, auto-tagging
+- **Catppuccin**: Color scheme with extensive plugin integrations
+
+#### Git Integration
 - **Gitsigns**: Git integration with hunk management
-- **Which-key**: Keybinding discovery and documentation
-- **Catppuccin**: Color scheme with plugin integrations
+- **Neogit**: Advanced Git UI with Telescope integration
+- **Diffview**: Side-by-side diff view for files and commits
+
+#### Editor Enhancements
+- **nvim-ufo**: Superior code folding with Treesitter support
+- **nvim-surround**: Easy manipulation of surrounding characters
+- **nvim-autopairs**: Intelligent auto-pairing of brackets
+- **Comment.nvim**: Smart commenting with language detection
+- **vim-illuminate**: Highlight word under cursor across buffer
+
+#### UI/UX
+- **noice.nvim**: Better UI for messages, cmdline, and popupmenu
+- **nvim-notify**: Notification manager with animations
+- **dressing.nvim**: Better UI for inputs and selects
+- **neoscroll.nvim**: Smooth scrolling animations
+- **dashboard-nvim**: Beautiful start screen
+- **bufferline.nvim**: Enhanced buffer line with diagnostics
+- **which-key**: Keybinding discovery and documentation
+- **lualine**: Customizable statusline
+
+#### Development Tools
 - **Trouble**: Advanced diagnostics and LSP symbol navigation
+- **todo-comments**: Highlight and search TODO comments
+- **toggleterm**: Integrated terminal with multiple layouts
+- **project.nvim**: Project management and switching
+- **nvim-navic**: Breadcrumb-style code context
+- **markdown-preview**: Live markdown preview
+
+#### Search & Navigation
 - **nvim-spectre**: Global search and replace functionality
+- **nvim-bqf**: Enhanced quickfix window
 - **persistence.nvim**: Session management and restoration
 - **indent-blankline**: Visual indentation guides
 - **nvim-colorizer**: Highlight color codes in files
@@ -109,13 +140,18 @@ Three-layer approach for language support:
 - Uses modern plugin versions and configuration patterns
 
 ### Common Workflow Patterns
-- File navigation: `<leader>ff` (find files) → `<leader>fs` (search text)
-- Code exploration: `gd` (definition) → `K` (hover docs) → `<leader>ca` (code actions)
-- Git workflow: `]c` (next hunk) → `<leader>hp` (preview) → `<leader>hs` (stage)
-- Window management: `<leader>sv` (vertical split) → `<C-h/j/k/l>` (navigate)
-- Diagnostics: `<leader>xx` (Trouble diagnostics) → `]d`/`[d` (navigate) → `<leader>ca` (fix)
-- Search and replace: `<leader>sr` (global search/replace) or `<leader>fs` + `<C-q>` (quickfix)
-- Session management: `<leader>qs` (restore session) → `<leader>qd` (stop saving)
+- **File navigation**: `<leader>ff` (find files) → `<leader>fs` (search text) → `<leader>fp` (find projects)
+- **Code exploration**: `gd` (definition) → `K` (hover docs) → `<leader>ca` (code actions) → `<leader>th` (toggle inlay hints)
+- **Git workflow**:
+  - Hunks: `]c` (next hunk) → `<leader>hp` (preview) → `<leader>hs` (stage)
+  - Advanced: `<leader>gg` (Neogit) → `<leader>gd` (DiffView) → `<leader>gh` (file history)
+- **Window management**: `<leader>sv` (vertical split) → `<C-h/j/k/l>` (navigate) → `<leader>se` (equal size)
+- **Diagnostics**: `<leader>xx` (Trouble diagnostics) → `]d`/`[d` (navigate) → `<leader>ca` (fix)
+- **Search and replace**: `<leader>sr` (global search/replace) or `<leader>fs` + `<C-q>` (quickfix)
+- **Session management**: `<leader>qs` (restore session) → `<leader>qd` (stop saving)
+- **Terminal**: `<C-\>` (toggle) → `<leader>tf` (float) → `<leader>th` (horizontal) → `<leader>tv` (vertical)
+- **TODO management**: `]t` (next todo) → `[t` (prev todo) → `<leader>ft` (find todos)
+- **Folding**: `zR` (open all) → `zM` (close all) → `zr/zm` (open/close by level)
 
 ### Error Recovery
 - LSP issues: `:LspRestart` or check `:Mason` for server installation

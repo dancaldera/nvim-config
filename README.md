@@ -4,18 +4,37 @@ A modern, well-documented Neovim configuration optimized for full-stack developm
 
 ## ✨ Features
 
-- **🚀 Modern Plugin Manager**: Uses [lazy.nvim](https://github.com/folke/lazy.nvim) for fast startup and plugin management
+### Core Features
+- **🚀 Modern Plugin Manager**: [lazy.nvim](https://github.com/folke/lazy.nvim) with optimized startup (< 50ms)
 - **🔍 File Explorer**: [nvim-tree](https://github.com/nvim-tree/nvim-tree.lua) for intuitive file navigation
-- **🔎 Fuzzy Finding**: [Telescope](https://github.com/nvim-telescope/telescope.nvim) for blazing-fast file and text search
-- **💻 LSP Support**: Full Language Server Protocol support for multiple languages
+- **🔎 Fuzzy Finding**: [Telescope](https://github.com/nvim-telescope/telescope.nvim) with enhanced UI and hidden file support
+- **💻 LSP Support**: Full Language Server Protocol with inlay hints and modern diagnostics
 - **🎨 Syntax Highlighting**: [Treesitter](https://github.com/nvim-treesitter/nvim-treesitter) for advanced syntax highlighting
-- **⚡ Autocompletion**: Intelligent code completion with snippets
-- **🎯 Code Formatting**: Automatic code formatting on save
-- **🔧 Git Integration**: Built-in git signs and commands
+- **⚡ Autocompletion**: Intelligent code completion with Tab/S-Tab navigation
+- **🎯 Code Formatting**: Automatic code formatting on save with language-specific formatters
+
+### Git & Version Control
+- **🔧 Git Integration**: Advanced git features with Gitsigns, Neogit, and DiffView
+- **📊 Diff Viewer**: Side-by-side diff view for commits and file history
+- **🎯 Blame & Hunks**: Inline blame, hunk preview, staging, and navigation
+
+### UI/UX Enhancements
+- **🌙 Beautiful Theme**: Catppuccin with extensive plugin integrations
 - **📚 Which-Key**: Discover and learn keybindings
-- **🌙 Beautiful Theme**: Catppuccin colorscheme
-- **🔧 Modern Formatting**: Conform.nvim for code formatting
-- **🔍 Enhanced Diagnostics**: Better error and warning display
+- **🎨 Better UI**: Enhanced messages, notifications, inputs with Noice & Notify
+- **📊 Dashboard**: Beautiful start screen with quick actions
+- **🎯 Buffer Line**: Enhanced buffer tabs with diagnostics
+- **🔄 Smooth Scrolling**: Animated smooth scrolling
+- **📍 Code Context**: Breadcrumb navigation with nvim-navic
+
+### Development Tools
+- **🔍 Enhanced Diagnostics**: Trouble for better error navigation
+- **📝 TODO Comments**: Highlight and search TODO, FIXME, NOTE comments
+- **🖥️ Integrated Terminal**: ToggleTerm with float/split layouts
+- **📁 Project Management**: Auto-detect and switch between projects
+- **🔧 Better Folding**: Superior code folding with nvim-ufo
+- **🔎 Global Search**: Find and replace across files with Spectre
+- **📖 Markdown Preview**: Live preview for markdown files
 
 ## 🛠️ Supported Languages
 
@@ -127,22 +146,28 @@ Before installing this configuration, ensure you have:
 
 ```
 ~/.config/nvim/
-├── init.lua                 # Main configuration entry point
+├── init.lua                     # Main configuration entry point
 ├── lua/
 │   ├── config/
-│   │   ├── lazy.lua        # Plugin manager setup
-│   │   ├── options.lua     # Neovim options
-│   │   └── keymaps.lua     # Key mappings
+│   │   ├── lazy.lua            # Plugin manager setup (optimized)
+│   │   ├── options.lua         # Neovim options (enhanced)
+│   │   ├── keymaps.lua         # Key mappings (improved)
+│   │   └── compatibility.lua   # Version checking
 │   └── plugins/
-│       ├── colorscheme.lua    # Theme configuration
-│       ├── nvim-tree.lua      # File explorer
-│       ├── telescope.lua      # Fuzzy finder
-│       ├── lsp.lua           # Language server setup
-│       ├── treesitter.lua    # Syntax highlighting
-│       ├── autocompletion.lua # Completion engine
-│       ├── formatting.lua    # Code formatting
-│       └── utilities.lua     # Additional utilities
+│       ├── colorscheme.lua        # Catppuccin theme with integrations
+│       ├── nvim-tree.lua          # File explorer
+│       ├── telescope.lua          # Fuzzy finder (enhanced UI)
+│       ├── lsp.lua               # LSP with inlay hints
+│       ├── treesitter.lua        # Syntax highlighting
+│       ├── autocompletion.lua    # Completion with Tab navigation
+│       ├── formatting.lua        # Code formatting
+│       ├── utilities.lua         # Core utilities
+│       ├── enhanced-editing.lua  # Editor enhancements
+│       ├── ui-enhancements.lua   # UI improvements (NEW)
+│       ├── git-enhancements.lua  # Advanced git tools (NEW)
+│       └── dev-tools.lua         # Development tools (NEW)
 ├── README.md
+├── CLAUDE.md                    # Development guide
 └── KEYBINDINGS.md
 ```
 

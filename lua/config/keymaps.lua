@@ -46,9 +46,6 @@ keymap.set("v", "p", '"_dP', { desc = "Paste without overwriting register" })
 keymap.set("v", "<", "<gv", { desc = "Indent left and reselect" })
 keymap.set("v", ">", ">gv", { desc = "Indent right and reselect" })
 
--- Better page navigation
-keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Scroll down and center" })
-keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Scroll up and center" })
 
 -- Search and replace
 keymap.set("n", "n", "nzzzv", { desc = "Next search result and center" })
@@ -62,4 +59,27 @@ keymap.set("n", "<leader>x", "<cmd>wq<CR>", { desc = "Save and quit" })
 -- Buffer navigation
 keymap.set("n", "<S-l>", ":bnext<CR>", { desc = "Next buffer" })
 keymap.set("n", "<S-h>", ":bprevious<CR>", { desc = "Previous buffer" })
-keymap.set("n", "<leader>bd", ":bdelete<CR>", { desc = "Delete buffer" })
+
+-- Quick escape from terminal mode
+keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
+
+-- Better line joining
+keymap.set("n", "J", "mzJ`z", { desc = "Join lines without moving cursor" })
+
+-- Keep cursor centered when jumping
+keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Scroll down and center" })
+keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Scroll up and center" })
+
+-- Add undo break-points
+keymap.set("i", ",", ",<c-g>u")
+keymap.set("i", ".", ".<c-g>u")
+keymap.set("i", ";", ";<c-g>u")
+
+-- Better pasting
+keymap.set("x", "<leader>p", [["_dP]], { desc = "Paste without yanking" })
+
+-- Delete without yanking
+keymap.set({ "n", "v" }, "<leader>D", [["_d]], { desc = "Delete without yanking" })
+
+-- Select all
+keymap.set("n", "<C-a>", "ggVG", { desc = "Select all" })

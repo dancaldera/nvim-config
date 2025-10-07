@@ -41,9 +41,40 @@ return {
           cmp = true,
           gitsigns = true,
           nvimtree = true,
-          telescope = true,
-          notify = false,
-          mini = false,
+          treesitter = true,
+          telescope = {
+            enabled = true,
+          },
+          notify = true,
+          mini = {
+            enabled = true,
+            indentscope_color = "",
+          },
+          native_lsp = {
+            enabled = true,
+            virtual_text = {
+              errors = { "italic" },
+              hints = { "italic" },
+              warnings = { "italic" },
+              information = { "italic" },
+            },
+            underlines = {
+              errors = { "underline" },
+              hints = { "underline" },
+              warnings = { "underline" },
+              information = { "underline" },
+            },
+            inlay_hints = {
+              background = true,
+            },
+          },
+          noice = true,
+          illuminate = {
+            enabled = true,
+            lsp = false,
+          },
+          dashboard = true,
+          which_key = true,
         },
       })
       vim.cmd.colorscheme "catppuccin"
