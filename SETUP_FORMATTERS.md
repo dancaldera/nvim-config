@@ -105,13 +105,28 @@ npm install -g tree-sitter-cli
 
 ## 🔍 Verify Installation
 
-After installing, verify in Neovim:
+**Note:** The `:checkhealth conform` command will show "No healthcheck found" - this is **normal and expected**. The conform plugin doesn't provide a built-in health check, but it works perfectly fine.
 
-```vim
-:checkhealth conform
+To verify formatters are working:
+
+1. **Open a file** of the language you want to test (e.g., `.js`, `.py`, `.lua`)
+2. **Make some changes** and mess up the formatting
+3. **Save the file** (`:w`) - it should auto-format
+4. **Or manually format** with `<Space>mp`
+
+If the file formats correctly, your formatter is installed and working!
+
+You can also check if a formatter is available in your PATH:
+```bash
+# Check if prettier is installed
+which prettier
+
+# Check if stylua is installed
+which stylua
+
+# Check if black is installed
+which black
 ```
-
-All formatters should show ✅ OK
 
 ## ⚡ Which Formatters Do You Need?
 
