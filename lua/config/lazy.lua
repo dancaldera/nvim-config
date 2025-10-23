@@ -21,6 +21,7 @@ require("lazy").setup({
 	checker = {
 		enabled = true,
 		notify = false,
+		frequency = 3600, -- Check every hour
 	},
 	change_detection = {
 		enabled = true,
@@ -37,6 +38,7 @@ require("lazy").setup({
 		cache = {
 			enabled = true,
 		},
+		reset_packpath = true, -- Improves performance
 		rtp = {
 			disabled_plugins = {
 				"gzip",
@@ -51,7 +53,14 @@ require("lazy").setup({
 				"builtins",
 				"compiler",
 				"optwin",
+				-- Additional disabled plugins for performance
+				"spellfile",
+				"shada_plugin",
 			},
 		},
+	},
+	-- Enable profiling for performance monitoring
+ profiling = {
+		enabled = false, -- Set to true to debug performance
 	},
 })

@@ -149,17 +149,56 @@ return {
 				lineFoldingOnly = true,
 			}
 
-			-- Suppress deprecation warning (will migrate when lspconfig v3.0.0 is released)
-			local notify = vim.notify
-			vim.notify = function(msg, ...)
-				if msg:match("lspconfig.*deprecated") then
-					return
-				end
-				notify(msg, ...)
-			end
+		-- Enhanced error handling for LSP
+		local function setup_lsp_error_handling()
+			vim.api.nvim_create_autocmd("LspDetach", {
+				group = vim.api.nvim_create_augroup("LspDetach", { clear = true }),
+				callback = function(ev)
+					local client_name = ev.data.client_id and vim.lsp.get_client_by_id(ev.data.client_id).name or "Unknown"
+					vim.notify(
+						string.format("LSP client '%s' detached from buffer %d", client_name, ev.buf),
+						vim.log.levels.WARN
+					)
+				end,
+			})
 
-			-- Configure individual servers
-			local lspconfig = require("lspconfig")
+			-- Handle LSP startup failures
+			vim.api.nvim_create_autocmd("LspAttach", {
+				group = vim.api.nvim_create_augroup("LspStartupCheck", { clear = true }),
+				callback = function(ev)
+					local client = vim.lsp.get_client_by_id(ev.data.client_id)
+					if not client then
+						vim.notify("Failed to attach LSP client", vim.log.levels.ERROR)
+						return
+					end
+
+					-- Check if server is actually initialized
+					vim.defer_fn(function()
+						if not client.initialized then
+							vim.notify(
+								string.format("LSP server '%s' failed to initialize properly", client.name),
+								vim.log.levels.ERROR
+							)
+						end
+					end, 2000)
+				end,
+			})
+		end
+
+		-- Initialize error handling
+		setup_lsp_error_handling()
+
+		-- Suppress deprecation warning (will migrate when lspconfig v3.0.0 is released)
+		local notify = vim.notify
+		vim.notify = function(msg, ...)
+			if msg:match("lspconfig.*deprecated") then
+				return
+			end
+			notify(msg, ...)
+		end
+
+		-- Configure individual servers
+		local lspconfig = require("lspconfig")
 
 			local servers = {
 				ts_ls = {},
@@ -191,8 +230,51 @@ return {
 			for server, config in pairs(servers) do
 				local final_config = vim.tbl_deep_extend("force", {
 					capabilities = capabilities,
+					handlers = {
+						["textDocument/publishDiagnostics"] = function(err, result, ctx, config)
+							if err then
+								vim.notify(
+									string.format("Diagnostics error in %s: %s", server, err.message),
+									vim.log.levels.ERROR
+								)
+								return
+							end
+							vim.lsp.diagnostic.on_publish_diagnostics(err, result, ctx, config)
+						end,
+						["workspace/configuration"] = function(err, result, ctx, config)
+							if err then
+								vim.notify(
+									string.format("Configuration error in %s: %s", server, err.message),
+									vim.log.levels.WARN
+								)
+							end
+						end,
+					},
+					on_init = function(client, _)
+						vim.notify(string.format("✓ LSP server '%s' initialized", client.name), vim.log.levels.INFO)
+					end,
+					on_exit = function(code, signal, client_id)
+						local client = vim.lsp.get_client_by_id(client_id)
+						if client then
+							vim.notify(
+								string.format("LSP server '%s' exited (code: %d, signal: %s)", client.name, code, signal or "none"),
+								vim.log.levels.WARN
+							)
+						end
+					end,
 				}, config)
-				lspconfig[server].setup(final_config)
+
+				-- Add error handling for server setup
+				local ok, err = pcall(function()
+					lspconfig[server].setup(final_config)
+				end)
+
+				if not ok then
+					vim.notify(
+						string.format("Failed to setup LSP server '%s': %s", server, err),
+						vim.log.levels.ERROR
+					)
+				end
 			end
 
 			-- Restore original notify

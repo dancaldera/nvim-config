@@ -82,3 +82,8 @@ keymap.set({ "n", "v" }, "<leader>D", [["_d]], { desc = "Delete without yanking"
 
 -- Select all
 keymap.set("n", "<C-a>", "ggVG", { desc = "Select all" })
+
+-- Health and diagnostics
+keymap.set("n", "<leader>hc", "<cmd>lua require('config.health').check_health()<CR>", { desc = "Run health check" })
+keymap.set("n", "<leader>hs", "<cmd>lua require('config.health').check_config_consistency()<CR>", { desc = "Check config consistency" })
+keymap.set("n", "<leader>hd", "<cmd>checkhealth<CR>", { desc = "Run Neovim health check" })
