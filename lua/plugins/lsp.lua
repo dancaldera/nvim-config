@@ -22,32 +22,14 @@ return {
 		dependencies = {
 			"williamboman/mason.nvim",
 		},
-		config = function()
-			require("mason-lspconfig").setup({
-				ensure_installed = {
-					"ts_ls", -- TypeScript/JavaScript (updated name)
-					"html", -- HTML
-					"cssls", -- CSS
-					"tailwindcss", -- Tailwind CSS
-					"lua_ls", -- Lua
-					"emmet_ls", -- Emmet
-					"pyright", -- Python
-					"gopls", -- Go
-					"clangd", -- C/C++
-					"rust_analyzer", -- Rust
-					"jsonls", -- JSON
-					"yamlls", -- YAML
-					"bashls", -- Bash
-				},
-				automatic_installation = true,
-			})
-		end,
 	},
 	{
 		"neovim/nvim-lspconfig",
 		event = { "BufReadPre", "BufNewFile" },
 		dependencies = {
 			"hrsh7th/cmp-nvim-lsp",
+			"williamboman/mason.nvim",
+			"williamboman/mason-lspconfig.nvim",
 			{ "antosha417/nvim-lsp-file-operations", config = true },
 			{ "folke/neodev.nvim", opts = {} }, -- Better Lua LSP for Neovim config
 		},
@@ -149,54 +131,57 @@ return {
 				lineFoldingOnly = true,
 			}
 
-			-- Suppress deprecation warning (will migrate when lspconfig v3.0.0 is released)
-			local notify = vim.notify
-			vim.notify = function(msg, ...)
-				if msg:match("lspconfig.*deprecated") then
-					return
-				end
-				notify(msg, ...)
+			-- Setup mason-lspconfig and configure servers
+			local mason_lspconfig_ok, mason_lspconfig = pcall(require, "mason-lspconfig")
+			if not mason_lspconfig_ok then
+				vim.notify("mason-lspconfig not found", vim.log.levels.ERROR)
+				return
 			end
 
-			-- Configure individual servers
-			local lspconfig = require("lspconfig")
-
-			local servers = {
-				ts_ls = {},
-				html = {},
-				cssls = {},
-				tailwindcss = {},
-				emmet_ls = {},
-				pyright = {},
-				gopls = {},
-				clangd = {},
-				rust_analyzer = {},
-				jsonls = {},
-				yamlls = {},
-				bashls = {},
-				lua_ls = {
-					settings = {
-						Lua = {
-							diagnostics = {
-								globals = { "vim" },
-							},
-							completion = {
-								callSnippet = "Replace",
-							},
-						},
-					},
+			-- Using the new v2.0.0+ API with handlers inside setup()
+			mason_lspconfig.setup({
+				ensure_installed = {
+					"ts_ls", -- TypeScript/JavaScript (updated name)
+					"html", -- HTML
+					"cssls", -- CSS
+					"tailwindcss", -- Tailwind CSS
+					"lua_ls", -- Lua
+					"emmet_ls", -- Emmet
+					"pyright", -- Python
+					"gopls", -- Go
+					"clangd", -- C/C++
+					"rust_analyzer", -- Rust
+					"jsonls", -- JSON
+					"yamlls", -- YAML
+					"bashls", -- Bash
 				},
-			}
-
-			for server, config in pairs(servers) do
-				local final_config = vim.tbl_deep_extend("force", {
-					capabilities = capabilities,
-				}, config)
-				lspconfig[server].setup(final_config)
-			end
-
-			-- Restore original notify
-			vim.notify = notify
+				automatic_installation = true,
+				-- Configure individual servers using handlers (v2.0.0+ API)
+				handlers = {
+					-- Default handler for all servers
+					function(server_name)
+						require("lspconfig")[server_name].setup({
+							capabilities = capabilities,
+						})
+					end,
+					-- Custom handler for lua_ls
+					["lua_ls"] = function()
+						require("lspconfig").lua_ls.setup({
+							capabilities = capabilities,
+							settings = {
+								Lua = {
+									diagnostics = {
+										globals = { "vim" },
+									},
+									completion = {
+										callSnippet = "Replace",
+									},
+								},
+							},
+						})
+					end,
+				},
+			})
 		end,
 	},
 }
