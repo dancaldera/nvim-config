@@ -99,7 +99,8 @@ local function create_backup()
 		vim.fn.mkdir(target_dir, "p")
 
 		-- Copy file
-		local copy_cmd = string.format("cp '%s' '%s'", file, target_dir .. "/" .. vim.fn.fnamemodify(relative_path, ":t"))
+		local copy_cmd =
+			string.format("cp '%s' '%s'", file, target_dir .. "/" .. vim.fn.fnamemodify(relative_path, ":t"))
 		local result = os.execute(copy_cmd)
 
 		if result == 0 then
@@ -220,7 +221,10 @@ function M.restore_backup(backup_name)
 
 	-- Confirm restoration
 	local choice = vim.fn.confirm(
-		string.format("Restore configuration from backup '%s'? This will overwrite your current configuration.", backup_name),
+		string.format(
+			"Restore configuration from backup '%s'? This will overwrite your current configuration.",
+			backup_name
+		),
 		"&Yes\n&No",
 		2
 	)
@@ -279,8 +283,11 @@ function M.auto_backup()
 	-- Also check if configuration files have been modified recently
 	if not should_backup then
 		local config_dir = vim.fn.stdpath("config")
-		local cmd = string.format("find '%s' -name '*.lua' -newer '%s' 2>/dev/null | head -1",
-			config_dir, os.date("%Y-%m-%d %H:%M:%S", last_backup_time))
+		local cmd = string.format(
+			"find '%s' -name '*.lua' -newer '%s' 2>/dev/null | head -1",
+			config_dir,
+			os.date("%Y-%m-%d %H:%M:%S", last_backup_time)
+		)
 		local handle = io.popen(cmd)
 		local result = handle:read("*a")
 		handle:close()
@@ -346,7 +353,9 @@ end, {
 	nargs = "?",
 	complete = function()
 		local backups = M.list_backups()
-		return vim.tbl_map(function(b) return b.name end, backups)
+		return vim.tbl_map(function(b)
+			return b.name
+		end, backups)
 	end,
 	desc = "Restore configuration from backup",
 })
@@ -360,7 +369,8 @@ vim.api.nvim_create_user_command("ConfigListBackups", function()
 
 	vim.notify("Available backups:", vim.log.levels.INFO)
 	for _, backup in ipairs(backups) do
-		local info = string.format("  %s (%d files, %s)",
+		local info = string.format(
+			"  %s (%d files, %s)",
 			backup.name,
 			backup.metadata.files_count or 0,
 			backup.metadata.timestamp or "unknown"

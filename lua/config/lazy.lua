@@ -60,7 +60,7 @@ require("lazy").setup({
 		},
 	},
 	-- Enable profiling for performance monitoring
- profiling = {
+	profiling = {
 		enabled = false, -- Set to true to debug performance
 	},
 })

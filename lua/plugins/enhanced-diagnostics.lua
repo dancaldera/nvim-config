@@ -19,7 +19,10 @@ return {
 			},
 			-- Better diagnostics grouping
 			mode = "diagnostics",
-			severity = vim.diagnostic.severity.HINT .. vim.diagnostic.severity.INFO .. vim.diagnostic.severity.WARN .. vim.diagnostic.severity.ERROR,
+			severity = vim.diagnostic.severity.HINT
+				.. vim.diagnostic.severity.INFO
+				.. vim.diagnostic.severity.WARN
+				.. vim.diagnostic.severity.ERROR,
 			focus = false,
 			follow = true,
 			restore = true,
@@ -60,10 +63,18 @@ return {
 			end
 
 			-- Enhanced diagnostic navigation with severity filtering
-			vim.keymap.set("n", "]e", function() diagnostic_goto(true, "ERROR") end, { desc = "Next Error" })
-			vim.keymap.set("n", "[e", function() diagnostic_goto(false, "ERROR") end, { desc = "Prev Error" })
-			vim.keymap.set("n", "]w", function() diagnostic_goto(true, "WARN") end, { desc = "Next Warning" })
-			vim.keymap.set("n", "[w", function() diagnostic_goto(false, "WARN") end, { desc = "Prev Warning" })
+			vim.keymap.set("n", "]e", function()
+				diagnostic_goto(true, "ERROR")
+			end, { desc = "Next Error" })
+			vim.keymap.set("n", "[e", function()
+				diagnostic_goto(false, "ERROR")
+			end, { desc = "Prev Error" })
+			vim.keymap.set("n", "]w", function()
+				diagnostic_goto(true, "WARN")
+			end, { desc = "Next Warning" })
+			vim.keymap.set("n", "[w", function()
+				diagnostic_goto(false, "WARN")
+			end, { desc = "Prev Warning" })
 
 			-- Enhanced diagnostic float with more context
 			vim.keymap.set("n", "<leader>d", function()
@@ -91,8 +102,20 @@ return {
 				-- Add keymaps for diagnostic float window
 				if winid then
 					vim.api.nvim_win_set_option(winid, "wrap", true)
-					vim.api.nvim_buf_set_keymap(vim.api.nvim_win_get_buf(winid), "n", "q", "<cmd>close<cr>", { noremap = true, silent = true })
-					vim.api.nvim_buf_set_keymap(vim.api.nvim_win_get_buf(winid), "n", "<Esc>", "<cmd>close<cr>", { noremap = true, silent = true })
+					vim.api.nvim_buf_set_keymap(
+						vim.api.nvim_win_get_buf(winid),
+						"n",
+						"q",
+						"<cmd>close<cr>",
+						{ noremap = true, silent = true }
+					)
+					vim.api.nvim_buf_set_keymap(
+						vim.api.nvim_win_get_buf(winid),
+						"n",
+						"<Esc>",
+						"<cmd>close<cr>",
+						{ noremap = true, silent = true }
+					)
 				end
 			end, { desc = "Show line diagnostics (enhanced)" })
 		end,

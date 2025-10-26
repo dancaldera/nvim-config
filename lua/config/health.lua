@@ -55,20 +55,26 @@ local function check_neovim_version()
 	local version = vim.version()
 	local required_version = { 0, 9, 0 }
 
-	if version.major < required_version[1] or
-	   (version.major == required_version[1] and version.minor < required_version[2]) then
+	if
+		version.major < required_version[1]
+		or (version.major == required_version[1] and version.minor < required_version[2])
+	then
 		vim.notify(
-			string.format("Neovim version %d.%d.%d is too old. Required: %d.%d.0+",
-				version.major, version.minor, version.patch,
-				required_version[1], required_version[2]),
+			string.format(
+				"Neovim version %d.%d.%d is too old. Required: %d.%d.0+",
+				version.major,
+				version.minor,
+				version.patch,
+				required_version[1],
+				required_version[2]
+			),
 			vim.log.levels.ERROR
 		)
 		return false
 	end
 
 	vim.notify(
-		string.format("✓ Neovim version %d.%d.%d is compatible",
-			version.major, version.minor, version.patch),
+		string.format("✓ Neovim version %d.%d.%d is compatible", version.major, version.minor, version.patch),
 		vim.log.levels.INFO
 	)
 	return true
@@ -90,8 +96,12 @@ local function check_lazy_nvim()
 
 	local stats = lazy.stats()
 	vim.notify(
-		string.format("✓ lazy.nvim loaded %d/%d plugins in %.2fms",
-			stats.loaded, stats.count, stats.startuptime * 1000),
+		string.format(
+			"✓ lazy.nvim loaded %d/%d plugins in %.2fms",
+			stats.loaded,
+			stats.count,
+			stats.startuptime * 1000
+		),
 		vim.log.levels.INFO
 	)
 	return true
@@ -101,25 +111,33 @@ end
 local function check_lsp_servers()
 	local lspconfig = require("lspconfig")
 	local required_servers = {
-		"lua_ls", "ts_ls", "html", "cssls", "jsonls", "yamlls"
+		"lua_ls",
+		"ts_ls",
+		"html",
+		"cssls",
+		"jsonls",
+		"yamlls",
 	}
 	local optional_servers = {
-		"pyright", "gopls", "clangd", "rust_analyzer", "tailwindcss"
+		"pyright",
+		"gopls",
+		"clangd",
+		"rust_analyzer",
+		"tailwindcss",
 	}
 
 	local available_servers = {}
 	for _, server in ipairs(required_servers) do
-		if lspconfig[server] and lspconfig[server].setup then
+		-- Check if server config file exists by attempting to require it
+		local config_exists = pcall(require, "lspconfig.configs." .. server)
+		if config_exists then
 			table.insert(available_servers, server)
 		else
 			vim.notify(string.format("LSP server '%s' not available", server), vim.log.levels.WARN)
 		end
 	end
 
-	vim.notify(
-		string.format("✓ Found %d required LSP servers", #available_servers),
-		vim.log.levels.INFO
-	)
+	vim.notify(string.format("✓ Found %d required LSP servers", #available_servers), vim.log.levels.INFO)
 
 	-- Check Mason
 	local mason_ok, mason = pcall(require, "mason")
@@ -135,10 +153,7 @@ local function check_lsp_servers()
 			total_count = total_count + 1
 		end
 
-		vim.notify(
-			string.format("✓ Mason: %d/%d tools installed", installed_count, total_count),
-			vim.log.levels.INFO
-		)
+		vim.notify(string.format("✓ Mason: %d/%d tools installed", installed_count, total_count), vim.log.levels.INFO)
 	else
 		vim.notify("Mason not available", vim.log.levels.WARN)
 	end
@@ -155,8 +170,7 @@ local function check_formatters()
 	end
 
 	vim.notify(
-		string.format("✓ Found %d formatters for %d file types",
-			formatter_count, vim.tbl_count(formatters_by_ft)),
+		string.format("✓ Found %d formatters for %d file types", formatter_count, vim.tbl_count(formatters_by_ft)),
 		vim.log.levels.INFO
 	)
 end
@@ -180,10 +194,7 @@ local function check_treesitter()
 		end
 	end
 
-	vim.notify(
-		string.format("✓ Treesitter: %d parsers installed", installed_count),
-		vim.log.levels.INFO
-	)
+	vim.notify(string.format("✓ Treesitter: %d parsers installed", installed_count), vim.log.levels.INFO)
 
 	return true
 end
