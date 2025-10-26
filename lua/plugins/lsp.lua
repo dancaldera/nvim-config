@@ -22,32 +22,14 @@ return {
 		dependencies = {
 			"williamboman/mason.nvim",
 		},
-		config = function()
-			require("mason-lspconfig").setup({
-				ensure_installed = {
-					"ts_ls", -- TypeScript/JavaScript (updated name)
-					"html", -- HTML
-					"cssls", -- CSS
-					"tailwindcss", -- Tailwind CSS
-					"lua_ls", -- Lua
-					"emmet_ls", -- Emmet
-					"pyright", -- Python
-					"gopls", -- Go
-					"clangd", -- C/C++
-					"rust_analyzer", -- Rust
-					"jsonls", -- JSON
-					"yamlls", -- YAML
-					"bashls", -- Bash
-				},
-				automatic_installation = true,
-			})
-		end,
 	},
 	{
 		"neovim/nvim-lspconfig",
 		event = { "BufReadPre", "BufNewFile" },
 		dependencies = {
 			"hrsh7th/cmp-nvim-lsp",
+			"williamboman/mason.nvim",
+			"williamboman/mason-lspconfig.nvim",
 			{ "antosha417/nvim-lsp-file-operations", config = true },
 			{ "folke/neodev.nvim", opts = {} }, -- Better Lua LSP for Neovim config
 		},
