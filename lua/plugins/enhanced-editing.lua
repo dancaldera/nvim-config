@@ -132,7 +132,7 @@ return {
 	-- Session management
 	{
 		"folke/persistence.nvim",
-		event = "BufReadPre",
+		event = { "VimEnter", "BufReadPre" },
 		opts = { options = vim.opt.sessionoptions:get() },
 		keys = {
 			{

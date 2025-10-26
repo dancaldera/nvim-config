@@ -28,7 +28,7 @@ return {
 	-- Notification manager
 	{
 		"rcarriga/nvim-notify",
-		event = "VeryLazy",
+		event = { "BufReadPre", "InsertEnter" },
 		opts = {
 			timeout = 3000,
 			max_height = function()
@@ -49,7 +49,7 @@ return {
 	-- Better UI for inputs and selects
 	{
 		"stevearc/dressing.nvim",
-		event = "VeryLazy",
+		event = { "BufReadPre", "CmdlineEnter" },
 		opts = {
 			input = {
 				enabled = true,
@@ -188,7 +188,7 @@ return {
 	-- Better buffer line
 	{
 		"akinsho/bufferline.nvim",
-		event = "VeryLazy",
+		event = { "BufAdd", "BufNewFile", "TabNewEntered" },
 		version = "*",
 		dependencies = "nvim-tree/nvim-web-devicons",
 		opts = {
@@ -263,7 +263,7 @@ return {
 	-- Noice - Better UI for messages, cmdline and popupmenu
 	{
 		"folke/noice.nvim",
-		event = "VeryLazy",
+		event = { "BufReadPre", "CmdlineEnter", "ModeChanged" },
 		dependencies = {
 			"MunifTanjim/nui.nvim",
 			"rcarriga/nvim-notify",

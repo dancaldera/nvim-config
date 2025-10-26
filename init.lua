@@ -32,3 +32,7 @@ require("config.keymaps")
 
 -- Plugin management
 require("config.lazy")
+
+-- Configuration utilities
+require("config.health")
+require("config.backup")

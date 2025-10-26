@@ -131,57 +131,118 @@ return {
 				lineFoldingOnly = true,
 			}
 
-			-- Setup mason-lspconfig and configure servers
-			local mason_lspconfig_ok, mason_lspconfig = pcall(require, "mason-lspconfig")
-			if not mason_lspconfig_ok then
-				vim.notify("mason-lspconfig not found", vim.log.levels.ERROR)
-				return
+			-- Enhanced error handling for LSP
+			local function setup_lsp_error_handling()
+				vim.api.nvim_create_autocmd("LspDetach", {
+					group = vim.api.nvim_create_augroup("LspDetach", { clear = true }),
+					callback = function(ev)
+						local client_name = ev.data.client_id and vim.lsp.get_client_by_id(ev.data.client_id).name
+							or "Unknown"
+						vim.notify(
+							string.format("LSP client '%s' detached from buffer %d", client_name, ev.buf),
+							vim.log.levels.WARN
+						)
+					end,
+				})
+
+				-- Handle LSP startup failures
+				vim.api.nvim_create_autocmd("LspAttach", {
+					group = vim.api.nvim_create_augroup("LspStartupCheck", { clear = true }),
+					callback = function(ev)
+						local client = vim.lsp.get_client_by_id(ev.data.client_id)
+						if not client then
+							vim.notify("Failed to attach LSP client", vim.log.levels.ERROR)
+							return
+						end
+
+						-- Check if server is actually initialized
+						vim.defer_fn(function()
+							if not client.initialized then
+								vim.notify(
+									string.format("LSP server '%s' failed to initialize properly", client.name),
+									vim.log.levels.ERROR
+								)
+							end
+						end, 2000)
+					end,
+				})
 			end
 
-			-- Using the new v2.0.0+ API with handlers inside setup()
-			mason_lspconfig.setup({
-				ensure_installed = {
-					"ts_ls", -- TypeScript/JavaScript (updated name)
-					"html", -- HTML
-					"cssls", -- CSS
-					"tailwindcss", -- Tailwind CSS
-					"lua_ls", -- Lua
-					"emmet_ls", -- Emmet
-					"pyright", -- Python
-					"gopls", -- Go
-					"clangd", -- C/C++
-					"rust_analyzer", -- Rust
-					"jsonls", -- JSON
-					"yamlls", -- YAML
-					"bashls", -- Bash
-				},
-				automatic_installation = true,
-				-- Configure individual servers using handlers (v2.0.0+ API)
-				handlers = {
-					-- Default handler for all servers
-					function(server_name)
-						require("lspconfig")[server_name].setup({
-							capabilities = capabilities,
-						})
-					end,
-					-- Custom handler for lua_ls
-					["lua_ls"] = function()
-						require("lspconfig").lua_ls.setup({
-							capabilities = capabilities,
-							settings = {
-								Lua = {
-									diagnostics = {
-										globals = { "vim" },
-									},
-									completion = {
-										callSnippet = "Replace",
-									},
-								},
+			-- Initialize error handling
+			setup_lsp_error_handling()
+
+			-- Suppress deprecation warning (will migrate when lspconfig v3.0.0 is released)
+			local notify = vim.notify
+			vim.notify = function(msg, ...)
+				if msg:match("lspconfig.*deprecated") then
+					return
+				end
+				notify(msg, ...)
+			end
+
+			-- Configure individual servers using new Neovim 0.11+ API
+			local servers = {
+				ts_ls = {},
+				html = {},
+				cssls = {},
+				tailwindcss = {},
+				emmet_ls = {},
+				pyright = {},
+				gopls = {},
+				clangd = {},
+				rust_analyzer = {},
+				jsonls = {},
+				yamlls = {},
+				bashls = {},
+				lua_ls = {
+					settings = {
+						Lua = {
+							diagnostics = {
+								globals = { "vim" },
 							},
-						})
-					end,
+							completion = {
+								callSnippet = "Replace",
+							},
+						},
+					},
 				},
-			})
+			}
+
+			for server, config in pairs(servers) do
+				local final_config = vim.tbl_deep_extend("force", {
+					capabilities = capabilities,
+					on_init = function(client, _)
+						vim.notify(string.format("✓ LSP server '%s' initialized", client.name), vim.log.levels.INFO)
+					end,
+					on_exit = function(code, signal, client_id)
+						local client = vim.lsp.get_client_by_id(client_id)
+						if client then
+							vim.notify(
+								string.format(
+									"LSP server '%s' exited (code: %d, signal: %s)",
+									client.name,
+									code,
+									signal or "none"
+								),
+								vim.log.levels.WARN
+							)
+						end
+					end,
+				}, config)
+
+				-- Add error handling for server setup using new API
+				local ok, err = pcall(function()
+					vim.lsp.config(server, final_config)
+					vim.lsp.enable(server)
+				end)
+
+				if not ok then
+					vim.notify(string.format("Failed to setup LSP server '%s': %s", server, err), vim.log.levels.ERROR)
+				end
+			end
+
+			-- Restore original notify
+			vim.notify = notify
 		end,
 	},
 }

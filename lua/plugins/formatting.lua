@@ -30,11 +30,17 @@ return {
 				c = { "clang_format" },
 				cpp = { "clang_format" },
 			},
-			-- format_on_save = {
-			-- 	lsp_format = "fallback",
-			-- 	async = false,
-			-- 	timeout_ms = 1000,
-			-- },
+			format_on_save = {
+				lsp_format = "fallback",
+				async = false,
+				timeout_ms = 1000,
+			},
+			-- Notification for formatting
+			notify_on_error = true,
+			-- Format after changes
+			format_after_save = {
+				lsp_format = "fallback",
+			},
 		})
 
 		vim.keymap.set({ "n", "v" }, "<leader>mp", function()
