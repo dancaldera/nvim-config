@@ -101,21 +101,10 @@ return {
 
 				-- Add keymaps for diagnostic float window
 				if winid then
-					vim.api.nvim_win_set_option(winid, "wrap", true)
-					vim.api.nvim_buf_set_keymap(
-						vim.api.nvim_win_get_buf(winid),
-						"n",
-						"q",
-						"<cmd>close<cr>",
-						{ noremap = true, silent = true }
-					)
-					vim.api.nvim_buf_set_keymap(
-						vim.api.nvim_win_get_buf(winid),
-						"n",
-						"<Esc>",
-						"<cmd>close<cr>",
-						{ noremap = true, silent = true }
-					)
+					vim.wo[winid].wrap = true
+					local bufnr = vim.api.nvim_win_get_buf(winid)
+					vim.keymap.set("n", "q", "<cmd>close<cr>", { buffer = bufnr, noremap = true, silent = true })
+					vim.keymap.set("n", "<Esc>", "<cmd>close<cr>", { buffer = bufnr, noremap = true, silent = true })
 				end
 			end, { desc = "Show line diagnostics (enhanced)" })
 		end,
