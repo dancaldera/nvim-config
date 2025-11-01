@@ -23,6 +23,9 @@
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
+-- Disable unused providers (silences warnings on macOS)
+vim.g.loaded_python3_provider = 0
+
 -- Check compatibility
 require("config.compatibility")
 
