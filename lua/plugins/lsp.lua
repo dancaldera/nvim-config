@@ -21,11 +21,162 @@ return {
 		"williamboman/mason-lspconfig.nvim",
 		dependencies = {
 			"williamboman/mason.nvim",
+			"hrsh7th/cmp-nvim-lsp",
 		},
+		config = function()
+			local cmp_nvim_lsp = require("cmp_nvim_lsp")
+
+			-- Get capabilities from nvim-cmp for all servers
+			local capabilities = cmp_nvim_lsp.default_capabilities()
+			capabilities.textDocument.foldingRange = {
+				dynamicRegistration = false,
+				lineFoldingOnly = true,
+			}
+
+			-- Configure servers using Neovim 0.11+ native API BEFORE mason-lspconfig setup
+			-- This way mason-lspconfig will automatically enable them when installed
+
+			-- Lua Language Server
+			vim.lsp.config("lua_ls", {
+				capabilities = capabilities,
+				settings = {
+					Lua = {
+						diagnostics = {
+							globals = { "vim" },
+						},
+						completion = {
+							callSnippet = "Replace",
+						},
+					},
+				},
+				on_init = function(client, _)
+					vim.notify(string.format("✓ LSP server '%s' initialized", client.name), vim.log.levels.INFO)
+				end,
+			})
+
+			-- TypeScript/JavaScript
+			vim.lsp.config("ts_ls", {
+				capabilities = capabilities,
+				on_init = function(client, _)
+					vim.notify(string.format("✓ LSP server '%s' initialized", client.name), vim.log.levels.INFO)
+				end,
+			})
+
+			-- HTML
+			vim.lsp.config("html", {
+				capabilities = capabilities,
+				on_init = function(client, _)
+					vim.notify(string.format("✓ LSP server '%s' initialized", client.name), vim.log.levels.INFO)
+				end,
+			})
+
+			-- CSS
+			vim.lsp.config("cssls", {
+				capabilities = capabilities,
+				on_init = function(client, _)
+					vim.notify(string.format("✓ LSP server '%s' initialized", client.name), vim.log.levels.INFO)
+				end,
+			})
+
+			-- JSON
+			vim.lsp.config("jsonls", {
+				capabilities = capabilities,
+				on_init = function(client, _)
+					vim.notify(string.format("✓ LSP server '%s' initialized", client.name), vim.log.levels.INFO)
+				end,
+			})
+
+			-- YAML
+			vim.lsp.config("yamlls", {
+				capabilities = capabilities,
+				on_init = function(client, _)
+					vim.notify(string.format("✓ LSP server '%s' initialized", client.name), vim.log.levels.INFO)
+				end,
+			})
+
+			-- Python
+			vim.lsp.config("pyright", {
+				capabilities = capabilities,
+				on_init = function(client, _)
+					vim.notify(string.format("✓ LSP server '%s' initialized", client.name), vim.log.levels.INFO)
+				end,
+			})
+
+			-- Go
+			vim.lsp.config("gopls", {
+				capabilities = capabilities,
+				on_init = function(client, _)
+					vim.notify(string.format("✓ LSP server '%s' initialized", client.name), vim.log.levels.INFO)
+				end,
+			})
+
+			-- C/C++
+			vim.lsp.config("clangd", {
+				capabilities = capabilities,
+				on_init = function(client, _)
+					vim.notify(string.format("✓ LSP server '%s' initialized", client.name), vim.log.levels.INFO)
+				end,
+			})
+
+			-- Rust
+			vim.lsp.config("rust_analyzer", {
+				capabilities = capabilities,
+				on_init = function(client, _)
+					vim.notify(string.format("✓ LSP server '%s' initialized", client.name), vim.log.levels.INFO)
+				end,
+			})
+
+			-- Tailwind CSS
+			vim.lsp.config("tailwindcss", {
+				capabilities = capabilities,
+				on_init = function(client, _)
+					vim.notify(string.format("✓ LSP server '%s' initialized", client.name), vim.log.levels.INFO)
+				end,
+			})
+
+			-- Bash
+			vim.lsp.config("bashls", {
+				capabilities = capabilities,
+				on_init = function(client, _)
+					vim.notify(string.format("✓ LSP server '%s' initialized", client.name), vim.log.levels.INFO)
+				end,
+			})
+
+			-- Emmet
+			vim.lsp.config("emmet_ls", {
+				capabilities = capabilities,
+				on_init = function(client, _)
+					vim.notify(string.format("✓ LSP server '%s' initialized", client.name), vim.log.levels.INFO)
+				end,
+			})
+
+			-- Now setup mason-lspconfig - it will automatically enable configured servers
+			require("mason-lspconfig").setup({
+				-- List of servers to automatically install
+				ensure_installed = {
+					-- Required servers
+					"lua_ls",
+					"ts_ls",
+					"html",
+					"cssls",
+					"jsonls",
+					"yamlls",
+					-- Optional but recommended servers
+					"pyright",
+					"gopls",
+					"clangd",
+					"rust_analyzer",
+					"tailwindcss",
+					"bashls",
+					"emmet_ls",
+				},
+				-- Automatically install servers that are configured but not installed
+				automatic_installation = true,
+			})
+		end,
 	},
 	{
 		"neovim/nvim-lspconfig",
-		event = { "BufReadPre", "BufNewFile" },
 		dependencies = {
 			"hrsh7th/cmp-nvim-lsp",
 			"williamboman/mason.nvim",
@@ -34,7 +185,6 @@ return {
 			{ "folke/neodev.nvim", opts = {} }, -- Better Lua LSP for Neovim config
 		},
 		config = function()
-			local cmp_nvim_lsp = require("cmp_nvim_lsp")
 			local keymap = vim.keymap
 
 			-- Defer diagnostic configuration to avoid buffer issues
@@ -66,6 +216,7 @@ return {
 				})
 			end)
 
+			-- Keymaps on LSP attach
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = vim.api.nvim_create_augroup("UserLspConfig", {}),
 				callback = function(ev)
@@ -123,14 +274,6 @@ return {
 				end,
 			})
 
-			local capabilities = cmp_nvim_lsp.default_capabilities()
-
-			-- Enable folding capability for nvim-ufo
-			capabilities.textDocument.foldingRange = {
-				dynamicRegistration = false,
-				lineFoldingOnly = true,
-			}
-
 			-- Enhanced error handling for LSP
 			local function setup_lsp_error_handling()
 				vim.api.nvim_create_autocmd("LspDetach", {
@@ -170,79 +313,6 @@ return {
 
 			-- Initialize error handling
 			setup_lsp_error_handling()
-
-			-- Suppress deprecation warning (will migrate when lspconfig v3.0.0 is released)
-			local notify = vim.notify
-			vim.notify = function(msg, ...)
-				if msg:match("lspconfig.*deprecated") then
-					return
-				end
-				notify(msg, ...)
-			end
-
-			-- Configure individual servers using new Neovim 0.11+ API
-			local servers = {
-				ts_ls = {},
-				html = {},
-				cssls = {},
-				tailwindcss = {},
-				emmet_ls = {},
-				pyright = {},
-				gopls = {},
-				clangd = {},
-				rust_analyzer = {},
-				jsonls = {},
-				yamlls = {},
-				bashls = {},
-				lua_ls = {
-					settings = {
-						Lua = {
-							diagnostics = {
-								globals = { "vim" },
-							},
-							completion = {
-								callSnippet = "Replace",
-							},
-						},
-					},
-				},
-			}
-
-			for server, config in pairs(servers) do
-				local final_config = vim.tbl_deep_extend("force", {
-					capabilities = capabilities,
-					on_init = function(client, _)
-						vim.notify(string.format("✓ LSP server '%s' initialized", client.name), vim.log.levels.INFO)
-					end,
-					on_exit = function(code, signal, client_id)
-						local client = vim.lsp.get_client_by_id(client_id)
-						if client then
-							vim.notify(
-								string.format(
-									"LSP server '%s' exited (code: %d, signal: %s)",
-									client.name,
-									code,
-									signal or "none"
-								),
-								vim.log.levels.WARN
-							)
-						end
-					end,
-				}, config)
-
-				-- Add error handling for server setup using new API
-				local ok, err = pcall(function()
-					vim.lsp.config(server, final_config)
-					vim.lsp.enable(server)
-				end)
-
-				if not ok then
-					vim.notify(string.format("Failed to setup LSP server '%s': %s", server, err), vim.log.levels.ERROR)
-				end
-			end
-
-			-- Restore original notify
-			vim.notify = notify
 		end,
 	},
 }
