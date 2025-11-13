@@ -36,6 +36,5 @@ require("config.keymaps")
 -- Plugin management
 require("config.lazy")
 
--- Configuration utilities
+-- Health check commands (manual only - auto-check disabled for performance)
 require("config.health")
-require("config.backup")

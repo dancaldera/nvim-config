@@ -19,11 +19,12 @@ keymap.set("n", "<leader>sh", "<C-w>s", { desc = "Split window horizontally" })
 keymap.set("n", "<leader>se", "<C-w>=", { desc = "Make splits equal size" })
 keymap.set("n", "<leader>sx", "<cmd>close<CR>", { desc = "Close current split" })
 
-keymap.set("n", "<leader>to", "<cmd>tabnew<CR>", { desc = "Open new tab" })
-keymap.set("n", "<leader>tx", "<cmd>tabclose<CR>", { desc = "Close current tab" })
-keymap.set("n", "<leader>tn", "<cmd>tabn<CR>", { desc = "Go to next tab" })
-keymap.set("n", "<leader>tp", "<cmd>tabp<CR>", { desc = "Go to previous tab" })
-keymap.set("n", "<leader>tf", "<cmd>tabnew %<CR>", { desc = "Open current buffer in new tab" })
+-- Tab management (uppercase T to avoid conflict with toggles)
+keymap.set("n", "<leader>To", "<cmd>tabnew<CR>", { desc = "Open new tab" })
+keymap.set("n", "<leader>Tx", "<cmd>tabclose<CR>", { desc = "Close current tab" })
+keymap.set("n", "<leader>Tn", "<cmd>tabn<CR>", { desc = "Go to next tab" })
+keymap.set("n", "<leader>Tp", "<cmd>tabp<CR>", { desc = "Go to previous tab" })
+keymap.set("n", "<leader>Tf", "<cmd>tabnew %<CR>", { desc = "Open current buffer in new tab" })
 
 -- Better window navigation
 keymap.set("n", "<C-h>", "<C-w>h", { desc = "Navigate to left window" })
@@ -59,8 +60,14 @@ keymap.set("n", "<leader>x", "<cmd>wq<CR>", { desc = "Save and quit" })
 keymap.set("n", "<S-l>", ":bnext<CR>", { desc = "Next buffer" })
 keymap.set("n", "<S-h>", ":bprevious<CR>", { desc = "Previous buffer" })
 
--- Quick escape from terminal mode
+-- Terminal mode keybindings
+-- Quick escape from terminal mode (multiple options for compatibility)
 keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
+keymap.set("t", "jk", "<C-\\><C-n>", { desc = "Exit terminal mode with jk" })
+keymap.set("t", "<C-h>", "<C-\\><C-n><C-w>h", { desc = "Navigate to left window from terminal" })
+keymap.set("t", "<C-j>", "<C-\\><C-n><C-w>j", { desc = "Navigate to bottom window from terminal" })
+keymap.set("t", "<C-k>", "<C-\\><C-n><C-w>k", { desc = "Navigate to top window from terminal" })
+keymap.set("t", "<C-l>", "<C-\\><C-n><C-w>l", { desc = "Navigate to right window from terminal" })
 
 -- Better line joining
 keymap.set("n", "J", "mzJ`z", { desc = "Join lines without moving cursor" })
@@ -78,10 +85,21 @@ keymap.set("i", ";", ";<c-g>u")
 keymap.set("x", "<leader>p", [["_dP]], { desc = "Paste without yanking" })
 
 -- Delete without yanking
-keymap.set({ "n", "v" }, "<leader>D", [["_d]], { desc = "Delete without yanking" })
+keymap.set({ "n", "v" }, "<leader>dd", [["_d]], { desc = "Delete without yanking" })
 
 -- Select all
 keymap.set("n", "<C-a>", "ggVG", { desc = "Select all" })
+
+-- System clipboard operations
+keymap.set({ "n", "v" }, "<leader>y", '"+y', { desc = "Yank to system clipboard" })
+keymap.set({ "n", "v" }, "<leader>Y", '"+Y', { desc = "Yank line to system clipboard" })
+keymap.set({ "n", "v" }, "<leader>P", '"+p', { desc = "Paste from system clipboard" })
+
+-- Better window resizing (Alt/Option + hjkl)
+keymap.set("n", "<M-h>", "<cmd>vertical resize -2<CR>", { desc = "Decrease window width" })
+keymap.set("n", "<M-l>", "<cmd>vertical resize +2<CR>", { desc = "Increase window width" })
+keymap.set("n", "<M-j>", "<cmd>resize +2<CR>", { desc = "Increase window height" })
+keymap.set("n", "<M-k>", "<cmd>resize -2<CR>", { desc = "Decrease window height" })
 
 -- Health and diagnostics
 keymap.set("n", "<leader>hc", "<cmd>lua require('config.health').check_health()<CR>", { desc = "Run health check" })

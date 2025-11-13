@@ -34,6 +34,9 @@ require("lazy").setup({
 		border = "rounded",
 		backdrop = 60,
 	},
+	rocks = {
+		enabled = false, -- Disable luarocks support (not needed for current plugins)
+	},
 	performance = {
 		cache = {
 			enabled = true,

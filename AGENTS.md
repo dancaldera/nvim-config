@@ -2,6 +2,49 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Recent Changes (2025)
+
+### Performance Optimizations
+- **Removed auto-updates.lua**: Eliminated hourly auto-update checks for better performance
+- **Removed backup.lua**: Simplified config management (use git for backups instead)
+- **Disabled auto health check**: Health checks now manual-only via `<leader>hc` or `:checkhealth`
+
+### Bug Fixes
+- **Fixed duplicate Trouble.nvim**: Removed duplicate configuration from dev-tools.lua
+- **Fixed bufferline bug**: Corrected undefined function call in session restoration
+- **Consolidated diagnostics**: Removed duplicate diagnostic configuration from lsp.lua
+
+### Keybinding Improvements
+- **Fixed conflicts**:
+  - Changed "delete without yank" from `<leader>D` to `<leader>dd`
+  - Moved tab commands from `<leader>t` to `<leader>T` (uppercase)
+  - Removed Noice scroll bindings to avoid conflicts
+- **Added quality-of-life bindings**:
+  - `<leader>y/Y/P` - System clipboard operations
+  - `<M-h/j/k/l>` - Better window resizing with Alt/Option keys
+  - `<C-s>` (insert mode) - LSP signature help
+- **Reorganized namespaces**:
+  - `<leader>t` - Toggle/Terminal
+  - `<leader>T` - Tabs
+  - Clearer separation of concerns
+
+### Modern Plugin Additions
+- **flash.nvim**: Modern motion/navigation (replaces vim-sneak style plugins)
+- **aerial.nvim**: Code outline sidebar (`<leader>a`)
+- **lsp_signature.nvim**: Function signature help as you type
+- **actions-preview.nvim**: Better code action preview with diff
+- **fidget.nvim**: LSP progress indicator
+- **git-conflict.nvim**: Visual git conflict resolution
+- **refactoring.nvim**: Extract function, inline variable, etc. (`<leader>r` namespace)
+- **mini.ai**: Enhanced text objects for better code selection
+
+### Plugin Migrations
+- **Codeium**: Migrated from `codeium.vim` (Vim-script) to `codeium.nvim` (Lua) for better performance
+
+### UX Improvements
+- **Silent LSP initialization**: Removed verbose LSP startup notifications
+- **Better diagnostics**: Enhanced configuration in enhanced-diagnostics.lua
+
 ## Development Commands
 
 ### Plugin Management
@@ -62,11 +105,12 @@ Three-layer approach for language support:
    - Telescope integration for definitions, references, diagnostics
 
 2. **Completion Layer** (`autocompletion.lua`):
-   - **AI Completion**: Codeium/Windsurf for intelligent code suggestions (ghost text)
+   - **AI Completion**: Codeium.nvim (Lua-native) for intelligent code suggestions (ghost text)
    - **LSP Completion**: nvim-cmp with multiple sources (LSP, buffer, path, snippets)
    - LuaSnip for snippet expansion
    - VS Code-style pictograms via lspkind
    - Dual completion system: AI suggestions + traditional completions work together
+   - Function signature help via lsp_signature.nvim
 
 3. **Formatting Layer** (`formatting.lua`):
    - Conform.nvim for code formatting
@@ -85,6 +129,7 @@ Three-layer approach for language support:
 - **Gitsigns**: Git integration with hunk management
 - **Neogit**: Advanced Git UI with Telescope integration
 - **Diffview**: Side-by-side diff view for files and commits
+- **git-conflict.nvim**: Visual git conflict resolution with intuitive keybindings
 
 #### Editor Enhancements
 - **nvim-ufo**: Superior code folding with Treesitter support
@@ -102,6 +147,7 @@ Three-layer approach for language support:
 - **bufferline.nvim**: Enhanced buffer line with diagnostics
 - **which-key**: Keybinding discovery and documentation
 - **lualine**: Customizable statusline
+- **fidget.nvim**: LSP progress indicator with elegant notifications
 
 #### Development Tools
 - **Trouble**: Advanced diagnostics and LSP symbol navigation
@@ -110,13 +156,19 @@ Three-layer approach for language support:
 - **project.nvim**: Project management and switching
 - **nvim-navic**: Breadcrumb-style code context
 - **markdown-preview**: Live markdown preview
+- **aerial.nvim**: Code outline sidebar showing functions, classes, etc.
+- **lsp_signature.nvim**: Function signature help displayed as you type
+- **actions-preview.nvim**: Code action preview with diff before applying
+- **refactoring.nvim**: Advanced refactoring operations (extract, inline, etc.)
 
 #### Search & Navigation
+- **flash.nvim**: Modern motion plugin for quick jumps anywhere on screen
 - **nvim-spectre**: Global search and replace functionality
 - **nvim-bqf**: Enhanced quickfix window
 - **persistence.nvim**: Session management and restoration
 - **indent-blankline**: Visual indentation guides
 - **nvim-colorizer**: Highlight color codes in files
+- **mini.ai**: Enhanced text objects for better code selection
 
 ## Working with This Configuration
 
@@ -143,17 +195,25 @@ Three-layer approach for language support:
 
 ### Common Workflow Patterns
 - **File navigation**: `<leader>ff` (find files) → `<leader>fs` (search text) → `<leader>fp` (find projects)
-- **Code exploration**: `gd` (definition) → `K` (hover docs) → `<leader>ca` (code actions) → `<leader>th` (toggle inlay hints)
+- **Code exploration**:
+  - Basic: `gd` (definition) → `K` (hover docs) → `<C-s>` (signature help in insert mode) → `<leader>ca` (code actions with preview)
+  - Advanced: `<leader>a` (code outline) → `s` (flash jump) → `<leader>th` (toggle inlay hints)
 - **Git workflow**:
   - Hunks: `]c` (next hunk) → `<leader>hp` (preview) → `<leader>hs` (stage)
   - Advanced: `<leader>gg` (Neogit) → `<leader>gd` (DiffView) → `<leader>gh` (file history)
-- **Window management**: `<leader>sv` (vertical split) → `<C-h/j/k/l>` (navigate) → `<leader>se` (equal size)
+  - Conflicts: `<leader>gcn` (next conflict) → `<leader>gco` (choose ours) → `<leader>gct` (choose theirs)
+- **Window management**:
+  - Navigation: `<leader>sv` (vertical split) → `<C-h/j/k/l>` (navigate) → `<leader>se` (equal size)
+  - Resizing: `<M-h/j/k/l>` (resize with Alt/Option keys)
+- **Tab management**: `<leader>To` (new tab) → `<leader>Tn/Tp` (next/prev) → `<leader>Tx` (close)
 - **Diagnostics**: `<leader>xx` (Trouble diagnostics) → `]d`/`[d` (navigate) → `<leader>ca` (fix)
+- **Refactoring**: Select code → `<leader>re` (extract function) → `<leader>rv` (extract variable) → `<leader>ri` (inline)
 - **Search and replace**: `<leader>sr` (global search/replace) or `<leader>fs` + `<C-q>` (quickfix)
 - **Session management**: `<leader>qs` (restore session) → `<leader>qd` (stop saving)
 - **Terminal**: `<C-\>` (toggle) → `<leader>tf` (float) → `<leader>th` (horizontal) → `<leader>tv` (vertical)
 - **TODO management**: `]t` (next todo) → `[t` (prev todo) → `<leader>ft` (find todos)
 - **Folding**: `zR` (open all) → `zM` (close all) → `zr/zm` (open/close by level)
+- **Clipboard**: `<leader>y` (yank to system) → `<leader>P` (paste from system) → `<leader>dd` (delete without yank)
 
 ### Error Recovery
 - LSP issues: `:LspRestart` or check `:Mason` for server installation

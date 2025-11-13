@@ -50,7 +50,7 @@ return {
 					},
 				},
 				on_init = function(client, _)
-					vim.notify(string.format("✓ LSP server '%s' initialized", client.name), vim.log.levels.INFO)
+					-- Silent initialization for better UX
 				end,
 			})
 
@@ -58,7 +58,7 @@ return {
 			vim.lsp.config("ts_ls", {
 				capabilities = capabilities,
 				on_init = function(client, _)
-					vim.notify(string.format("✓ LSP server '%s' initialized", client.name), vim.log.levels.INFO)
+					-- Silent initialization for better UX
 				end,
 			})
 
@@ -66,7 +66,7 @@ return {
 			vim.lsp.config("html", {
 				capabilities = capabilities,
 				on_init = function(client, _)
-					vim.notify(string.format("✓ LSP server '%s' initialized", client.name), vim.log.levels.INFO)
+					-- Silent initialization for better UX
 				end,
 			})
 
@@ -74,7 +74,7 @@ return {
 			vim.lsp.config("cssls", {
 				capabilities = capabilities,
 				on_init = function(client, _)
-					vim.notify(string.format("✓ LSP server '%s' initialized", client.name), vim.log.levels.INFO)
+					-- Silent initialization for better UX
 				end,
 			})
 
@@ -82,7 +82,7 @@ return {
 			vim.lsp.config("jsonls", {
 				capabilities = capabilities,
 				on_init = function(client, _)
-					vim.notify(string.format("✓ LSP server '%s' initialized", client.name), vim.log.levels.INFO)
+					-- Silent initialization for better UX
 				end,
 			})
 
@@ -90,7 +90,7 @@ return {
 			vim.lsp.config("yamlls", {
 				capabilities = capabilities,
 				on_init = function(client, _)
-					vim.notify(string.format("✓ LSP server '%s' initialized", client.name), vim.log.levels.INFO)
+					-- Silent initialization for better UX
 				end,
 			})
 
@@ -98,7 +98,7 @@ return {
 			vim.lsp.config("pyright", {
 				capabilities = capabilities,
 				on_init = function(client, _)
-					vim.notify(string.format("✓ LSP server '%s' initialized", client.name), vim.log.levels.INFO)
+					-- Silent initialization for better UX
 				end,
 			})
 
@@ -106,7 +106,7 @@ return {
 			vim.lsp.config("gopls", {
 				capabilities = capabilities,
 				on_init = function(client, _)
-					vim.notify(string.format("✓ LSP server '%s' initialized", client.name), vim.log.levels.INFO)
+					-- Silent initialization for better UX
 				end,
 			})
 
@@ -114,7 +114,7 @@ return {
 			vim.lsp.config("clangd", {
 				capabilities = capabilities,
 				on_init = function(client, _)
-					vim.notify(string.format("✓ LSP server '%s' initialized", client.name), vim.log.levels.INFO)
+					-- Silent initialization for better UX
 				end,
 			})
 
@@ -122,7 +122,7 @@ return {
 			vim.lsp.config("rust_analyzer", {
 				capabilities = capabilities,
 				on_init = function(client, _)
-					vim.notify(string.format("✓ LSP server '%s' initialized", client.name), vim.log.levels.INFO)
+					-- Silent initialization for better UX
 				end,
 			})
 
@@ -130,7 +130,7 @@ return {
 			vim.lsp.config("tailwindcss", {
 				capabilities = capabilities,
 				on_init = function(client, _)
-					vim.notify(string.format("✓ LSP server '%s' initialized", client.name), vim.log.levels.INFO)
+					-- Silent initialization for better UX
 				end,
 			})
 
@@ -138,7 +138,7 @@ return {
 			vim.lsp.config("bashls", {
 				capabilities = capabilities,
 				on_init = function(client, _)
-					vim.notify(string.format("✓ LSP server '%s' initialized", client.name), vim.log.levels.INFO)
+					-- Silent initialization for better UX
 				end,
 			})
 
@@ -146,7 +146,7 @@ return {
 			vim.lsp.config("emmet_ls", {
 				capabilities = capabilities,
 				on_init = function(client, _)
-					vim.notify(string.format("✓ LSP server '%s' initialized", client.name), vim.log.levels.INFO)
+					-- Silent initialization for better UX
 				end,
 			})
 
@@ -187,34 +187,7 @@ return {
 		config = function()
 			local keymap = vim.keymap
 
-			-- Defer diagnostic configuration to avoid buffer issues
-			vim.schedule(function()
-				vim.diagnostic.config({
-					signs = {
-						text = {
-							[vim.diagnostic.severity.ERROR] = " ",
-							[vim.diagnostic.severity.WARN] = " ",
-							[vim.diagnostic.severity.HINT] = "󰠠 ",
-							[vim.diagnostic.severity.INFO] = " ",
-						},
-					},
-					virtual_text = {
-						spacing = 4,
-						source = "if_many",
-						prefix = "●",
-					},
-					float = {
-						focusable = false,
-						style = "minimal",
-						border = "rounded",
-						source = "always",
-						header = "",
-						prefix = "",
-					},
-					severity_sort = true,
-					update_in_insert = false,
-				})
-			end)
+			-- Note: Diagnostic configuration is in lua/plugins/enhanced-diagnostics.lua
 
 			-- Keymaps on LSP attach
 			vim.api.nvim_create_autocmd("LspAttach", {
@@ -263,6 +236,9 @@ return {
 
 					opts.desc = "Show documentation for what is under cursor"
 					keymap.set("n", "K", vim.lsp.buf.hover, opts)
+
+					opts.desc = "Show signature help"
+					keymap.set("i", "<C-s>", vim.lsp.buf.signature_help, opts)
 
 					opts.desc = "Toggle inlay hints"
 					keymap.set("n", "<leader>th", function()

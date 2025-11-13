@@ -118,7 +118,8 @@ return {
 				{ "<leader>q", group = "Session" },
 				{ "<leader>r", group = "Rename/Restart" },
 				{ "<leader>s", group = "Split Windows/Search" },
-				{ "<leader>t", group = "Tab/Toggle" },
+				{ "<leader>t", group = "Toggle/Terminal" },
+				{ "<leader>T", group = "Tabs" },
 				{ "<leader>x", group = "Trouble/Diagnostics" },
 			})
 		end,
