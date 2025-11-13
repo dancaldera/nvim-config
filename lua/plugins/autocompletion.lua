@@ -4,15 +4,20 @@
 -- ============================================================================
 
 return {
-	-- AI-Powered Completion (Windsurf/Codeium)
+	-- AI-Powered Completion (Codeium - Lua version)
 	{
-		"Exafunction/codeium.vim",
+		"Exafunction/codeium.nvim",
 		event = "BufEnter",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"hrsh7th/nvim-cmp",
+		},
 		config = function()
-			-- Disable default bindings to use custom ones
-			vim.g.codeium_disable_bindings = 1
+			require("codeium").setup({
+				enable_chat = true,
+			})
 
-			-- AI completion keybindings
+			-- AI completion keybindings (same as before for muscle memory)
 			vim.keymap.set("i", "<C-g>", function()
 				return vim.fn["codeium#Accept"]()
 			end, { expr = true, silent = true, desc = "Accept AI suggestion" })

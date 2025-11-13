@@ -376,8 +376,6 @@ function M.check()
 	return run_all_checks(reporter)
 end
 
-vim.defer_fn(function()
-	M.check_health()
-end, 3000)
+-- Auto-check disabled for performance - use :checkhealth or <leader>hc manually
 
 return M

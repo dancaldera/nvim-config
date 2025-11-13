@@ -19,11 +19,12 @@ keymap.set("n", "<leader>sh", "<C-w>s", { desc = "Split window horizontally" })
 keymap.set("n", "<leader>se", "<C-w>=", { desc = "Make splits equal size" })
 keymap.set("n", "<leader>sx", "<cmd>close<CR>", { desc = "Close current split" })
 
-keymap.set("n", "<leader>to", "<cmd>tabnew<CR>", { desc = "Open new tab" })
-keymap.set("n", "<leader>tx", "<cmd>tabclose<CR>", { desc = "Close current tab" })
-keymap.set("n", "<leader>tn", "<cmd>tabn<CR>", { desc = "Go to next tab" })
-keymap.set("n", "<leader>tp", "<cmd>tabp<CR>", { desc = "Go to previous tab" })
-keymap.set("n", "<leader>tf", "<cmd>tabnew %<CR>", { desc = "Open current buffer in new tab" })
+-- Tab management (uppercase T to avoid conflict with toggles)
+keymap.set("n", "<leader>To", "<cmd>tabnew<CR>", { desc = "Open new tab" })
+keymap.set("n", "<leader>Tx", "<cmd>tabclose<CR>", { desc = "Close current tab" })
+keymap.set("n", "<leader>Tn", "<cmd>tabn<CR>", { desc = "Go to next tab" })
+keymap.set("n", "<leader>Tp", "<cmd>tabp<CR>", { desc = "Go to previous tab" })
+keymap.set("n", "<leader>Tf", "<cmd>tabnew %<CR>", { desc = "Open current buffer in new tab" })
 
 -- Better window navigation
 keymap.set("n", "<C-h>", "<C-w>h", { desc = "Navigate to left window" })
@@ -78,10 +79,21 @@ keymap.set("i", ";", ";<c-g>u")
 keymap.set("x", "<leader>p", [["_dP]], { desc = "Paste without yanking" })
 
 -- Delete without yanking
-keymap.set({ "n", "v" }, "<leader>D", [["_d]], { desc = "Delete without yanking" })
+keymap.set({ "n", "v" }, "<leader>dd", [["_d]], { desc = "Delete without yanking" })
 
 -- Select all
 keymap.set("n", "<C-a>", "ggVG", { desc = "Select all" })
+
+-- System clipboard operations
+keymap.set({ "n", "v" }, "<leader>y", '"+y', { desc = "Yank to system clipboard" })
+keymap.set({ "n", "v" }, "<leader>Y", '"+Y', { desc = "Yank line to system clipboard" })
+keymap.set({ "n", "v" }, "<leader>P", '"+p', { desc = "Paste from system clipboard" })
+
+-- Better window resizing (Alt/Option + hjkl)
+keymap.set("n", "<M-h>", "<cmd>vertical resize -2<CR>", { desc = "Decrease window width" })
+keymap.set("n", "<M-l>", "<cmd>vertical resize +2<CR>", { desc = "Increase window width" })
+keymap.set("n", "<M-j>", "<cmd>resize +2<CR>", { desc = "Increase window height" })
+keymap.set("n", "<M-k>", "<cmd>resize -2<CR>", { desc = "Decrease window height" })
 
 -- Health and diagnostics
 keymap.set("n", "<leader>hc", "<cmd>lua require('config.health').check_health()<CR>", { desc = "Run health check" })
