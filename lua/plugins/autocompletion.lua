@@ -14,25 +14,25 @@ return {
 		},
 		config = function()
 			require("codeium").setup({
-				enable_chat = true,
+				enable_cmp_source = false, -- We'll use it as a separate completion source
+				virtual_text = {
+					enabled = true,
+					manual = false,
+					default_filetype_enabled = true,
+					idle_delay = 75,
+					virtual_text_priority = 65535,
+					map_keys = true,
+					accept_fallback = nil,
+					key_bindings = {
+						accept = "<C-g>",
+						accept_word = false,
+						accept_line = false,
+						next = "<C-;>",
+						prev = "<C-,>",
+						clear = "<C-x>",
+					},
+				},
 			})
-
-			-- AI completion keybindings (same as before for muscle memory)
-			vim.keymap.set("i", "<C-g>", function()
-				return vim.fn["codeium#Accept"]()
-			end, { expr = true, silent = true, desc = "Accept AI suggestion" })
-
-			vim.keymap.set("i", "<C-;>", function()
-				return vim.fn["codeium#CycleCompletions"](1)
-			end, { expr = true, silent = true, desc = "Next AI suggestion" })
-
-			vim.keymap.set("i", "<C-,>", function()
-				return vim.fn["codeium#CycleCompletions"](-1)
-			end, { expr = true, silent = true, desc = "Previous AI suggestion" })
-
-			vim.keymap.set("i", "<C-x>", function()
-				return vim.fn["codeium#Clear"]()
-			end, { expr = true, silent = true, desc = "Clear AI suggestion" })
 		end,
 	},
 
