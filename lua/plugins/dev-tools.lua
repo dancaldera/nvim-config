@@ -76,41 +76,128 @@ return {
 		},
 	},
 
-	-- Better terminal
+	-- Modern terminal with natural keybindings
 	{
-		"akinsho/toggleterm.nvim",
-		version = "*",
-		cmd = { "ToggleTerm", "TermExec" },
+		"folke/snacks.nvim",
+		priority = 1000,
+		lazy = false,
 		opts = {
-			size = function(term)
-				if term.direction == "horizontal" then
-					return 15
-				elseif term.direction == "vertical" then
-					return vim.o.columns * 0.4
-				end
-			end,
-			open_mapping = [[<c-\>]],
-			hide_numbers = true,
-			shade_terminals = true,
-			shading_factor = 2,
-			start_in_insert = true,
-			insert_mappings = true,
-			terminal_mappings = true,
-			persist_size = true,
-			persist_mode = true,
-			direction = "horizontal",
-			close_on_exit = true,
-			shell = vim.o.shell,
-			auto_scroll = true,
-			float_opts = {
-				border = "curved",
-				winblend = 0,
+			-- Enable notifier (required for terminal error messages)
+			notifier = {
+				enabled = true,
+			},
+			terminal = {
+				win = {
+					style = "terminal",
+					position = "float",
+				},
 			},
 		},
+		config = function(_, opts)
+			require("snacks").setup(opts)
+
+			-- Suppress terminal exit code error notifications
+			local snacks_notify = require("snacks.notifier").notify
+			require("snacks.notifier").notify = function(msg, level, notify_opts)
+				-- Suppress terminal exit errors
+				if type(msg) == "string" and msg:match("Terminal exited with code") then
+					return
+				end
+				return snacks_notify(msg, level, notify_opts)
+			end
+
+			-- Auto-close terminal on any exit (including non-zero codes)
+			vim.api.nvim_create_autocmd("TermClose", {
+				group = vim.api.nvim_create_augroup("snacks_terminal_autoclose", { clear = true }),
+				callback = function(event)
+					-- Only auto-close if it's a snacks terminal
+					local buf = event.buf
+					if vim.bo[buf].filetype == "snacks_terminal" or vim.bo[buf].buftype == "terminal" then
+						vim.schedule(function()
+							if vim.api.nvim_buf_is_valid(buf) then
+								vim.api.nvim_buf_delete(buf, { force = true })
+							end
+						end)
+					end
+				end,
+			})
+		end,
 		keys = {
-			{ "<leader>tf", "<cmd>ToggleTerm direction=float<cr>", desc = "Toggle floating terminal" },
-			{ "<leader>th", "<cmd>ToggleTerm direction=horizontal<cr>", desc = "Toggle horizontal terminal" },
-			{ "<leader>tv", "<cmd>ToggleTerm direction=vertical<cr>", desc = "Toggle vertical terminal" },
+			-- Main toggle (count-aware: 1<leader>tt, 2<leader>tt, etc.)
+			{
+				"<leader>tt",
+				function()
+					Snacks.terminal.toggle()
+				end,
+				desc = "Toggle Terminal",
+				mode = { "n", "t" },
+			},
+			{
+				"<C-\\>",
+				function()
+					Snacks.terminal.toggle()
+				end,
+				desc = "Toggle Terminal",
+				mode = { "n", "t" },
+			},
+			-- Different positions
+			{
+				"<leader>tf",
+				function()
+					Snacks.terminal.toggle(nil, { win = { position = "float" } })
+				end,
+				desc = "Terminal (float)",
+			},
+			{
+				"<leader>th",
+				function()
+					Snacks.terminal.toggle(nil, { win = { position = "bottom", height = 0.4 } })
+				end,
+				desc = "Terminal (horizontal)",
+			},
+			{
+				"<leader>tv",
+				function()
+					Snacks.terminal.toggle(nil, { win = { position = "right", width = 0.4 } })
+				end,
+				desc = "Terminal (vertical)",
+			},
+			-- Run custom commands
+			{
+				"<leader>tc",
+				function()
+					vim.ui.input({ prompt = "Command: " }, function(cmd)
+						if cmd then
+							Snacks.terminal(cmd, { win = { position = "float" } })
+						end
+					end)
+				end,
+				desc = "Terminal (custom command)",
+			},
+			-- Kill current terminal (don't reopen)
+			{
+				"<leader>tk",
+				function()
+					local buf = vim.api.nvim_get_current_buf()
+					if vim.bo[buf].buftype == "terminal" then
+						-- Get the terminal job ID and stop it properly
+						local job_id = vim.b[buf].terminal_job_id
+						if job_id then
+							vim.fn.jobstop(job_id) -- Sends SIGTERM, then SIGKILL if needed
+						end
+
+						-- Close window
+						local win = vim.api.nvim_get_current_win()
+						if vim.api.nvim_win_is_valid(win) then
+							vim.api.nvim_win_close(win, true)
+						end
+
+						-- Buffer will auto-delete via TermClose autocmd
+					end
+				end,
+				desc = "Kill terminal",
+				mode = { "n", "t" },
+			},
 		},
 	},
 

@@ -61,8 +61,6 @@ keymap.set("n", "<S-l>", ":bnext<CR>", { desc = "Next buffer" })
 keymap.set("n", "<S-h>", ":bprevious<CR>", { desc = "Previous buffer" })
 
 -- Terminal mode keybindings
--- Quick escape from terminal mode (multiple options for compatibility)
-keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 keymap.set("t", "jk", "<C-\\><C-n>", { desc = "Exit terminal mode with jk" })
 keymap.set("t", "<C-h>", "<C-\\><C-n><C-w>h", { desc = "Navigate to left window from terminal" })
 keymap.set("t", "<C-j>", "<C-\\><C-n><C-w>j", { desc = "Navigate to bottom window from terminal" })
