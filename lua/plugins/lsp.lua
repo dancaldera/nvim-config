@@ -241,7 +241,7 @@ return {
 					keymap.set("i", "<C-s>", vim.lsp.buf.signature_help, opts)
 
 					opts.desc = "Toggle inlay hints"
-					keymap.set("n", "<leader>th", function()
+					keymap.set("n", "<leader>ti", function()
 						vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = 0 }), { bufnr = 0 })
 					end, opts)
 
