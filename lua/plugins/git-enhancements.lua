@@ -139,4 +139,30 @@ return {
 			{ "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", desc = "File History" },
 		},
 	},
+
+	-- Git Conflict - Visual git conflict resolution
+	{
+		"akinsho/git-conflict.nvim",
+		event = "VeryLazy",
+		version = "*",
+		opts = {
+			default_mappings = true,
+			default_commands = true,
+			disable_diagnostics = false,
+			list_opener = "copen",
+			highlights = {
+				incoming = "DiffAdd",
+				current = "DiffText",
+			},
+		},
+		keys = {
+			{ "<leader>gco", "<cmd>GitConflictChooseOurs<cr>", desc = "Choose ours (current changes)" },
+			{ "<leader>gct", "<cmd>GitConflictChooseTheirs<cr>", desc = "Choose theirs (incoming changes)" },
+			{ "<leader>gcb", "<cmd>GitConflictChooseBoth<cr>", desc = "Choose both" },
+			{ "<leader>gc0", "<cmd>GitConflictChooseNone<cr>", desc = "Choose none" },
+			{ "<leader>gcn", "<cmd>GitConflictNextConflict<cr>", desc = "Next conflict" },
+			{ "<leader>gcp", "<cmd>GitConflictPrevConflict<cr>", desc = "Previous conflict" },
+			{ "<leader>gcl", "<cmd>GitConflictListQf<cr>", desc = "List conflicts" },
+		},
+	},
 }

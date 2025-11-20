@@ -152,7 +152,7 @@ Three-layer approach for language support:
 #### Development Tools
 - **Trouble**: Advanced diagnostics and LSP symbol navigation
 - **todo-comments**: Highlight and search TODO comments
-- **toggleterm**: Integrated terminal with multiple layouts
+- **snacks.nvim terminal**: Integrated terminal with float/split layouts
 - **project.nvim**: Project management and switching
 - **nvim-navic**: Breadcrumb-style code context
 - **markdown-preview**: Live markdown preview

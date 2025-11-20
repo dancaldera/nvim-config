@@ -14,7 +14,7 @@ return {
 		},
 		config = function()
 			require("codeium").setup({
-				enable_cmp_source = false, -- We'll use it as a separate completion source
+				enable_cmp_source = true, -- Enable cmp source for blended completions
 				virtual_text = {
 					enabled = true,
 					manual = false,
@@ -103,10 +103,11 @@ return {
 				}),
 				-- sources for autocompletion
 				sources = cmp.config.sources({
-					{ name = "nvim_lsp" },
-					{ name = "luasnip" }, -- snippets
-					{ name = "buffer" }, -- text within current buffer
-					{ name = "path" }, -- file system paths
+					{ name = "codeium", priority = 1000 }, -- AI completions (highest priority)
+					{ name = "nvim_lsp", priority = 900 },
+					{ name = "luasnip", priority = 750 }, -- snippets
+					{ name = "buffer", priority = 500 }, -- text within current buffer
+					{ name = "path", priority = 250 }, -- file system paths
 				}),
 
 				performance = {
