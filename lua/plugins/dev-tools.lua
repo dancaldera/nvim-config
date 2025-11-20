@@ -281,5 +281,20 @@ return {
 		},
 	},
 
+	-- Render markdown with visual effects (togglable)
+	{
+		"MeanderingProgrammer/render-markdown.nvim",
+		ft = { "markdown" },
+		dependencies = { "nvim-treesitter/nvim-treesitter" },
+		config = function()
+			require("render-markdown").setup({
+				enabled = false, -- start disabled (raw chars visible)
+			})
+		end,
+		keys = {
+			{ "<leader>tm", "<cmd>RenderMarkdown toggle<cr>", desc = "Toggle markdown render" },
+		},
+	},
+
 	-- Note: Trouble.nvim is configured in lua/plugins/enhanced-diagnostics.lua
 }

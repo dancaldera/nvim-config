@@ -34,7 +34,7 @@ This document summarizes all the optimizations and enhancements made to your Neo
 - **Fold column**: Visual indicator for foldable sections
 - **Enhanced diagnostics**: Better virtual text and floating windows
 - **Improved diff options**: Better diff algorithm with linematch
-- **Catppuccin integrations**: Extended theme support for all new plugins
+- **Monokai Pro theme**: Spectrum filter with vibrant mode colors in lualine
 
 ## 🔧 LSP & Development Tools
 

@@ -74,9 +74,19 @@ return {
 			local lualine = require("lualine")
 			local lazy_status = require("lazy.status")
 
+			-- Custom theme with Monokai Pro Spectrum colors
+			local custom_theme = require("lualine.themes.monokai-pro")
+			local bg = "#222222" -- spectrum background
+			custom_theme.normal.a.bg = "#7bd88f" -- spectrum green
+			custom_theme.insert.a.bg = "#5ad4e6" -- spectrum cyan
+			custom_theme.visual.a.bg = "#948ae3" -- spectrum purple
+			custom_theme.replace.a.bg = "#fc618d" -- spectrum pink
+			custom_theme.command.a.bg = "#fce566" -- spectrum yellow
+			custom_theme.terminal = { a = { bg = "#fd9353", fg = bg, gui = "bold" } } -- spectrum orange
+
 			lualine.setup({
 				options = {
-					theme = "catppuccin",
+					theme = custom_theme,
 				},
 				sections = {
 					lualine_x = {

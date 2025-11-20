@@ -99,7 +99,7 @@ opt.spell = false
 opt.spelllang = { "en_us" }
 
 -- Concealing
-opt.conceallevel = 2
+opt.conceallevel = 0 -- show all characters by default (toggle render with <leader>tm)
 opt.concealcursor = ""
 
 -- Formatting

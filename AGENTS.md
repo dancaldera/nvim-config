@@ -123,7 +123,7 @@ Three-layer approach for language support:
 - **nvim-tree**: File explorer with git integration
 - **Telescope**: Fuzzy finder for files, text, LSP symbols, diagnostics (enhanced with better UI)
 - **Treesitter**: Syntax highlighting, text objects, auto-tagging
-- **Catppuccin**: Color scheme with extensive plugin integrations
+- **Monokai Pro**: Color scheme (Spectrum filter) with vibrant mode colors
 
 #### Git Integration
 - **Gitsigns**: Git integration with hunk management

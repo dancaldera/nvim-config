@@ -26,7 +26,7 @@ A modern, well-documented Neovim configuration optimized for full-stack developm
 - **🎯 Blame & Hunks**: Inline blame, hunk preview, staging, and navigation
 
 ### UI/UX Enhancements
-- **🌙 Beautiful Theme**: Catppuccin with extensive plugin integrations
+- **🌙 Beautiful Theme**: Monokai Pro (Spectrum) with vibrant mode colors
 - **📚 Which-Key**: Discover and learn keybindings
 - **🎨 Better UI**: Enhanced messages, notifications, inputs with Noice & Notify
 - **📊 Dashboard**: Beautiful start screen with quick actions
@@ -170,7 +170,7 @@ Before installing this configuration, ensure you have:
 │   │   ├── keymaps.lua         # Key mappings (improved)
 │   │   └── compatibility.lua   # Version checking
 │   └── plugins/
-│       ├── colorscheme.lua        # Catppuccin theme with integrations
+│       ├── colorscheme.lua        # Monokai Pro theme
 │       ├── nvim-tree.lua          # File explorer
 │       ├── telescope.lua          # Fuzzy finder (enhanced UI)
 │       ├── lsp.lua               # LSP with inlay hints
@@ -194,12 +194,15 @@ Before installing this configuration, ensure you have:
 To change the colorscheme, edit `lua/plugins/colorscheme.lua`:
 
 ```lua
--- Replace catppuccin with your preferred theme
+-- Current theme: Monokai Pro (Spectrum filter)
 return {
-  "your-theme/repo",
-  name = "your-theme",
+  "loctvl842/monokai-pro.nvim",
   config = function()
-    vim.cmd.colorscheme "your-theme"
+    require("monokai-pro").setup({
+      filter = "spectrum", -- or "pro", "classic", "machine", "octagon", "ristretto"
+      transparent_background = true,
+    })
+    vim.cmd.colorscheme "monokai-pro"
   end,
 }
 ```
