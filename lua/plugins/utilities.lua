@@ -95,6 +95,28 @@ return {
 							cond = lazy_status.has_updates,
 							color = { fg = "#ff9e64" },
 						},
+						{
+							function()
+								-- Try swenv first, fallback to $VIRTUAL_ENV
+								local ok, swenv = pcall(require, "swenv.api")
+								if ok then
+									local venv = swenv.get_current_venv()
+									if venv then
+										return venv.name
+									end
+								end
+								-- Fallback: check $VIRTUAL_ENV
+								local venv_path = vim.fn.getenv("VIRTUAL_ENV")
+								if venv_path and venv_path ~= vim.NIL then
+									return vim.fn.fnamemodify(venv_path, ":t")
+								end
+								return ""
+							end,
+							cond = function()
+								return vim.bo.filetype == "python"
+							end,
+							color = { fg = "#fce566" },
+						},
 						{ "encoding" },
 						{ "fileformat" },
 						{ "filetype" },
@@ -125,6 +147,7 @@ return {
 				{ "<leader>f", group = "Find/Search" },
 				{ "<leader>h", group = "Git Hunks" },
 				{ "<leader>m", group = "Format" },
+				{ "<leader>p", group = "Python" },
 				{ "<leader>q", group = "Session" },
 				{ "<leader>r", group = "Rename/Restart" },
 				{ "<leader>s", group = "Split Windows/Search" },
