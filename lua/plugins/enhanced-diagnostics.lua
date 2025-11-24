@@ -88,7 +88,6 @@ return {
 					format = function(diagnostic)
 						local code = diagnostic.code and (" [%s]"):format(diagnostic.code) or ""
 						local user_data = diagnostic.user_data or {}
-						local lsp = user_data.lsp or {}
 						local message = diagnostic.message
 
 						-- Add file and line info

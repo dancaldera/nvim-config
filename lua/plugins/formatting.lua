@@ -21,21 +21,6 @@ local function has_deno()
 	return root_has_file({ "deno.json", "deno.jsonc" })
 end
 
-local function has_prettier()
-	return root_has_file({
-		".prettierrc",
-		".prettierrc.json",
-		".prettierrc.yml",
-		".prettierrc.yaml",
-		".prettierrc.js",
-		".prettierrc.cjs",
-		".prettierrc.mjs",
-		"prettier.config.js",
-		"prettier.config.cjs",
-		"prettier.config.mjs",
-	})
-end
-
 local function has_eslint()
 	return root_has_file({
 		".eslintrc",

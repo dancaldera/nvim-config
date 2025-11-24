@@ -127,7 +127,7 @@ return {
 			{
 				"<leader>tt",
 				function()
-					Snacks.terminal.toggle()
+					require("snacks").terminal.toggle()
 				end,
 				desc = "Toggle Terminal",
 				mode = { "n", "t" },
@@ -135,7 +135,7 @@ return {
 			{
 				"<C-\\>",
 				function()
-					Snacks.terminal.toggle()
+					require("snacks").terminal.toggle()
 				end,
 				desc = "Toggle Terminal",
 				mode = { "n", "t" },
@@ -144,21 +144,21 @@ return {
 			{
 				"<leader>tf",
 				function()
-					Snacks.terminal.toggle(nil, { win = { position = "float" } })
+					require("snacks").terminal.toggle(nil, { win = { position = "float" } })
 				end,
 				desc = "Terminal (float)",
 			},
 			{
 				"<leader>th",
 				function()
-					Snacks.terminal.toggle(nil, { win = { position = "bottom", height = 0.4 } })
+					require("snacks").terminal.toggle(nil, { win = { position = "bottom", height = 0.4 } })
 				end,
 				desc = "Terminal (horizontal)",
 			},
 			{
 				"<leader>tv",
 				function()
-					Snacks.terminal.toggle(nil, { win = { position = "right", width = 0.4 } })
+					require("snacks").terminal.toggle(nil, { win = { position = "right", width = 0.4 } })
 				end,
 				desc = "Terminal (vertical)",
 			},
@@ -168,7 +168,7 @@ return {
 				function()
 					vim.ui.input({ prompt = "Command: " }, function(cmd)
 						if cmd then
-							Snacks.terminal(cmd, { win = { position = "float" } })
+							require("snacks").terminal(cmd, { win = { position = "float" } })
 						end
 					end)
 				end,

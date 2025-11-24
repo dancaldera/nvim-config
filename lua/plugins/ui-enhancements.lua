@@ -176,7 +176,8 @@ return {
 				vim.api.nvim_create_autocmd("User", {
 					pattern = "DashboardLoaded",
 					callback = function()
-						require("lazy").show()
+						local lazy = require("lazy")
+						lazy.show()
 					end,
 				})
 			end

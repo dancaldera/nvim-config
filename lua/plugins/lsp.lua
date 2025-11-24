@@ -49,7 +49,7 @@ return {
 						},
 					},
 				},
-				on_init = function(client, _)
+				on_init = function(_, _)
 					-- Silent initialization for better UX
 				end,
 			})
@@ -57,7 +57,7 @@ return {
 			-- TypeScript/JavaScript
 			vim.lsp.config("ts_ls", {
 				capabilities = capabilities,
-				on_init = function(client, _)
+				on_init = function(_, _)
 					-- Silent initialization for better UX
 				end,
 				settings = {
@@ -91,7 +91,7 @@ return {
 			-- HTML
 			vim.lsp.config("html", {
 				capabilities = capabilities,
-				on_init = function(client, _)
+				on_init = function(_, _)
 					-- Silent initialization for better UX
 				end,
 			})
@@ -99,7 +99,7 @@ return {
 			-- CSS
 			vim.lsp.config("cssls", {
 				capabilities = capabilities,
-				on_init = function(client, _)
+				on_init = function(_, _)
 					-- Silent initialization for better UX
 				end,
 			})
@@ -107,7 +107,7 @@ return {
 			-- JSON
 			vim.lsp.config("jsonls", {
 				capabilities = capabilities,
-				on_init = function(client, _)
+				on_init = function(_, _)
 					-- Silent initialization for better UX
 				end,
 			})
@@ -115,7 +115,7 @@ return {
 			-- YAML
 			vim.lsp.config("yamlls", {
 				capabilities = capabilities,
-				on_init = function(client, _)
+				on_init = function(_, _)
 					-- Silent initialization for better UX
 				end,
 			})
@@ -123,7 +123,7 @@ return {
 			-- Python
 			vim.lsp.config("pyright", {
 				capabilities = capabilities,
-				on_init = function(client, _)
+				on_init = function(_, _)
 					-- Silent initialization for better UX
 				end,
 			})
@@ -131,7 +131,7 @@ return {
 			-- Go
 			vim.lsp.config("gopls", {
 				capabilities = capabilities,
-				on_init = function(client, _)
+				on_init = function(_, _)
 					-- Silent initialization for better UX
 				end,
 			})
@@ -139,7 +139,7 @@ return {
 			-- C/C++
 			vim.lsp.config("clangd", {
 				capabilities = capabilities,
-				on_init = function(client, _)
+				on_init = function(_, _)
 					-- Silent initialization for better UX
 				end,
 			})
@@ -147,7 +147,7 @@ return {
 			-- Rust
 			vim.lsp.config("rust_analyzer", {
 				capabilities = capabilities,
-				on_init = function(client, _)
+				on_init = function(_, _)
 					-- Silent initialization for better UX
 				end,
 			})
@@ -155,7 +155,7 @@ return {
 			-- Tailwind CSS
 			vim.lsp.config("tailwindcss", {
 				capabilities = capabilities,
-				on_init = function(client, _)
+				on_init = function(_, _)
 					-- Silent initialization for better UX
 				end,
 			})
@@ -163,7 +163,7 @@ return {
 			-- Bash
 			vim.lsp.config("bashls", {
 				capabilities = capabilities,
-				on_init = function(client, _)
+				on_init = function(_, _)
 					-- Silent initialization for better UX
 				end,
 			})
@@ -171,7 +171,7 @@ return {
 			-- Emmet
 			vim.lsp.config("emmet_ls", {
 				capabilities = capabilities,
-				on_init = function(client, _)
+				on_init = function(_, _)
 					-- Silent initialization for better UX
 				end,
 			})
@@ -292,12 +292,12 @@ return {
 					local function set_inlay_hints(level)
 						local cfg = inlay_hint_levels[level]
 						local clients = vim.lsp.get_clients({ bufnr = 0 })
-						for _, client in ipairs(clients) do
-							if client.name == "ts_ls" then
-								client.settings = client.settings or {}
+						for _, c in ipairs(clients) do
+							if c.name == "ts_ls" then
+								c.settings = c.settings or {}
 								for _, lang in ipairs({ "typescript", "javascript" }) do
-									client.settings[lang] = client.settings[lang] or {}
-									client.settings[lang].inlayHints = {
+									c.settings[lang] = c.settings[lang] or {}
+									c.settings[lang].inlayHints = {
 										includeInlayParameterNameHints = cfg.params,
 										includeInlayParameterNameHintsWhenArgumentMatchesName = false,
 										includeInlayFunctionParameterTypeHints = cfg.types,
@@ -308,7 +308,7 @@ return {
 										includeInlayEnumMemberValueHints = cfg.enums,
 									}
 								end
-								client:notify("workspace/didChangeConfiguration", { settings = client.settings })
+								c:notify("workspace/didChangeConfiguration", { settings = c.settings })
 							end
 						end
 						if cfg.params == "none" then
