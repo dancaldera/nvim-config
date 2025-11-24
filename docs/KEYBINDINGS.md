@@ -1,0 +1,324 @@
+# Neovim Keybindings Reference
+
+Comprehensive keybinding reference for this Neovim configuration.
+Leader key: `<Space>`
+
+## Table of Contents
+- [General Navigation](#general-navigation)
+- [Window Management](#window-management)
+- [Tab Management](#tab-management)
+- [Buffer Management](#buffer-management)
+- [File Operations](#file-operations)
+- [Search & Find (Telescope)](#search--find-telescope)
+- [LSP & Code Actions](#lsp--code-actions)
+- [Diagnostics](#diagnostics)
+- [Refactoring](#refactoring)
+- [Git Operations](#git-operations)
+- [Completion & AI](#completion--ai)
+- [Terminal](#terminal)
+- [Folding](#folding)
+- [Miscellaneous](#miscellaneous)
+
+---
+
+## General Navigation
+
+| Key | Mode | Description |
+|-----|------|-------------|
+| `<C-h/j/k/l>` | Normal | Navigate between windows |
+| `<C-u>` | Normal | Scroll half page up (with smooth scroll) |
+| `<C-d>` | Normal | Scroll half page down (with smooth scroll) |
+| `<C-b>` | Normal | Scroll full page up (with smooth scroll) |
+| `<C-f>` | Normal | Scroll full page down (with smooth scroll) |
+| `s` | Normal/Visual/Operator | Flash jump (modern motion) |
+| `S` | Normal/Visual/Operator | Flash treesitter jump |
+| `<C-a>` | Normal | Select all text |
+
+---
+
+## Window Management
+
+| Key | Mode | Description |
+|-----|------|-------------|
+| `<leader>sv` | Normal | Split window vertically |
+| `<leader>sh` | Normal | Split window horizontally |
+| `<leader>se` | Normal | Make splits equal size |
+| `<leader>sx` | Normal | Close current split |
+| `<C-Up>` | Normal | Increase window height |
+| `<C-Down>` | Normal | Decrease window height |
+| `<C-Left>` | Normal | Decrease window width |
+| `<C-Right>` | Normal | Increase window width |
+| `<M-h>` | Normal | Decrease window width (Alt+h) |
+| `<M-l>` | Normal | Increase window width (Alt+l) |
+| `<M-j>` | Normal | Increase window height (Alt+j) |
+| `<M-k>` | Normal | Decrease window height (Alt+k) |
+
+---
+
+## Tab Management
+
+| Key | Mode | Description |
+|-----|------|-------------|
+| `<leader>To` | Normal | Open new tab |
+| `<leader>Tx` | Normal | Close current tab |
+| `<leader>Tn` | Normal | Go to next tab |
+| `<leader>Tp` | Normal | Go to previous tab |
+| `<leader>Tf` | Normal | Open current buffer in new tab |
+
+**Note:** Tab commands use uppercase T to avoid conflicts with toggle/terminal commands.
+
+---
+
+## Buffer Management
+
+| Key | Mode | Description |
+|-----|------|-------------|
+| `<S-h>` | Normal | Previous buffer |
+| `<S-l>` | Normal | Next buffer |
+| `<leader>bd` | Normal | Delete buffer (with mini.bufremove) |
+
+---
+
+## File Operations
+
+| Key | Mode | Description |
+|-----|------|-------------|
+| `<leader>e` | Normal | Toggle nvim-tree file explorer |
+| `<leader>w` | Normal | Write/save file |
+| `<leader>q` | Normal | Quit window |
+| `<leader>Q` | Normal | Quit all windows |
+
+---
+
+## Search & Find (Telescope)
+
+| Key | Mode | Description |
+|-----|------|-------------|
+| `<leader>ff` | Normal | Find files (fuzzy finder) |
+| `<leader>fr` | Normal | Find recent files |
+| `<leader>fs` | Normal | Find string in current working directory |
+| `<leader>fc` | Normal | Find string under cursor |
+| `<leader>fb` | Normal | Find buffers |
+| `<leader>fh` | Normal | Find help tags |
+| `<leader>fk` | Normal | Find keymaps |
+| `<leader>fp` | Normal | Find projects |
+| `<leader>ft` | Normal | Find TODO comments |
+| `<leader>sr` | Normal | Search and replace (Spectre) |
+
+---
+
+## LSP & Code Actions
+
+| Key | Mode | Description |
+|-----|------|-------------|
+| `gD` | Normal | Go to declaration |
+| `gd` | Normal | Go to definition (Telescope) |
+| `gi` | Normal | Go to implementation (Telescope) |
+| `gy` | Normal | Go to type definition (Telescope) |
+| `gR` | Normal | Show LSP references (Telescope) |
+| `K` | Normal | Show hover documentation |
+| `<C-s>` | Insert | Show signature help |
+| `<leader>ca` | Normal/Visual | Code actions (with preview) |
+| `<leader>rn` | Normal | Rename symbol |
+| `<leader>rs` | Normal | Restart LSP |
+| `<leader>th` | Normal | Toggle inlay hints |
+| `<leader>a` | Normal | Toggle Aerial (code outline) |
+
+---
+
+## Diagnostics
+
+| Key | Mode | Description |
+|-----|------|-------------|
+| `<leader>d` | Normal | Show line diagnostics (float) |
+| `<leader>D` | Normal | Show buffer diagnostics (Telescope) |
+| `[d` | Normal | Go to previous diagnostic |
+| `]d` | Normal | Go to next diagnostic |
+| `[e` | Normal | Go to previous error |
+| `]e` | Normal | Go to next error |
+| `[w` | Normal | Go to previous warning |
+| `]w` | Normal | Go to next warning |
+| `<leader>xx` | Normal | Toggle Trouble diagnostics |
+| `<leader>xX` | Normal | Toggle Trouble buffer diagnostics |
+| `<leader>cs` | Normal | Toggle Trouble symbols |
+| `<leader>cl` | Normal | Toggle Trouble LSP definitions/references |
+| `<leader>xL` | Normal | Toggle Trouble location list |
+| `<leader>xQ` | Normal | Toggle Trouble quickfix list |
+
+---
+
+## Refactoring
+
+| Key | Mode | Description |
+|-----|------|-------------|
+| `<leader>re` | Visual | Extract function |
+| `<leader>rf` | Visual | Extract function to file |
+| `<leader>rv` | Visual | Extract variable |
+| `<leader>ri` | Normal/Visual | Inline variable |
+| `<leader>rr` | Visual | Show refactor menu (Telescope) |
+
+---
+
+## Git Operations
+
+### Git Hunks (Gitsigns)
+| Key | Mode | Description |
+|-----|------|-------------|
+| `]c` | Normal | Next git hunk |
+| `[c` | Normal | Previous git hunk |
+| `<leader>hs` | Normal/Visual | Stage hunk |
+| `<leader>hr` | Normal/Visual | Reset hunk |
+| `<leader>hS` | Normal | Stage buffer |
+| `<leader>hu` | Normal | Undo stage hunk |
+| `<leader>hR` | Normal | Reset buffer |
+| `<leader>hp` | Normal | Preview hunk |
+| `<leader>hb` | Normal | Blame line |
+| `<leader>hd` | Normal | Diff this |
+| `<leader>hD` | Normal | Diff this (cached) |
+| `<leader>tb` | Normal | Toggle line blame |
+| `<leader>td` | Normal | Toggle deleted |
+
+### Advanced Git
+| Key | Mode | Description |
+|-----|------|-------------|
+| `<leader>gg` | Normal | Open Neogit |
+| `<leader>gc` | Normal | Open Neogit commit |
+| `<leader>gd` | Normal | Open DiffView |
+| `<leader>gh` | Normal | Open DiffView file history |
+
+### Git Conflicts
+| Key | Mode | Description |
+|-----|------|-------------|
+| `<leader>gco` | Normal | Choose ours (current changes) |
+| `<leader>gct` | Normal | Choose theirs (incoming changes) |
+| `<leader>gcb` | Normal | Choose both |
+| `<leader>gc0` | Normal | Choose none |
+| `<leader>gcn` | Normal | Next conflict |
+| `<leader>gcp` | Normal | Previous conflict |
+| `<leader>gcl` | Normal | List conflicts (quickfix) |
+
+---
+
+## Completion & AI
+
+### AI Completion (Codeium)
+| Key | Mode | Description |
+|-----|------|-------------|
+| `<C-g>` | Insert | Accept AI suggestion |
+| `<C-;>` | Insert | Next AI suggestion |
+| `<C-,>` | Insert | Previous AI suggestion |
+| `<C-x>` | Insert | Clear AI suggestion |
+
+### LSP Completion (nvim-cmp)
+| Key | Mode | Description |
+|-----|------|-------------|
+| `<C-Space>` | Insert | Trigger completion |
+| `<C-k>` | Insert | Previous completion item |
+| `<C-j>` | Insert | Next completion item |
+| `<Tab>` | Insert | Next item / expand snippet |
+| `<S-Tab>` | Insert | Previous item / jump back in snippet |
+| `<CR>` | Insert | Confirm selection |
+| `<C-e>` | Insert | Abort completion |
+| `<C-b>` | Insert | Scroll docs up |
+| `<C-f>` | Insert | Scroll docs down |
+
+---
+
+## Terminal
+
+| Key | Mode | Description |
+|-----|------|-------------|
+| `<C-\>` | Normal | Toggle terminal |
+| `<leader>tf` | Normal | Toggle floating terminal |
+| `<leader>th` | Normal | Toggle horizontal terminal |
+| `<leader>tv` | Normal | Toggle vertical terminal |
+| `<Esc><Esc>` | Terminal | Exit terminal mode |
+
+---
+
+## Folding
+
+| Key | Mode | Description |
+|-----|------|-------------|
+| `zR` | Normal | Open all folds |
+| `zM` | Normal | Close all folds |
+| `zr` | Normal | Open one fold level |
+| `zm` | Normal | Close one fold level |
+| `zo` | Normal | Open fold under cursor |
+| `zc` | Normal | Close fold under cursor |
+| `za` | Normal | Toggle fold under cursor |
+
+---
+
+## Miscellaneous
+
+### Editing
+| Key | Mode | Description |
+|-----|------|-------------|
+| `<leader>p` | Visual | Paste without yanking |
+| `<leader>dd` | Normal/Visual | Delete without yanking |
+| `<leader>y` | Normal/Visual | Yank to system clipboard |
+| `<leader>Y` | Normal/Visual | Yank line to system clipboard |
+| `<leader>P` | Normal/Visual | Paste from system clipboard |
+| `<` | Visual | Indent left (repeatable) |
+| `>` | Visual | Indent right (repeatable) |
+| `J` | Visual | Move selected lines down |
+| `K` | Visual | Move selected lines up |
+| `gc` | Normal/Visual | Toggle comment (Comment.nvim) |
+| `gcc` | Normal | Comment current line |
+
+### TODO Comments
+| Key | Mode | Description |
+|-----|------|-------------|
+| `]t` | Normal | Next TODO comment |
+| `[t` | Normal | Previous TODO comment |
+| `<leader>ft` | Normal | Find TODO comments (Telescope) |
+
+### Sessions
+| Key | Mode | Description |
+|-----|------|-------------|
+| `<leader>qs` | Normal | Restore session |
+| `<leader>ql` | Normal | Restore last session |
+| `<leader>qd` | Normal | Stop session saving |
+
+### Formatting
+| Key | Mode | Description |
+|-----|------|-------------|
+| `<leader>mp` | Normal/Visual | Format buffer or markdown preview for .md files |
+
+### Health & Diagnostics
+| Key | Mode | Description |
+|-----|------|-------------|
+| `<leader>hc` | Normal | Run health check |
+| `<leader>hs` | Normal | Run health summary |
+
+### Notifications
+| Key | Mode | Description |
+|-----|------|-------------|
+| `<leader>snd` | Normal | Dismiss all notifications (Noice) |
+
+---
+
+## Keybinding Namespaces
+
+This configuration uses logical namespaces for leader keybindings:
+
+- `<leader>f` - **Find/Search** (Telescope)
+- `<leader>g` - **Git** operations
+- `<leader>h` - **Git Hunks** (Gitsigns)
+- `<leader>s` - **Search/Splits** (Spectre, window splits)
+- `<leader>t` - **Toggle/Terminal**
+- `<leader>T` - **Tabs** (uppercase T)
+- `<leader>r` - **Refactoring/Rename**
+- `<leader>d` - **Diagnostics**
+- `<leader>x` - **Trouble** (diagnostics/quickfix)
+- `<leader>c` - **Code** (LSP actions)
+- `<leader>q` - **Quit/Sessions**
+- `<leader>m` - **Markdown/Format**
+- `<leader>a` - **Aerial** (code outline)
+- `<leader>y/Y/P` - **Clipboard** operations
+
+---
+
+*Last updated: 2025-01-13*
+*This configuration uses Neovim 0.10+ with lazy.nvim plugin manager*
