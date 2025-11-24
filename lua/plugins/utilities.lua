@@ -3,40 +3,14 @@
 -- ============================================================================
 
 return {
-	-- Autopairs
+	-- Autopairs - Using mini.pairs (lighter, part of mini.nvim ecosystem)
 	{
-		"windwp/nvim-autopairs",
-		event = { "InsertEnter" },
-		dependencies = {
-			"hrsh7th/nvim-cmp",
+		"echasnovski/mini.pairs",
+		event = "InsertEnter",
+		opts = {
+			-- Treesitter integration for better context awareness
+			modes = { insert = true, command = false, terminal = false },
 		},
-		config = function()
-			local autopairs = require("nvim-autopairs")
-			autopairs.setup({
-				check_ts = true,
-				ts_config = {
-					lua = { "string", "source" },
-					javascript = { "string", "template_string" },
-					java = false,
-				},
-				disable_filetype = { "TelescopePrompt", "spectre_panel" },
-				fast_wrap = {
-					map = "<M-e>",
-					chars = { "{", "[", "(", '"', "'" },
-					pattern = string.gsub([[ [%'%"%)%>%]%)%}%,] ]], "%s+", ""),
-					offset = 0,
-					end_key = "$",
-					keys = "qwertyuiopzxcvbnmasdfghjkl",
-					check_comma = true,
-					highlight = "PmenuSel",
-					highlight_grey = "LineNr",
-				},
-			})
-
-			local cmp_autopairs = require("nvim-autopairs.completion.cmp")
-			local cmp = require("cmp")
-			cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
-		end,
 	},
 
 	-- Surround
@@ -61,7 +35,29 @@ return {
 			local ts_context_commentstring = require("ts_context_commentstring.integrations.comment_nvim")
 
 			comment.setup({
+				padding = true,
+				sticky = true,
+				ignore = "^$",
+				toggler = {
+					line = "gcc",
+					block = "gbc",
+				},
+				opleader = {
+					line = "gc",
+					block = "gb",
+				},
+				extra = {
+					above = "gcO",
+					below = "gco",
+					eol = "gcA",
+				},
+				mappings = {
+					basic = true,
+					extra = true,
+				},
 				pre_hook = ts_context_commentstring.create_pre_hook(),
+				---@diagnostic disable-next-line: missing-parameter
+				post_hook = function(_) end,
 			})
 		end,
 	},

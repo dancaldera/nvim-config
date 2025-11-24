@@ -87,12 +87,12 @@ return {
 					c = { "clang_format" },
 					cpp = { "clang_format" },
 				},
-				-- Disable automatic formatting on save; users can trigger `<leader>mp` instead
-				format_on_save = false,
+				-- Format on save disabled by default
+				-- To enable: uncomment and configure format_on_save below
+				-- To format manually: use <leader>mp
+				-- format_on_save = { timeout_ms = 500, lsp_fallback = true },
 				-- Notification for formatting
 				notify_on_error = true,
-				-- Format after changes
-				format_after_save = nil,
 			})
 
 			vim.keymap.set({ "n", "v" }, "<leader>mp", function()

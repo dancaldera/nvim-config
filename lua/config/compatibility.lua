@@ -21,6 +21,7 @@ end
 -- Avoid vim.lsp.get_active_clients() deprecation noise while keeping behavior identical.
 if vim.lsp and vim.lsp.get_clients and vim.lsp.get_active_clients then
 	local get_clients = vim.lsp.get_clients
+	---@diagnostic disable-next-line: duplicate-set-field
 	vim.lsp.get_active_clients = function(opts)
 		return get_clients(opts)
 	end
@@ -29,17 +30,19 @@ end
 -- Allow plugins still using the table-form vim.validate() signature without spamming warnings.
 if vim.validate then
 	local original_validate = vim.validate
-	vim.validate = function(name, value, validator, optional, message)
+	---@diagnostic disable-next-line: duplicate-set-field
+	vim.validate = function(name, value, validator, optional)
 		if validator == nil and type(name) == "table" then
 			local original_deprecate = vim.deprecate
+			---@diagnostic disable-next-line: duplicate-set-field
 			vim.deprecate = function() end
-			local ok, err = pcall(original_validate, name, value, validator, optional, message)
+			local ok, err = pcall(original_validate, name)
 			vim.deprecate = original_deprecate
 			if not ok then
 				error(err, 2)
 			end
 			return
 		end
-		return original_validate(name, value, validator, optional, message)
+		return original_validate(name, value, validator, optional)
 	end
 end

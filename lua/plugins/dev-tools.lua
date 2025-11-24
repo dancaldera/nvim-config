@@ -92,6 +92,42 @@ return {
 					position = "float",
 				},
 			},
+			dashboard = {
+				enabled = true,
+				preset = {
+					header = [[
+███╗   ██╗███████╗ ██████╗ ██╗   ██╗██╗███╗   ███╗
+████╗  ██║██╔════╝██╔═══██╗██║   ██║██║████╗ ████║
+██╔██╗ ██║█████╗  ██║   ██║██║   ██║██║██╔████╔██║
+██║╚██╗██║██╔══╝  ██║   ██║╚██╗ ██╔╝██║██║╚██╔╝██║
+██║ ╚████║███████╗╚██████╔╝ ╚████╔╝ ██║██║ ╚═╝ ██║
+╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═══╝  ╚═╝╚═╝     ╚═╝]],
+					keys = {
+						{ icon = " ", key = "f", desc = "Find File", action = ":Telescope find_files" },
+						{ icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
+						{ icon = " ", key = "r", desc = "Recent Files", action = ":Telescope oldfiles" },
+						{ icon = " ", key = "g", desc = "Find Text", action = ":Telescope live_grep" },
+						{
+							icon = " ",
+							key = "s",
+							desc = "Restore Session",
+							action = ':lua require("persistence").load()',
+						},
+						{ icon = "󰒲 ", key = "l", desc = "Lazy", action = ":Lazy" },
+						{ icon = " ", key = "q", desc = "Quit", action = ":qa" },
+					},
+				},
+				sections = {
+					{ section = "header" },
+					{ section = "keys", gap = 1, padding = 1 },
+					{
+						section = "terminal",
+						cmd = "echo '⚡ Neovim loaded plugins'; sleep 0.1",
+						height = 1,
+						padding = 1,
+					},
+				},
+			},
 		},
 		config = function(_, opts)
 			require("snacks").setup(opts)

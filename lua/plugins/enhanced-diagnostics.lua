@@ -51,7 +51,7 @@ return {
 
 			-- Enhanced diagnostic keymaps
 			local diagnostic_goto = function(next, severity)
-				local go = next and vim.diagnostic.goto_next or vim.diagnostic.goto_prev
+				local go = next and vim.diagnostic.jump or vim.diagnostic.jump
 				local severity_map = {
 					ERROR = vim.diagnostic.severity.ERROR,
 					WARN = vim.diagnostic.severity.WARN,
@@ -59,7 +59,8 @@ return {
 					HINT = vim.diagnostic.severity.HINT,
 				}
 				local severity_int = severity_map[severity] or nil
-				go({ severity = severity_int })
+				local count = next and 1 or -1
+				go({ count = count, severity = severity_int })
 			end
 
 			-- Enhanced diagnostic navigation with severity filtering
@@ -87,7 +88,6 @@ return {
 					prefix = "",
 					format = function(diagnostic)
 						local code = diagnostic.code and (" [%s]"):format(diagnostic.code) or ""
-						local user_data = diagnostic.user_data or {}
 						local message = diagnostic.message
 
 						-- Add file and line info

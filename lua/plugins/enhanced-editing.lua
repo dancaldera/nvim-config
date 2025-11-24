@@ -12,10 +12,20 @@ return {
 				auto_enable = true,
 				auto_resize_height = true,
 				preview = {
+					auto_preview = true,
 					win_height = 12,
 					win_vheight = 12,
 					delay_syntax = 80,
 					border = { "┏", "━", "┓", "┃", "┛", "━", "┗", "┃" },
+					show_title = true,
+					show_scroll_bar = true,
+					winblend = 0,
+					wrap = false,
+					buf_label = true,
+					---@diagnostic disable-next-line: unused-local
+					should_preview_cb = function(_bufnr, _qwinid)
+						return true
+					end,
 				},
 				func_map = {
 					vsplit = "",

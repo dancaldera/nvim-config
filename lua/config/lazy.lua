@@ -3,7 +3,8 @@
 -- ============================================================================
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then
+---@diagnostic disable-next-line: undefined-field
+if not (vim.uv or vim.loop).fs_stat(lazypath) then
 	vim.fn.system({
 		"git",
 		"clone",
@@ -21,7 +22,7 @@ require("lazy").setup({
 	checker = {
 		enabled = true,
 		notify = false,
-		frequency = 3600, -- Check every hour
+		frequency = 86400, -- Check daily for better performance
 	},
 	change_detection = {
 		enabled = true,

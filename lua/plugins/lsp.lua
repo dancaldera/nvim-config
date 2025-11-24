@@ -208,7 +208,16 @@ return {
 			"williamboman/mason.nvim",
 			"williamboman/mason-lspconfig.nvim",
 			{ "antosha417/nvim-lsp-file-operations", config = true },
-			{ "folke/neodev.nvim", opts = {} }, -- Better Lua LSP for Neovim config
+			{
+				"folke/lazydev.nvim",
+				ft = "lua",
+				opts = {
+					library = {
+						{ path = "luvit-meta/library", words = { "vim%.uv" } },
+					},
+				},
+			},
+			{ "Bilal2453/luvit-meta", lazy = true },
 		},
 		config = function()
 			local keymap = vim.keymap
@@ -248,17 +257,7 @@ return {
 					opts.desc = "Smart rename"
 					keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
 
-					opts.desc = "Show buffer diagnostics"
-					keymap.set("n", "<leader>D", "<cmd>Telescope diagnostics bufnr=0<CR>", opts)
-
-					opts.desc = "Show line diagnostics"
-					keymap.set("n", "<leader>d", vim.diagnostic.open_float, opts)
-
-					opts.desc = "Go to previous diagnostic"
-					keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
-
-					opts.desc = "Go to next diagnostic"
-					keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
+					-- Note: Diagnostic keymaps are in lua/plugins/enhanced-diagnostics.lua
 
 					opts.desc = "Show documentation for what is under cursor"
 					keymap.set("n", "K", vim.lsp.buf.hover, opts)
@@ -294,9 +293,12 @@ return {
 						local clients = vim.lsp.get_clients({ bufnr = 0 })
 						for _, c in ipairs(clients) do
 							if c.name == "ts_ls" then
+								---@diagnostic disable-next-line: inject-field
 								c.settings = c.settings or {}
 								for _, lang in ipairs({ "typescript", "javascript" }) do
+									---@diagnostic disable-next-line: inject-field
 									c.settings[lang] = c.settings[lang] or {}
+									---@diagnostic disable-next-line: inject-field
 									c.settings[lang].inlayHints = {
 										includeInlayParameterNameHints = cfg.params,
 										includeInlayParameterNameHintsWhenArgumentMatchesName = false,

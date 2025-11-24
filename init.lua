@@ -32,9 +32,16 @@ require("config.compatibility")
 -- Basic settings
 require("config.options")
 require("config.keymaps")
+require("config.autocmds")
 
 -- Plugin management
 require("config.lazy")
 
 -- Health check commands (manual only - auto-check disabled for performance)
 require("config.health")
+
+-- Project-local config support
+local project_config = vim.fn.getcwd() .. "/.nvim.lua"
+if vim.fn.filereadable(project_config) == 1 then
+	vim.cmd.source(project_config)
+end

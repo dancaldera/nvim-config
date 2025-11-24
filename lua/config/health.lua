@@ -276,13 +276,14 @@ local function check_treesitter(report)
 		report.warn("Unable to read Treesitter parser installation info.")
 	end
 
+	---@type boolean
 	local folding_enabled = false
 	if type(configs.is_enabled) == "function" then
 		local ok, enabled = pcall(configs.is_enabled, "folding")
 		folding_enabled = ok and enabled or false
 	elseif type(configs.get_module) == "function" then
 		local module = configs.get_module("folding")
-		folding_enabled = module and module.enable == true
+		folding_enabled = (module and module.enable == true) and true or false
 	end
 
 	if folding_enabled then
