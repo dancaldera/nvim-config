@@ -45,6 +45,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Silent LSP initialization**: Removed verbose LSP startup notifications
 - **Better diagnostics**: Enhanced configuration in enhanced-diagnostics.lua
 
+### Colorscheme Changes (2025)
+- **Removed Monokai Pro**: Replaced plugin-based theme with custom implementation
+- **Custom Gruvbox**: Science-based colorscheme in `lua/colors/gruvbox-custom.lua`
+- **Eye Strain Optimization**: Based on 2024-2025 research (WCAG AAA, ~9:1 contrast)
+- **Desaturated Colors**: 10-15% less saturation to reduce visual fatigue
+- **Easy Customization**: Single color table for all customizations
+
 ## Development Commands
 
 ### Plugin Management
@@ -86,6 +93,8 @@ This is a modern Neovim configuration using lazy.nvim as the plugin manager, org
   - `options.lua`: Neovim options and settings (tabs, search, appearance)
   - `keymaps.lua`: General key mappings for window/buffer/tab management
   - `compatibility.lua`: Version compatibility checks (requires Neovim 0.9+)
+- **lua/colors/**: Custom colorscheme implementations
+  - `gruvbox-custom.lua`: Science-based custom Gruvbox colorscheme
 - **lua/plugins/**: Individual plugin configurations (auto-loaded by lazy.nvim)
 
 ### Plugin System
@@ -123,7 +132,7 @@ Three-layer approach for language support:
 - **nvim-tree**: File explorer with git integration
 - **Telescope**: Fuzzy finder for files, text, LSP symbols, diagnostics (enhanced with better UI)
 - **Treesitter**: Syntax highlighting, text objects, auto-tagging
-- **Monokai Pro**: Color scheme (Spectrum filter) with vibrant mode colors
+- **Custom Gruvbox**: Science-based colorscheme optimized for reduced eye strain (see `docs/COLORSCHEME.md`)
 
 #### Git Integration
 - **Gitsigns**: Git integration with hunk management

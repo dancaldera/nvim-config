@@ -70,15 +70,26 @@ return {
 			local lualine = require("lualine")
 			local lazy_status = require("lazy.status")
 
-			-- Custom theme with Monokai Pro Spectrum colors
-			local custom_theme = require("lualine.themes.monokai-pro")
-			local bg = "#222222" -- spectrum background
-			custom_theme.normal.a.bg = "#7bd88f" -- spectrum green
-			custom_theme.insert.a.bg = "#5ad4e6" -- spectrum cyan
-			custom_theme.visual.a.bg = "#948ae3" -- spectrum purple
-			custom_theme.replace.a.bg = "#fc618d" -- spectrum pink
-			custom_theme.command.a.bg = "#fce566" -- spectrum yellow
-			custom_theme.terminal = { a = { bg = "#fd9353", fg = bg, gui = "bold" } } -- spectrum orange
+			-- Custom Gruvbox theme
+			local colors = {
+				bg = "#1d2021",
+				fg = "#ebdbb2",
+				green = "#b8bb26",
+				blue = "#83a598",
+				purple = "#d3869b",
+				red = "#fb4934",
+				yellow = "#fabd2f",
+				orange = "#fe8019",
+			}
+
+			local custom_theme = {
+				normal = { a = { bg = colors.green, fg = colors.bg, gui = "bold" } },
+				insert = { a = { bg = colors.blue, fg = colors.bg, gui = "bold" } },
+				visual = { a = { bg = colors.purple, fg = colors.bg, gui = "bold" } },
+				replace = { a = { bg = colors.red, fg = colors.bg, gui = "bold" } },
+				command = { a = { bg = colors.yellow, fg = colors.bg, gui = "bold" } },
+				terminal = { a = { bg = colors.orange, fg = colors.bg, gui = "bold" } },
+			}
 
 			lualine.setup({
 				options = {

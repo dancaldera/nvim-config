@@ -4,23 +4,11 @@
 
 return {
 	{
-		"loctvl842/monokai-pro.nvim",
+		name = "gruvbox-custom",
+		dir = vim.fn.stdpath("config"),
 		priority = 1000,
 		config = function()
-			require("monokai-pro").setup({
-				filter = "pro",
-				transparent_background = true,
-				background_clear = {
-					"toggleterm",
-					"telescope",
-					"which-key",
-					"float_win",
-				},
-				styles = {
-					comment = { italic = true },
-				},
-			})
-			vim.cmd.colorscheme("monokai-pro")
+			dofile(vim.fn.stdpath("config") .. "/lua/colors/gruvbox-custom.lua")
 		end,
 	},
 }
