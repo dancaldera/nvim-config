@@ -35,6 +35,48 @@ local function has_eslint()
 	})
 end
 
+local function has_pyproject_toml()
+	return root_has_file({ "pyproject.toml" })
+end
+
+local function has_ruff_config()
+	if not has_pyproject_toml() then
+		return false
+	end
+	local root = vim.fn.getcwd()
+	-- Check for ruff config file
+	if vim.fn.glob(root .. "/ruff.toml") ~= "" then
+		return true
+	end
+	-- Check for pyproject.toml with [tool.ruff] section
+	local pyproject = root .. "/pyproject.toml"
+	if vim.fn.filereadable(pyproject) == 1 then
+		local content = vim.fn.readfile(pyproject)
+		for _, line in ipairs(content) do
+			if string.match(line, "%[tool%.ruff%]") then
+				return true
+			end
+		end
+	end
+	return false
+end
+
+local function has_black_config()
+	if not has_pyproject_toml() then
+		return false
+	end
+	local pyproject = vim.fn.getcwd() .. "/pyproject.toml"
+	if vim.fn.filereadable(pyproject) == 1 then
+		local content = vim.fn.readfile(pyproject)
+		for _, line in ipairs(content) do
+			if string.match(line, "%[tool%.black%]") then
+				return true
+			end
+		end
+	end
+	return false
+end
+
 -- Dynamic formatter selection for JS/TS
 local function js_formatter()
 	if has_biome() then
@@ -55,6 +97,20 @@ local function js_linter()
 	else
 		return {} -- no linting if no config found
 	end
+end
+
+-- Dynamic formatter selection for Python
+local function python_formatter()
+	-- Only use Ruff if project explicitly configures it
+	if has_ruff_config() then
+		return { "ruff_format" }
+	end
+	-- Otherwise, fallback to black+isort if project has [tool.black] config
+	if has_black_config() then
+		return { "isort", "black" }
+	end
+	-- No formatter configured - that's OK! (allows other tools like Biome to work)
+	return {}
 end
 
 return {
@@ -80,7 +136,7 @@ return {
 					graphql = { "prettier" },
 					liquid = { "prettier" },
 					lua = { "stylua" },
-					python = { "isort", "black" },
+					python = python_formatter,
 					rust = { "rustfmt", lsp_format = "fallback" },
 					go = { "goimports", "gofmt" },
 					sh = { "shfmt" },
