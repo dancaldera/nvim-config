@@ -3,33 +3,38 @@
 -- Standalone theme with Gruvbox warm palette for optimal readability
 -- ============================================================================
 
--- Color Palette - Edit this table to customize all colors at once
--- Scientifically optimized for reduced eye strain (2024-2025 research)
--- Contrast ratio: ~9:1 (WCAG AAA compliant, avoids halation effect)
-local colors = {
-	-- Base colors (optimized for 8-10:1 contrast ratio)
-	bg0 = "#2e2e2e", -- slightly lighter than pure Gruvbox (reduced halation)
-	bg1 = "#242424", -- darker bg (adjusted proportionally)
-	bg2 = "#3a3a3a", -- lighter elements
-	fg = "#d5c4a1", -- slightly dimmer cream (optimal contrast ~9:1)
-	grey = "#a89984", -- comments (increased from #928374 for readability)
+-- ============================================================================
+-- Gruvbox Custom Colorscheme
+-- Standalone theme based on "Gruvbox Material Soft" for maximum eye comfort
+-- ============================================================================
 
-	-- Syntax colors (desaturated for reduced eye strain)
-	red = "#ea6962", -- keywords (softer red, -10% saturation)
-	green = "#a9b665", -- strings (muted green, -12% saturation)
-	yellow = "#e3c78a", -- functions (warm yellow, low fatigue per research)
-	blue = "#7daea3", -- types (softer blue)
-	purple = "#d3869b", -- special (keep warm tone)
-	orange = "#e78a4e", -- numbers (reduced brightness)
-	aqua = "#89b482", -- properties (softer aqua)
+-- Color Palette - Edit this table to customize all colors at once
+-- Scientifically optimized for reduced eye strain (Gruvbox Material Soft variant)
+-- Research indicates warm backgrounds and soft contrast minimize blue light fatigue.
+local colors = {
+	-- Base colors (Gruvbox Material Soft Palette)
+	bg0 = "#32302f", -- Soft warm background (low blue light, reduced contrast strain)
+	bg1 = "#3c3836", -- Lighter background for UI elements/CursorLine
+	bg2 = "#504945", -- Even lighter for borders/splits
+	fg = "#d4be98", -- Warm wheat foreground (soft contrast ~7:1 against bg0)
+	grey = "#a89984", -- Comments (good readability without glare)
+
+	-- Syntax colors (Nature-inspired, desaturated warm tones)
+	red = "#ea6962", -- Keywords (soft coral red)
+	green = "#a9b665", -- Strings (olive green)
+	yellow = "#d8a657", -- Functions (warm golden yellow)
+	blue = "#7daea3", -- Types (muted seafoam blue - low blue light emission)
+	purple = "#d3869b", -- Special (muted raspberry)
+	orange = "#e78a4e", -- Numbers (warm terracotta)
+	aqua = "#89b482", -- Properties (sage green)
 
 	-- UI accents (maintained for functionality)
-	visual = "#45403d", -- selection (slightly lighter for visibility)
-	search = "#d8a657", -- search (desaturated yellow-orange)
-	error = "#ea6962", -- errors (same as keywords for consistency)
-	warning = "#d8a657", -- warnings (warm yellow)
-	info = "#7daea3", -- info (softer blue)
-	hint = "#89b482", -- hints (softer aqua)
+	visual = "#504945", -- Selection (matches bg2 for subtle highlight)
+	search = "#d8a657", -- Search (warm yellow)
+	error = "#ea6962", -- Errors
+	warning = "#d8a657", -- Warnings
+	info = "#7daea3", -- Info
+	hint = "#89b482", -- Hints
 }
 
 -- Helper function for setting highlights

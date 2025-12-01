@@ -246,6 +246,42 @@ return {
 				end,
 				desc = "Lazygit",
 			},
+			-- AI & Tools Openers
+			{
+				"<leader>lc",
+				function()
+					require("snacks").terminal("claude")
+				end,
+				desc = "Open Claude",
+			},
+			{
+				"<leader>lG",
+				function()
+					require("snacks").terminal("gemini")
+				end,
+				desc = "Open Gemini",
+			},
+			{
+				"<leader>lx",
+				function()
+					require("snacks").terminal("codex")
+				end,
+				desc = "Open Codex",
+			},
+			{
+				"<leader>lo",
+				function()
+					require("snacks").terminal("opencode")
+				end,
+				desc = "Open Opencode",
+			},
+			{
+				"<leader>la",
+				function()
+					require("snacks").terminal("amp")
+				end,
+				desc = "Open Amp",
+			},
 		},
 	},
 
