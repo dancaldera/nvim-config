@@ -86,6 +86,10 @@ return {
 			notifier = {
 				enabled = true,
 			},
+			-- Disable indent guides
+			indent = {
+				enabled = false,
+			},
 			terminal = {
 				win = {
 					style = "terminal",

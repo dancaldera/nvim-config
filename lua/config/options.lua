@@ -6,12 +6,9 @@ local opt = vim.opt
 
 -- Line numbers
 opt.number = true
-opt.relativenumber = true
+opt.relativenumber = false
 
 -- Tabs and indentation
-opt.tabstop = 2
-opt.shiftwidth = 2
-opt.expandtab = true
 opt.autoindent = true
 opt.smartindent = true
 
@@ -32,7 +29,6 @@ opt.cursorline = true
 opt.termguicolors = true
 opt.background = "dark"
 opt.signcolumn = "yes"
-opt.colorcolumn = "80"
 
 -- Backspace
 opt.backspace = "indent,eol,start"
@@ -86,7 +82,7 @@ opt.lazyredraw = false
 opt.ttyfast = true
 
 -- Folding (using nvim-ufo)
-opt.foldcolumn = "1"
+opt.foldcolumn = "0"
 opt.foldlevel = 99
 opt.foldlevelstart = 99
 opt.foldenable = true
