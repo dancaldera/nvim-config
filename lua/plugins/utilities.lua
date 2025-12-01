@@ -94,8 +94,23 @@ return {
 			lualine.setup({
 				options = {
 					theme = custom_theme,
+					component_separators = { left = "│", right = "│" },
+					section_separators = { left = "", right = "" },
+					globalstatus = true,
 				},
 				sections = {
+					lualine_c = {
+						{ "filename" },
+						{
+							function()
+								return require("nvim-navic").get_location()
+							end,
+							cond = function()
+								return package.loaded["nvim-navic"] and require("nvim-navic").is_available()
+							end,
+							color = { fg = "#a89984" }, -- Grey for context
+						},
+					},
 					lualine_x = {
 						{
 							lazy_status.updates,

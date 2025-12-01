@@ -238,6 +238,14 @@ return {
 				desc = "Kill terminal",
 				mode = { "n", "t" },
 			},
+			-- Lazygit
+			{
+				"<leader>lg",
+				function()
+					require("snacks").lazygit()
+				end,
+				desc = "Lazygit",
+			},
 		},
 	},
 
