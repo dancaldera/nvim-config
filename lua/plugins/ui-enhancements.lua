@@ -8,9 +8,10 @@ return {
 		"echasnovski/mini.indentscope",
 		version = false,
 		event = { "BufReadPre", "BufNewFile" },
-								opts = {
-									symbol = "│",
-									options = { try_as_border = true },		},
+		opts = {
+			symbol = "│",
+			options = { try_as_border = true },
+		},
 		init = function()
 			vim.api.nvim_create_autocmd("FileType", {
 				pattern = {
@@ -121,6 +122,71 @@ return {
 
 	-- Note: Dashboard now handled by snacks.nvim in lua/plugins/dev-tools.lua
 
+	-- Better buffer closing (keeps window open and selects nearest buffer)
+	{
+		"echasnovski/mini.bufremove",
+		version = false,
+		keys = {
+			{
+				"<leader>bd",
+				function()
+					local bd = require("mini.bufremove").delete
+					if vim.bo.modified then
+						local choice =
+							vim.fn.confirm(("Save changes to %q?"):format(vim.fn.bufname()), "&Yes\n&No\n&Cancel")
+						if choice == 1 then -- Yes
+							vim.cmd.write()
+							bd(0)
+						elseif choice == 2 then -- No
+							bd(0, true)
+						end
+					else
+						bd(0)
+					end
+				end,
+				desc = "Delete Buffer",
+			},
+			{
+				"<leader>bD",
+				function()
+					require("mini.bufremove").delete(0, true)
+				end,
+				desc = "Delete Buffer (Force)",
+			},
+		},
+	},
+
+	-- Buffer Manager (Reorder and manage buffers visually)
+	{
+		"j-morano/buffer_manager.nvim",
+		dependencies = { "nvim-lua/plenary.nvim" },
+		keys = {
+			{
+				"<leader>bm",
+				function()
+					require("buffer_manager.ui").toggle_quick_menu()
+				end,
+				desc = "Buffer Manager Menu",
+			},
+		},
+		config = function()
+			require("buffer_manager").setup({
+				select_menu_item_commands = {
+					v = {
+						key = "<C-v>",
+						command = "vsplit",
+					},
+					h = {
+						key = "<C-h>",
+						command = "split",
+					},
+				},
+				short_file_names = true,
+				short_term_names = true,
+			})
+		end,
+	},
+
 	-- Better buffer line
 	{
 		"akinsho/bufferline.nvim",
@@ -129,13 +195,29 @@ return {
 		dependencies = "nvim-tree/nvim-web-devicons",
 		opts = {
 			options = {
-				mode = "tabs",
+				mode = "buffers",
 				separator_style = "slant",
-				always_show_bufferline = false,
+				always_show_bufferline = true,
 				show_buffer_close_icons = false,
 				show_close_icon = false,
 				color_icons = true,
 				diagnostics = "nvim_lsp",
+				diagnostics_indicator = function(count, level, diagnostics_dict, context)
+					local icon = level:match("error") and " " or " "
+					return " " .. icon .. count
+				end,
+				sort_by = "insert_after_current",
+				close_command = function(n)
+					require("mini.bufremove").delete(n, false)
+				end,
+				right_mouse_command = function(n)
+					require("mini.bufremove").delete(n, false)
+				end,
+				hover = {
+					enabled = true,
+					delay = 200,
+					reveal = { "close" },
+				},
 				offsets = {
 					{
 						filetype = "NvimTree",
@@ -223,6 +305,14 @@ return {
 						},
 					},
 					view = "mini",
+				},
+				-- Suppress annoying LSP "Content Modified" errors
+				{
+					filter = {
+						event = "notify",
+						find = "ContentModified",
+					},
+					opts = { skip = true },
 				},
 			},
 			presets = {

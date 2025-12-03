@@ -334,18 +334,6 @@ return {
 
 			-- Enhanced error handling for LSP
 			local function setup_lsp_error_handling()
-				vim.api.nvim_create_autocmd("LspDetach", {
-					group = vim.api.nvim_create_augroup("LspDetach", { clear = true }),
-					callback = function(ev)
-						local client_name = ev.data.client_id and vim.lsp.get_client_by_id(ev.data.client_id).name
-							or "Unknown"
-						vim.notify(
-							string.format("LSP client '%s' detached from buffer %d", client_name, ev.buf),
-							vim.log.levels.WARN
-						)
-					end,
-				})
-
 				-- Handle LSP startup failures
 				vim.api.nvim_create_autocmd("LspAttach", {
 					group = vim.api.nvim_create_augroup("LspStartupCheck", { clear = true }),

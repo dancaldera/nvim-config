@@ -158,6 +158,15 @@ return {
 					timeout_ms = 1000,
 				})
 			end, { desc = "Format file or range (in visual mode)" })
+
+			-- Alias for formatting
+			vim.keymap.set({ "n", "v" }, "<leader>jf", function()
+				conform.format({
+					lsp_format = "fallback",
+					async = false,
+					timeout_ms = 1000,
+				})
+			end, { desc = "Format file (Just Format)" })
 		end,
 	},
 
@@ -175,26 +184,57 @@ return {
 
 			-- Lint on save and insert leave
 			local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
+
+			-- Global state for auto-linting
+			vim.g.auto_lint_enabled = true
+
+			-- Helper to update linters based on filetype
+			local function update_linters()
+				local ft = vim.bo.filetype
+				if ft == "javascript" or ft == "typescript" or ft == "javascriptreact" or ft == "typescriptreact" then
+					lint.linters_by_ft[ft] = js_linter()
+				end
+			end
+
 			vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
 				group = lint_augroup,
 				callback = function()
-					-- Dynamic linter selection for JS/TS
-					local ft = vim.bo.filetype
-					if
-						ft == "javascript"
-						or ft == "typescript"
-						or ft == "javascriptreact"
-						or ft == "typescriptreact"
-					then
-						lint.linters_by_ft[ft] = js_linter()
+					-- Check if auto-linting is enabled
+					if not vim.g.auto_lint_enabled then
+						return
 					end
+
+					update_linters()
 					lint.try_lint()
 				end,
 			})
 
 			vim.keymap.set("n", "<leader>ml", function()
+				update_linters()
 				lint.try_lint()
-			end, { desc = "Lint current file" })
+				local linters = lint.linters_by_ft[vim.bo.filetype] or {}
+				if #linters > 0 then
+					vim.notify("Linting with: " .. table.concat(linters, ", "), vim.log.levels.INFO)
+				else
+					vim.notify("No linter configured for this filetype", vim.log.levels.WARN)
+				end
+			end, { desc = "Lint current file (Manual)" })
+
+			-- Toggle Auto-Linting
+			vim.keymap.set("n", "<leader>jl", function()
+				vim.g.auto_lint_enabled = not vim.g.auto_lint_enabled
+				if vim.g.auto_lint_enabled then
+					update_linters()
+					local linters = lint.linters_by_ft[vim.bo.filetype] or {}
+					local linter_msg = #linters > 0 and (" (" .. table.concat(linters, ", ") .. ")") or ""
+					vim.notify("Auto-linting ENABLED" .. linter_msg, vim.log.levels.INFO)
+					lint.try_lint()
+				else
+					vim.notify("Auto-linting DISABLED", vim.log.levels.INFO)
+					-- Clear diagnostics for the current buffer when disabling
+					vim.diagnostic.reset(nil, 0)
+				end
+			end, { desc = "Toggle Auto-Linting" })
 		end,
 	},
 }
