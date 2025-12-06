@@ -189,48 +189,56 @@ return {
 
 	-- Better buffer line
 	{
-		"akinsho/bufferline.nvim",
+		"romgrk/barbar.nvim",
 		event = { "BufAdd", "BufNewFile", "TabNewEntered" },
-		version = "*",
-		dependencies = "nvim-tree/nvim-web-devicons",
+		dependencies = {
+			"nvim-tree/nvim-web-devicons",
+			"lewis6991/gitsigns.nvim", -- Optional: git status icons
+		},
 		opts = {
-			options = {
-				mode = "buffers",
-				separator_style = "slant",
-				always_show_bufferline = true,
-				show_buffer_close_icons = false,
-				show_close_icon = false,
-				color_icons = true,
-				diagnostics = "nvim_lsp",
-				diagnostics_indicator = function(count, level, diagnostics_dict, context)
-					local icon = level:match("error") and " " or " "
-					return " " .. icon .. count
-				end,
-				sort_by = "insert_after_current",
-				close_command = function(n)
-					require("mini.bufremove").delete(n, false)
-				end,
-				right_mouse_command = function(n)
-					require("mini.bufremove").delete(n, false)
-				end,
-				hover = {
+			animation = true,
+			auto_hide = 1, -- Hide when only 1 buffer
+			tabpages = true,
+			clickable = true, -- CRITICAL: Enable mouse clicks
+
+			-- Close buffer with middle-click or close button
+			-- Left-click switches buffers (built-in)
+
+			-- Icons
+			icons = {
+				button = "×",
+				buffer_index = false,
+				buffer_number = false,
+				diagnostics = {
+					[vim.diagnostic.severity.ERROR] = { enabled = true, icon = " " },
+					[vim.diagnostic.severity.WARN] = { enabled = true, icon = " " },
+				},
+				gitsigns = {
+					added = { enabled = true, icon = "+" },
+					changed = { enabled = true, icon = "~" },
+					deleted = { enabled = true, icon = "-" },
+				},
+				filetype = {
 					enabled = true,
-					delay = 200,
-					reveal = { "close" },
 				},
-				offsets = {
-					{
-						filetype = "NvimTree",
-						text = "File Explorer",
-						highlight = "Directory",
-						text_align = "left",
-					},
-				},
+				separator = { left = "▎", right = "" },
+				modified = { button = "●" },
+				pinned = { button = "車", filename = true },
 			},
+
+			-- Sidebar offsets (keep NvimTree offset)
+			sidebar_filetypes = {
+				NvimTree = { text = "File Explorer", align = "left" },
+			},
+
+			-- Sorting (keep insert_after_current behavior)
+			insert_at_end = false,
+			insert_at_start = false,
 		},
 		config = function(_, opts)
-			require("bufferline").setup(opts)
-			-- Fix bufferline when restoring a session
+			require("barbar").setup(opts)
+
+			-- Keep session restoration fix
 			vim.api.nvim_create_autocmd("BufAdd", {
 				callback = function()
 					vim.schedule(function()

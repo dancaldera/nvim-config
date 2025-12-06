@@ -5,6 +5,9 @@
 return {
 	{
 		"williamboman/mason.nvim",
+		dependencies = {
+			"WhoIsSethDaniel/mason-tool-installer.nvim",
+		},
 		config = function()
 			require("mason").setup({
 				ui = {
@@ -14,6 +17,22 @@ return {
 						package_uninstalled = "✗",
 					},
 				},
+			})
+
+			require("mason-tool-installer").setup({
+				ensure_installed = {
+					-- Formatters & Linters
+					"prettier", -- Multi-language formatter
+					"stylua", -- Lua formatter
+					"eslint_d", -- JS/TS linter (FIX: ensures this is installed)
+					"shfmt", -- Shell formatter
+					"ruff", -- Python linter/formatter
+					"isort", -- Python import sorter
+					"black", -- Python formatter
+					"golangci-lint", -- Go linter
+				},
+				auto_update = true,
+				run_on_start = true,
 			})
 		end,
 	},
