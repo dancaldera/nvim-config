@@ -56,21 +56,19 @@ keymap.set("n", "<leader>w", "<cmd>w<CR>", { desc = "Save file" })
 keymap.set("n", "<leader>q", "<cmd>q<CR>", { desc = "Quit" })
 keymap.set("n", "<leader>x", "<cmd>wq<CR>", { desc = "Save and quit" })
 
--- Buffer navigation (barbar.nvim)
-keymap.set("n", "<S-l>", "<Cmd>BufferNext<CR>", { desc = "Next buffer" })
-keymap.set("n", "<S-h>", "<Cmd>BufferPrevious<CR>", { desc = "Previous buffer" })
-keymap.set("n", "<S-x>", "<Cmd>BufferClose<CR>", { desc = "Close current buffer" })
+-- Buffer navigation (nvim-cokeline)
+keymap.set("n", "<S-l>", "<Plug>(cokeline-focus-next)", { desc = "Next buffer", silent = true })
+keymap.set("n", "<S-h>", "<Plug>(cokeline-focus-prev)", { desc = "Previous buffer", silent = true })
+keymap.set("n", "<S-x>", function()
+	require("mini.bufremove").delete(0, false)
+end, { desc = "Close current buffer" })
 
 -- Buffer reordering (move buffers left/right in tabline)
-keymap.set("n", "<A-<>", "<Cmd>BufferMovePrevious<CR>", { desc = "Move buffer left" })
-keymap.set("n", "<A->>", "<Cmd>BufferMoveNext<CR>", { desc = "Move buffer right" })
+keymap.set("n", "<A-<>", "<Plug>(cokeline-switch-prev)", { desc = "Move buffer left", silent = true })
+keymap.set("n", "<A->>", "<Plug>(cokeline-switch-next)", { desc = "Move buffer right", silent = true })
 
--- Quick jump to buffer position
-keymap.set("n", "<leader>1", "<Cmd>BufferGoto 1<CR>", { desc = "Go to buffer 1" })
-keymap.set("n", "<leader>2", "<Cmd>BufferGoto 2<CR>", { desc = "Go to buffer 2" })
-keymap.set("n", "<leader>3", "<Cmd>BufferGoto 3<CR>", { desc = "Go to buffer 3" })
-keymap.set("n", "<leader>4", "<Cmd>BufferGoto 4<CR>", { desc = "Go to buffer 4" })
-keymap.set("n", "<leader>5", "<Cmd>BufferGoto 5<CR>", { desc = "Go to buffer 5" })
+-- Quick jump to buffer position (by-index plugin for cokeline)
+keymap.set("n", "<leader>1", "<Plug>(cokeline-pick-focus)", { desc = "Pick buffer to focus", silent = true })
 
 -- Terminal mode keybindings
 keymap.set("t", "jk", "<C-\\><C-n>", { desc = "Exit terminal mode with jk" })

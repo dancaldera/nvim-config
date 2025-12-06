@@ -189,56 +189,143 @@ return {
 
 	-- Better buffer line
 	{
-		"romgrk/barbar.nvim",
-		event = { "BufAdd", "BufNewFile", "TabNewEntered" },
+		"willothy/nvim-cokeline",
+		event = { "BufAdd", "BufNewFile" },
 		dependencies = {
 			"nvim-tree/nvim-web-devicons",
-			"lewis6991/gitsigns.nvim", -- Optional: git status icons
 		},
-		opts = {
-			animation = true,
-			auto_hide = 1, -- Hide when only 1 buffer
-			tabpages = true,
-			clickable = true, -- CRITICAL: Enable mouse clicks
+		config = function()
+			local get_hex = require("cokeline.hlgroups").get_hl_attr
 
-			-- Close buffer with middle-click or close button
-			-- Left-click switches buffers (built-in)
+			require("cokeline").setup({
+				-- Only show bufferline in editor windows (not spanning sidebars)
+				show_if_buffers_are_at_least = 1,
 
-			-- Icons
-			icons = {
-				button = "×",
-				buffer_index = false,
-				buffer_number = false,
-				diagnostics = {
-					[vim.diagnostic.severity.ERROR] = { enabled = true, icon = " " },
-					[vim.diagnostic.severity.WARN] = { enabled = true, icon = " " },
+				default_hl = {
+					fg = function(buffer)
+						return buffer.is_focused and get_hex("Normal", "fg") or get_hex("Comment", "fg")
+					end,
+					bg = function(buffer)
+						return buffer.is_focused and get_hex("ColorColumn", "bg") or get_hex("Normal", "bg")
+					end,
 				},
-				gitsigns = {
-					added = { enabled = true, icon = "+" },
-					changed = { enabled = true, icon = "~" },
-					deleted = { enabled = true, icon = "-" },
+
+				-- Sidebar configuration (NvimTree offset)
+				sidebar = {
+					filetype = { "NvimTree", "neo-tree" },
+					components = {
+						{
+							text = "  File Explorer",
+							fg = get_hex("Comment", "fg"),
+							bg = get_hex("Normal", "bg"),
+							bold = true,
+						},
+					},
 				},
-				filetype = {
-					enabled = true,
+
+				components = {
+					{
+						text = " ",
+						bg = function(buffer)
+							return buffer.is_focused and get_hex("ColorColumn", "bg") or get_hex("Normal", "bg")
+						end,
+					},
+					-- File icon
+					{
+						text = function(buffer)
+							return buffer.devicon.icon
+						end,
+						fg = function(buffer)
+							return buffer.devicon.color
+						end,
+						bg = function(buffer)
+							return buffer.is_focused and get_hex("ColorColumn", "bg") or get_hex("Normal", "bg")
+						end,
+					},
+					{
+						text = " ",
+						bg = function(buffer)
+							return buffer.is_focused and get_hex("ColorColumn", "bg") or get_hex("Normal", "bg")
+						end,
+					},
+					-- Filename
+					{
+						text = function(buffer)
+							return buffer.unique_prefix .. buffer.filename
+						end,
+						fg = function(buffer)
+							return buffer.is_focused and get_hex("Normal", "fg") or get_hex("Comment", "fg")
+						end,
+						bg = function(buffer)
+							return buffer.is_focused and get_hex("ColorColumn", "bg") or get_hex("Normal", "bg")
+						end,
+						bold = function(buffer)
+							return buffer.is_focused
+						end,
+						italic = function(buffer)
+							return not buffer.is_focused
+						end,
+					},
+					-- Modified indicator
+					{
+						text = function(buffer)
+							return buffer.is_modified and " ●" or ""
+						end,
+						fg = function(buffer)
+							return buffer.is_modified and get_hex("DiagnosticWarn", "fg") or nil
+						end,
+						bg = function(buffer)
+							return buffer.is_focused and get_hex("ColorColumn", "bg") or get_hex("Normal", "bg")
+						end,
+					},
+					-- Diagnostics
+					{
+						text = function(buffer)
+							local errors = buffer.diagnostics.errors
+							local warnings = buffer.diagnostics.warnings
+							if errors > 0 then
+								return "  " .. errors
+							elseif warnings > 0 then
+								return "  " .. warnings
+							end
+							return ""
+						end,
+						fg = function(buffer)
+							if buffer.diagnostics.errors > 0 then
+								return get_hex("DiagnosticError", "fg")
+							elseif buffer.diagnostics.warnings > 0 then
+								return get_hex("DiagnosticWarn", "fg")
+							end
+						end,
+						bg = function(buffer)
+							return buffer.is_focused and get_hex("ColorColumn", "bg") or get_hex("Normal", "bg")
+						end,
+					},
+					{
+						text = " ",
+						bg = function(buffer)
+							return buffer.is_focused and get_hex("ColorColumn", "bg") or get_hex("Normal", "bg")
+						end,
+					},
+					-- Close button
+					{
+						text = "×",
+						fg = get_hex("Comment", "fg"),
+						bg = function(buffer)
+							return buffer.is_focused and get_hex("ColorColumn", "bg") or get_hex("Normal", "bg")
+						end,
+						delete_buffer_on_left_click = true,
+					},
+					{
+						text = " ",
+						bg = function(buffer)
+							return buffer.is_focused and get_hex("ColorColumn", "bg") or get_hex("Normal", "bg")
+						end,
+					},
 				},
-				separator = { left = "▎", right = "" },
-				modified = { button = "●" },
-				pinned = { button = "車", filename = true },
-			},
+			})
 
-			-- Sidebar offsets (keep NvimTree offset)
-			sidebar_filetypes = {
-				NvimTree = { text = "File Explorer", align = "left" },
-			},
-
-			-- Sorting (keep insert_after_current behavior)
-			insert_at_end = false,
-			insert_at_start = false,
-		},
-		config = function(_, opts)
-			require("barbar").setup(opts)
-
-			-- Keep session restoration fix
+			-- Session restoration fix
 			vim.api.nvim_create_autocmd("BufAdd", {
 				callback = function()
 					vim.schedule(function()
