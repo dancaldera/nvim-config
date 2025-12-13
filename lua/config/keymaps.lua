@@ -41,7 +41,6 @@ keymap.set("n", "<C-Right>", ":vertical resize +2<CR>", { desc = "Increase windo
 -- Move text up and down
 keymap.set("v", "<A-j>", ":m .+1<CR>==", { desc = "Move text down" })
 keymap.set("v", "<A-k>", ":m .-2<CR>==", { desc = "Move text up" })
-keymap.set("v", "p", '"_dP', { desc = "Paste without overwriting register" })
 
 -- Stay in indent mode
 keymap.set("v", "<", "<gv", { desc = "Indent left and reselect" })
