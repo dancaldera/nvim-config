@@ -1,38 +1,61 @@
 -- ============================================================================
 -- Autocompletion Configuration
--- Combines AI completion (Windsurf) + LSP/Snippet completion (nvim-cmp)
+-- Combines AI completion (GitHub Copilot) + LSP/Snippet completion (nvim-cmp)
 -- ============================================================================
 
 return {
-	-- AI-Powered Completion (Codeium - Lua version)
+	-- AI-Powered Completion (GitHub Copilot)
 	{
-		"Exafunction/codeium.nvim",
-		event = "BufEnter",
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-			"hrsh7th/nvim-cmp",
-		},
+		"zbirenbaum/copilot.lua",
+		cmd = "Copilot",
+		event = "InsertEnter",
 		config = function()
-			require("codeium").setup({
-				enable_cmp_source = true, -- Enable cmp source for blended completions
-				virtual_text = {
+			require("copilot").setup({
+				panel = {
 					enabled = true,
-					manual = false,
-					default_filetype_enabled = true,
-					idle_delay = 75,
-					virtual_text_priority = 65535,
-					map_keys = true,
-					accept_fallback = nil,
-					key_bindings = {
+					auto_refresh = false,
+					keymap = {
+						jump_prev = "[[",
+						jump_next = "]]",
+						accept = "<CR>",
+						refresh = "gr",
+						open = "<M-CR>",
+					},
+					layout = {
+						position = "bottom",
+						ratio = 0.4,
+					},
+				},
+				suggestion = {
+					enabled = true,
+					auto_trigger = true,
+					debounce = 75,
+					keymap = {
 						accept = "<C-g>",
 						accept_word = false,
 						accept_line = false,
 						next = "<C-;>",
 						prev = "<C-,>",
-						clear = "<C-x>",
+						dismiss = "<C-x>",
 					},
 				},
+				filetypes = {
+					-- Enable Copilot for all file types
+					["*"] = true,
+				},
+				copilot_node_command = "node",
+				server_opts_overrides = {},
 			})
+		end,
+	},
+
+	-- Copilot CMP Source
+	{
+		"zbirenbaum/copilot-cmp",
+		event = "InsertEnter",
+		dependencies = { "zbirenbaum/copilot.lua" },
+		config = function()
+			require("copilot_cmp").setup()
 		end,
 	},
 
@@ -103,7 +126,7 @@ return {
 				}),
 				-- sources for autocompletion
 				sources = cmp.config.sources({
-					{ name = "codeium", priority = 1000 }, -- AI completions (highest priority)
+					{ name = "copilot", priority = 1000 }, -- AI completions (highest priority)
 					{ name = "nvim_lsp", priority = 900 },
 					{ name = "luasnip", priority = 750 }, -- snippets
 					{ name = "buffer", priority = 500 }, -- text within current buffer

@@ -14,7 +14,7 @@ Your Neovim configuration is **excellent** and represents a modern, well-organiz
 - Comprehensive language support (12 LSP servers, 23+ Treesitter parsers)
 - Excellent Git integration (gitsigns, neogit, diffview)
 - Strong UI/UX enhancements (noice, notify, bufferline, etc.)
-- AI-powered completion (Codeium)
+- AI-powered completion (GitHub Copilot)
 - Automatic health checks and backups
 - Performance-optimized (~76ms startup)
 
@@ -909,7 +909,7 @@ Potential conflicts identified:
 
 ### 2. **AI Completion Conflicts**
 
-Currently using only Codeium. If you add GitHub Copilot or other AI tools, they may conflict.
+Currently using GitHub Copilot. If you add other AI tools (like Codeium, Tabnine, etc.), they may conflict.
 
 **Recommendation:** Choose one primary AI completion tool or configure them to work together.
 

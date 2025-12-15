@@ -39,7 +39,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **mini.ai**: Enhanced text objects for better code selection
 
 ### Plugin Migrations
-- **Codeium**: Migrated from `codeium.vim` (Vim-script) to `codeium.nvim` (Lua) for better performance
+- **GitHub Copilot**: Migrated from Codeium to GitHub Copilot for AI-powered completions
 
 ### UX Improvements
 - **Silent LSP initialization**: Removed verbose LSP startup notifications
@@ -114,7 +114,7 @@ Three-layer approach for language support:
    - Telescope integration for definitions, references, diagnostics
 
 2. **Completion Layer** (`autocompletion.lua`):
-   - **AI Completion**: Codeium.nvim (Lua-native) for intelligent code suggestions (ghost text)
+   - **AI Completion**: GitHub Copilot for intelligent code suggestions (inline suggestions)
    - **LSP Completion**: nvim-cmp with multiple sources (LSP, buffer, path, snippets)
    - LuaSnip for snippet expansion
    - VS Code-style pictograms via lspkind

@@ -1,13 +1,13 @@
-# AI Completion Guide (Codeium/Windsurf)
+# AI Completion Guide (GitHub Copilot)
 
 Your Neovim configuration now includes **dual completion system**:
-- 🤖 **AI Completion** (Codeium) - Ghost text suggestions powered by AI
+- 🤖 **AI Completion** (GitHub Copilot) - Inline suggestions powered by AI
 - 💻 **LSP Completion** (nvim-cmp) - Traditional LSP, snippets, and buffer completions
 
 ## How It Works
 
-### AI Completion (Ghost Text)
-When you type, Codeium will show AI-powered suggestions as **gray ghost text** after your cursor. These are context-aware, intelligent suggestions based on your code.
+### AI Completion (Inline Text)
+When you type, GitHub Copilot will show AI-powered suggestions as **gray inline text** after your cursor. These are context-aware, intelligent suggestions based on your code.
 
 ### LSP Completion (Popup Menu)
 Press `<C-Space>` or start typing to see traditional completions in a popup menu with LSP suggestions, snippets, and buffer text.
@@ -16,13 +16,14 @@ Press `<C-Space>` or start typing to see traditional completions in a popup menu
 
 ## Keybindings
 
-### AI Completion (Codeium)
+### AI Completion (GitHub Copilot)
 | Key | Action | Description |
 |-----|--------|-------------|
-| `<C-g>` | Accept AI suggestion | Accept the entire AI ghost text suggestion |
+| `<C-g>` | Accept AI suggestion | Accept the entire AI inline suggestion |
 | `<C-;>` | Next suggestion | Cycle to next AI suggestion |
 | `<C-,>` | Previous suggestion | Cycle to previous AI suggestion |
-| `<C-x>` | Clear suggestion | Dismiss current AI suggestion |
+| `<C-x>` | Dismiss suggestion | Dismiss current AI suggestion |
+| `<M-CR>` | Open panel | Open Copilot panel with multiple alternatives |
 
 ### LSP Completion (nvim-cmp)
 | Key | Action | Description |
@@ -77,8 +78,8 @@ AI ghost text: setCount] = useState(0)
 - **Context-aware**: Understands your entire codebase
 - **Multi-line suggestions**: Can suggest entire functions
 - **Language support**: Works with all programming languages
-- **Ghost text**: Non-intrusive gray text display
-- **No account required**: Codeium is free for individual use
+- **Inline text**: Non-intrusive gray text display
+- **GitHub integration**: Works with your GitHub account
 
 ### LSP Completion Features
 - **Accurate**: Based on actual code analysis
@@ -89,7 +90,7 @@ AI ghost text: setCount] = useState(0)
 
 ## Tips & Best Practices
 
-### When to Use AI (Codeium)
+### When to Use AI (GitHub Copilot)
 ✅ Writing new functions or logic
 ✅ Boilerplate code
 ✅ Complex algorithms
@@ -114,9 +115,10 @@ AI ghost text: setCount] = useState(0)
 
 ### AI suggestions not appearing?
 1. Make sure you're in Insert mode
-2. Check internet connection (Codeium needs API access)
-3. Wait a moment - AI takes slightly longer than LSP
-4. Try typing more context for better suggestions
+2. Check authentication: `:Copilot status`
+3. Check internet connection (Copilot needs API access)
+4. Wait a moment - AI takes slightly longer than LSP
+5. Try typing more context for better suggestions
 
 ### LSP completion not working?
 1. Ensure LSP is attached: `:LspInfo`
@@ -126,32 +128,25 @@ AI ghost text: setCount] = useState(0)
 ### Both showing at once?
 This is normal! They complement each other:
 - LSP shows in **popup menu**
-- AI shows as **ghost text**
+- AI shows as **inline text**
 - Choose whichever is more appropriate
 
 ## First-Time Setup
 
-### Codeium Authentication (First Launch)
-1. When you first use Codeium, it will prompt for authentication
-2. It will open a browser to authenticate
-3. Follow the on-screen instructions
-4. It's completely free for individual use!
+### GitHub Copilot Authentication (First Launch)
+1. When you first use Copilot, run `:Copilot auth`
+2. It will open a browser to authenticate with GitHub
+3. Enter the one-time code shown in Neovim
+4. Authorize GitHub Copilot in your browser
+5. Done! Start coding with AI assistance
 
-### Alternative: If you prefer Windsurf
-Replace `codeium.vim` with `windsurf.vim` in the config:
-```lua
--- In lua/plugins/autocompletion.lua
-{
-  "Exafunction/windsurf.vim",  -- instead of codeium.vim
-  -- ... rest of config
-}
-```
+**Note:** GitHub Copilot requires a subscription (free for students, educators, and open source maintainers).
 
 ## Summary
 
 You now have **the best of both worlds**:
 
-🤖 **AI (Codeium)** - Smart, context-aware, multi-line suggestions
+🤖 **AI (GitHub Copilot)** - Smart, context-aware, multi-line suggestions
 💻 **LSP (nvim-cmp)** - Precise, fast, local completions
 
 Press `<C-g>` for AI magic ✨

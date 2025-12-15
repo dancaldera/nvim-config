@@ -22,17 +22,19 @@ nvim
 
 In Neovim, run:
 ```vim
-:Codeium Auth
+:Copilot auth
 ```
 
 **What will happen:**
 1. 🌐 Your browser will open
-2. 🔐 Sign in to Codeium (it's FREE!)
-3. 📋 Copy the authentication token
-4. 📥 Paste it in Neovim when prompted
-5. ✅ Press Enter
+2. 🔐 Sign in with your GitHub account
+3. 📋 Enter the one-time code shown in Neovim
+4. ✅ Authorize GitHub Copilot
+5. ✅ Done!
 
 **Done! AI completion is now active!** 🎉
+
+**Note:** GitHub Copilot requires a subscription (free for students, educators, and open source maintainers).
 
 ## ✅ Step 3: Test AI Completion
 
@@ -104,21 +106,20 @@ K          = Show documentation
 ## 📚 Learn More
 
 ### Must-Read Documentation
-1. **CODEIUM_SETUP.md** ⭐ - Complete AI setup guide
+1. **COPILOT_SETUP.md** ⭐ - Complete AI setup guide
 2. **AI_COMPLETION_GUIDE.md** - Advanced AI usage
 3. **README.md** - Full features and installation
 
 ### Quick References
 - `:help` - Neovim help
-- `:help codeium` - Codeium help
 - `:WhichKey <leader>` - See all leader keybindings
 
 ## 🐛 Troubleshooting
 
 ### AI suggestions not appearing?
 ```vim
-:Codeium Auth          " Re-authenticate
-:Codeium Enable        " Make sure it's enabled
+:Copilot auth          " Re-authenticate
+:Copilot status        " Check status
 ```
 
 ### LSP not working?
@@ -160,14 +161,15 @@ Write a comment describing what you want, and let AI write the code:
 ## 🎓 Learning Path
 
 ### Day 1 (Today!)
-- [x] `:Codeium Auth` - Setup AI
+- [x] `:Copilot auth` - Setup AI
 - [x] Learn `<Ctrl-g>` - Accept AI suggestions
 - [x] Try `<leader>ff` - Find files
 - [x] Use `<leader>ee` - Open file explorer
 
 ### Day 2
-- [ ] Read `CODEIUM_SETUP.md`
+- [ ] Read `COPILOT_SETUP.md`
 - [ ] Try `<Ctrl-;>` for alternative AI suggestions
+- [ ] Try `<M-CR>` to open Copilot panel
 - [ ] Explore `<leader>fs` for text search
 - [ ] Use `gd` to jump to definitions
 
