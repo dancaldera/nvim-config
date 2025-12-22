@@ -278,9 +278,9 @@ return {
 			{
 				"<leader>la",
 				function()
-					require("snacks").terminal("amp")
+					require("snacks").terminal("copilot")
 				end,
-				desc = "Open Amp",
+				desc = "Open Copilot CLI",
 			},
 		},
 	},

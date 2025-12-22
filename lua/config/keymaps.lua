@@ -117,8 +117,3 @@ keymap.set(
 	{ desc = "Check config consistency" }
 )
 keymap.set("n", "<leader>hd", "<cmd>checkhealth<CR>", { desc = "Run Neovim health check" })
-
--- Toggle colorscheme
-keymap.set("n", "<leader>cs", function()
-	_G.toggle_colorscheme()
-end, { desc = "Colorscheme switch (dark/light)" })
