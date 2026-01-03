@@ -205,8 +205,13 @@ return {
 					-- Filename
 					{
 						text = function(buffer)
-							return buffer.unique_prefix .. buffer.filename
+							return buffer.filename
 						end,
+						truncation = {
+							tail = true,
+							head = false,
+							max_width = 30,
+						},
 						fg = function(buffer)
 							return buffer.is_focused and get_hex("Normal", "fg") or get_hex("Comment", "fg")
 						end,
@@ -223,7 +228,7 @@ return {
 					-- Modified indicator
 					{
 						text = function(buffer)
-							return buffer.is_modified and " ●" or ""
+							return buffer.is_modified and "●" or ""
 						end,
 						fg = function(buffer)
 							return buffer.is_modified and get_hex("DiagnosticWarn", "fg") or nil
@@ -238,9 +243,9 @@ return {
 							local errors = buffer.diagnostics.errors
 							local warnings = buffer.diagnostics.warnings
 							if errors > 0 then
-								return "  " .. errors
+								return errors
 							elseif warnings > 0 then
-								return "  " .. warnings
+								return warnings
 							end
 							return ""
 						end,
