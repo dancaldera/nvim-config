@@ -17,7 +17,7 @@ A modern, well-documented Neovim configuration optimized for full-stack developm
 - **🔎 Fuzzy Finding**: [Telescope](https://github.com/nvim-telescope/telescope.nvim) with enhanced UI and hidden file support
 - **💻 LSP Support**: Full Language Server Protocol with inlay hints and modern diagnostics
 - **🎨 Syntax Highlighting**: [Treesitter](https://github.com/nvim-treesitter/nvim-treesitter) for advanced syntax highlighting
-- **⚡ Autocompletion**: Dual completion system with AI suggestions (Codeium) + LSP/snippets (nvim-cmp)
+- **⚡ Autocompletion**: Dual completion system with AI suggestions (GitHub Copilot) + LSP/snippets (nvim-cmp)
 - **🎯 Code Formatting**: Automatic code formatting on save with language-specific formatters
 
 ### Git & Version Control
@@ -129,13 +129,13 @@ Before installing this configuration, ensure you have:
 
 4. **Install plugins:** Lazy.nvim will automatically install all plugins on first launch.
 
-5. **Setup AI Completion (Codeium):**
+5. **Setup AI Completion (GitHub Copilot):**
    ```vim
-   :Codeium Auth
+   :Copilot auth
    ```
    - This will open your browser for authentication
-   - Sign in (it's free for individual use!)
-   - Copy the token and paste it in Neovim
+   - Sign in with GitHub (free for students/educators!)
+   - Enter the one-time code shown in Neovim
    - Done! AI completion is now active 🎉
 
 6. **Install LSP servers:** Open Neovim and the language servers will be automatically installed via Mason. You can also manually install additional servers by running:
@@ -414,12 +414,13 @@ echo "Neovim configuration updated!"
 
 ### AI Completion (Must Read!)
 ```vim
-:Codeium Auth         " First-time setup (authenticate)
+:Copilot auth         " First-time setup (authenticate)
 <Ctrl-g>             " Accept AI suggestion (INSERT MODE)
 <Ctrl-;>             " Next AI suggestion
+<M-CR>               " Open Copilot panel for alternatives
 <Ctrl-x>             " Clear AI suggestion
 ```
-📚 **Full guide**: See `CODEIUM_SETUP.md`
+📚 **Full guide**: See `COPILOT_SETUP.md`
 
 ### Essential Keybindings
 ```vim
@@ -433,13 +434,13 @@ echo "Neovim configuration updated!"
 ```
 
 ### First Steps After Install
-1. `:Codeium Auth` - Setup AI completion (required)
+1. `:Copilot auth` - Setup AI completion (required)
 2. `:checkhealth` - Check everything is working
 3. `:Mason` - Verify LSP servers installed
 4. `:Lazy` - See installed plugins
 5. `nvim --startuptime startup.log` - Verify performance (~76ms)
 6. Install formatters (optional) - See `SETUP_FORMATTERS.md`
-7. Read `CODEIUM_SETUP.md` - Learn AI completion
+7. Read `COPILOT_SETUP.md` - Learn AI completion
 
 ## 📊 Performance Comparison
 
@@ -462,7 +463,7 @@ echo "Neovim configuration updated!"
 
 ### Setup & Configuration
 - **FIRST_LAUNCH.md** - 🚀 Complete first-time setup guide
-- **CODEIUM_SETUP.md** - ⭐ AI completion quick start
+- **COPILOT_SETUP.md** - ⭐ AI completion quick start
 - **SETUP_FORMATTERS.md** - 🔧 Install formatters (optional)
 - **COLORSCHEME.md** - 🎨 Science-based colorscheme guide
 

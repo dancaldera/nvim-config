@@ -104,23 +104,8 @@ return {
 		},
 	},
 
-	-- Smooth scrolling
-	{
-		"karb94/neoscroll.nvim",
-		event = "VeryLazy",
-		opts = {
-			mappings = { "<C-u>", "<C-d>", "<C-b>", "<C-f>", "<C-y>", "<C-e>", "zt", "zz", "zb" },
-			hide_cursor = true,
-			stop_eof = true,
-			respect_scrolloff = false,
-			cursor_scrolls_alone = true,
-			easing_function = "quadratic",
-			pre_hook = nil,
-			post_hook = nil,
-		},
-	},
-
 	-- Note: Dashboard now handled by snacks.nvim in lua/plugins/dev-tools.lua
+	-- Smooth scrolling is now handled by native Neovim 0.10+ features
 
 	-- Better buffer closing (keeps window open and selects nearest buffer)
 	{
@@ -156,38 +141,7 @@ return {
 		},
 	},
 
-	-- Buffer Manager (Reorder and manage buffers visually)
-	{
-		"j-morano/buffer_manager.nvim",
-		dependencies = { "nvim-lua/plenary.nvim" },
-		keys = {
-			{
-				"<leader>bm",
-				function()
-					require("buffer_manager.ui").toggle_quick_menu()
-				end,
-				desc = "Buffer Manager Menu",
-			},
-		},
-		config = function()
-			require("buffer_manager").setup({
-				select_menu_item_commands = {
-					v = {
-						key = "<C-v>",
-						command = "vsplit",
-					},
-					h = {
-						key = "<C-h>",
-						command = "split",
-					},
-				},
-				short_file_names = true,
-				short_term_names = true,
-			})
-		end,
-	},
-
-	-- Better buffer line
+	-- Buffer line (nvim-cokeline handles buffer management)
 	{
 		"willothy/nvim-cokeline",
 		event = { "BufAdd", "BufNewFile" },

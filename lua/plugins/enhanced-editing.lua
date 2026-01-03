@@ -3,46 +3,6 @@
 -- ============================================================================
 
 return {
-	-- Better quickfix window
-	{
-		"kevinhwang91/nvim-bqf",
-		ft = "qf",
-		config = function()
-			require("bqf").setup({
-				auto_enable = true,
-				auto_resize_height = true,
-				preview = {
-					auto_preview = true,
-					win_height = 12,
-					win_vheight = 12,
-					delay_syntax = 80,
-					border = { "┏", "━", "┓", "┃", "┛", "━", "┗", "┃" },
-					show_title = true,
-					show_scroll_bar = true,
-					winblend = 0,
-					wrap = false,
-					buf_label = true,
-					---@diagnostic disable-next-line: unused-local
-					should_preview_cb = function(_bufnr, _qwinid)
-						return true
-					end,
-				},
-				func_map = {
-					vsplit = "",
-					ptogglemode = "z,",
-					stoggleup = "",
-				},
-				filter = {
-					fzf = {
-						action_for = { ["ctrl-s"] = "split" },
-						extra_opts = { "--bind", "ctrl-o:toggle-all", "--prompt", "> " },
-					},
-				},
-			})
-		end,
-	},
-
-	-- Improved search and replace
 	{
 		"nvim-pack/nvim-spectre",
 		build = false,
@@ -55,27 +15,6 @@ return {
 					require("spectre").open()
 				end,
 				desc = "Replace in files (Spectre)",
-			},
-		},
-	},
-
-	-- Better buffer closing
-	{
-		"echasnovski/mini.bufremove",
-		keys = {
-			{
-				"<leader>bd",
-				function()
-					require("mini.bufremove").delete(0, false)
-				end,
-				desc = "Delete Buffer",
-			},
-			{
-				"<leader>bD",
-				function()
-					require("mini.bufremove").delete(0, true)
-				end,
-				desc = "Delete Buffer (Force)",
 			},
 		},
 	},

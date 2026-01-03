@@ -3,13 +3,14 @@
 -- ============================================================================
 --
 -- 🚀 QUICK START:
---   1. Run :Codeium Auth (first time only) - Setup AI completion
+--   1. Run :Copilot auth (first time only) - Setup AI completion
 --   2. Press <Ctrl-g> in INSERT mode to accept AI suggestions
---   3. See CODEIUM_SETUP.md for full guide
+--   3. See COPILOT_SETUP.md for full guide
 --
 -- 📝 AI COMPLETION KEYS (Insert Mode):
 --   <Ctrl-g> = Accept AI suggestion  👈 MOST IMPORTANT!
 --   <Ctrl-;> = Next AI suggestion
+--   <M-CR> = Open Copilot panel
 --   <Ctrl-x> = Clear AI suggestion
 --
 -- 💻 LSP COMPLETION (Insert Mode):

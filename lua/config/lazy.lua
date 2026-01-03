@@ -29,7 +29,7 @@ require("lazy").setup({
 		notify = false,
 	},
 	install = {
-		colorscheme = { "monokai-pro", "habamax" },
+		colorscheme = { "gruvbox-custom", "habamax" },
 	},
 	ui = {
 		border = "rounded",
