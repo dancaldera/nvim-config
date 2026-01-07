@@ -24,7 +24,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - `<M-h/j/k/l>` - Better window resizing with Alt/Option keys
   - `<C-s>` (insert mode) - LSP signature help
 - **Reorganized namespaces**:
-  - `<leader>t` - Toggle/Terminal
+  - `<leader>t` - Toggle/Terminal/Theme
   - `<leader>T` - Tabs
   - Clearer separation of concerns
 
@@ -47,10 +47,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Colorscheme Changes (2025)
 - **Removed Monokai Pro**: Replaced plugin-based theme with custom implementation
-- **Custom Gruvbox**: Science-based colorscheme in `lua/colors/gruvbox-custom.lua`
-- **Eye Strain Optimization**: Based on 2024-2025 research (WCAG AAA, ~9:1 contrast)
-- **Desaturated Colors**: 10-15% less saturation to reduce visual fatigue
-- **Easy Customization**: Single color table for all customizations
+- **Theme System**: Three scientifically-designed dark themes with instant switching
+  - **Gruvbox Dark** (`<leader>t1`): Warm, eye-comfort optimized (default)
+  - **Solarized Dark** (`<leader>t2`): Precision colors, mathematically-balanced contrast
+  - **Nord Dark** (`<leader>t3`): Arctic, bluish palette with clean design
+- **Persistent Preference**: Theme selection saved across Neovim sessions
+- **List Themes**: `<leader>tl` displays all available themes with descriptions
+- **Eye Strain Optimization**: All themes designed for reduced eye strain
+- **Easy Customization**: Each theme has single color table in `lua/colors/`
 
 ## Development Commands
 

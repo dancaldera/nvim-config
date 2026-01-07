@@ -117,3 +117,21 @@ keymap.set(
 	{ desc = "Check config consistency" }
 )
 keymap.set("n", "<leader>hd", "<cmd>checkhealth<CR>", { desc = "Run Neovim health check" })
+
+-- Theme switching
+keymap.set("n", "<leader>t1", function()
+	require("config.theme-manager").load_theme("gruvbox-custom")
+end, { desc = "Theme: Gruvbox Dark" })
+
+keymap.set("n", "<leader>t2", function()
+	require("config.theme-manager").load_theme("solarized-dark")
+end, { desc = "Theme: Solarized Dark" })
+
+keymap.set("n", "<leader>t3", function()
+	require("config.theme-manager").load_theme("nord-dark")
+end, { desc = "Theme: Nord Dark" })
+
+-- List available themes
+keymap.set("n", "<leader>tl", function()
+	require("config.theme-manager").list_themes()
+end, { desc = "Theme: List All" })

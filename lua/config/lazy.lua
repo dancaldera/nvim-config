@@ -29,7 +29,7 @@ require("lazy").setup({
 		notify = false,
 	},
 	install = {
-		colorscheme = { "gruvbox-custom", "habamax" },
+		colorscheme = { "gruvbox-custom", "solarized-dark", "nord-dark", "habamax" },
 	},
 	ui = {
 		border = "rounded",
