@@ -11,95 +11,65 @@ return {
 			"windwp/nvim-ts-autotag",
 		},
 		config = function()
-			-- Install parsers on first load
-			local parsers = {
-				"json",
-				"javascript",
-				"typescript",
-				"tsx",
-				"yaml",
-				"html",
-				"css",
-				"prisma",
-				"markdown",
-				"markdown_inline",
-				"svelte",
-				"graphql",
-				"bash",
-				"lua",
-				"vim",
-				"dockerfile",
-				"gitignore",
-				"query",
-				"python",
-				"go",
-				"c",
-				"cpp",
-				"rust",
-				"toml",
-				"latex",
-				"scss",
-				"typst",
-				"vue",
-			}
-
-			-- Install all parsers asynchronously
-			require("nvim-treesitter").install(parsers)
-
-			-- Enable treesitter highlighting for common filetypes
-			vim.api.nvim_create_autocmd("FileType", {
-				pattern = {
+			require("nvim-treesitter.configs").setup({
+				-- List of parsers to install
+				ensure_installed = {
+					"json",
 					"javascript",
 					"typescript",
 					"tsx",
-					"jsx",
-					"lua",
-					"python",
-					"go",
-					"rust",
-					"c",
-					"cpp",
+					"yaml",
 					"html",
 					"css",
-					"scss",
-					"json",
-					"yaml",
-					"markdown",
-					"bash",
-					"sh",
-					"vim",
-					"toml",
-					"graphql",
-					"svelte",
-					"vue",
 					"prisma",
-				},
-				callback = function()
-					vim.treesitter.start()
-				end,
-			})
-
-			-- Enable treesitter-based indentation
-			vim.api.nvim_create_autocmd("FileType", {
-				pattern = {
-					"javascript",
-					"typescript",
-					"tsx",
-					"jsx",
+					"markdown",
+					"markdown_inline",
+					"svelte",
+					"graphql",
+					"bash",
 					"lua",
+					"vim",
+					"dockerfile",
+					"gitignore",
+					"query",
 					"python",
 					"go",
-					"rust",
 					"c",
 					"cpp",
-					"html",
-					"css",
-					"json",
-					"yaml",
+					"rust",
+					"toml",
+					"scss",
+					"typst",
+					"vue",
 				},
-				callback = function()
-					vim.bo.indentexpr = "v:lua.vim.treesitter.indentexpr()"
-				end,
+
+				-- Install parsers synchronously (only applied to `ensure_installed`)
+				sync_install = false,
+
+				-- Automatically install missing parsers when entering buffer
+				auto_install = true,
+
+				-- Enable syntax highlighting
+				highlight = {
+					enable = true,
+					additional_vim_regex_highlighting = false,
+				},
+
+				-- Enable indentation
+				indent = {
+					enable = true,
+				},
+
+				-- Enable incremental selection
+				incremental_selection = {
+					enable = true,
+					keymaps = {
+						init_selection = "<C-space>",
+						node_incremental = "<C-space>",
+						scope_incremental = false,
+						node_decremental = "<bs>",
+					},
+				},
 			})
 
 			-- Configure nvim-ts-autotag
