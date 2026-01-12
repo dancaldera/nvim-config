@@ -132,6 +132,10 @@ return {
 					},
 				},
 			},
+			-- Explicitly disable image module (basic features only via external tools)
+			image = {
+				enabled = false,
+			},
 		},
 		config = function(_, opts)
 			require("snacks").setup(opts)
