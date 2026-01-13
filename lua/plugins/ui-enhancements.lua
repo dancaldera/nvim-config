@@ -155,6 +155,12 @@ return {
 				-- Only show bufferline in editor windows (not spanning sidebars)
 				show_if_buffers_are_at_least = 1,
 
+				-- Enable buffer picking
+				pick = {
+					use_filename = true,
+					letters = "asdfjkl;ghnmxcvbziowerutyqpASDFJKLGHNMXCVBZIOWERUTYQP",
+				},
+
 				default_hl = {
 					fg = function(buffer)
 						return buffer.is_focused and get_hex("Normal", "fg") or get_hex("Comment", "fg")
