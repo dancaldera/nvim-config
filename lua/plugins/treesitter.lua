@@ -5,6 +5,7 @@
 return {
 	{
 		"nvim-treesitter/nvim-treesitter",
+		branch = "master",
 		lazy = false, -- Plugin must not be lazy-loaded
 		build = ":TSUpdate",
 		dependencies = {
