@@ -22,12 +22,14 @@ All LSP servers auto-install via Mason.
 ## 📋 Prerequisites
 
 **Required:**
-- Neovim >= 0.10.0 (`nvim --version`)
+- Neovim >= 0.10.0 (**0.11+ recommended** for native LSP features) (`nvim --version`)
 - Git
 - ripgrep (`brew install ripgrep`)
 
 **Optional** (install for languages you use):
 - Node.js, Python 3, Go, Rust
+
+> **Note:** Neovim 0.11+ provides native LSP configuration via `vim.lsp.config()`. On 0.10, some features may have reduced functionality.
 
 ## 🚀 Quick Start
 

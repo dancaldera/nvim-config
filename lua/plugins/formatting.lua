@@ -14,11 +14,27 @@ local function root_has_file(patterns)
 end
 
 local function has_biome()
-	return root_has_file({ "biome.json", "biome.jsonc" })
+	return root_has_file({ "biome.json", "biome.jsonc", ".biomerc.json", "biome.yaml" })
 end
 
 local function has_deno()
 	return root_has_file({ "deno.json", "deno.jsonc" })
+end
+
+local function has_prettier()
+	return root_has_file({
+		".prettierrc",
+		".prettierrc.json",
+		".prettierrc.js",
+		".prettierrc.cjs",
+		".prettierrc.mjs",
+		".prettierrc.yml",
+		".prettierrc.yaml",
+		"prettier.config.js",
+		"prettier.config.cjs",
+		"prettier.config.mjs",
+		".prettierignore",
+	})
 end
 
 local function has_eslint()

@@ -1,17 +1,21 @@
 -- ============================================================================
--- Compatibility Check for Neovim 0.9.x
+-- Compatibility Check for Neovim 0.10+
 -- ============================================================================
 
 -- Check Neovim version compatibility
 local version = vim.version()
-if version.major == 0 and version.minor < 9 then
-	vim.notify("This configuration requires Neovim 0.9+. Please upgrade.", vim.log.levels.ERROR)
+if version.major == 0 and version.minor < 10 then
+	vim.notify("This configuration requires Neovim 0.10+. Please upgrade.", vim.log.levels.ERROR)
 	return
 end
 
-if version.major == 0 and version.minor == 9 then
-	-- Disable some features that require 0.10+
-	vim.g.nvim_version_compat = "0.9"
+-- Recommend 0.11+ for native LSP features
+if version.major == 0 and version.minor == 10 then
+	vim.notify(
+		"Neovim 0.10 detected. For best experience with native LSP features (vim.lsp.config), upgrade to 0.11+.",
+		vim.log.levels.WARN
+	)
+	vim.g.nvim_version_compat = "0.10"
 end
 
 -- ============================================================================

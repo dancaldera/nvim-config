@@ -117,7 +117,8 @@ local function check_neovim_version(report)
 	report.start("Neovim version")
 
 	local version = vim.version()
-	local required_minor = 9
+	local required_minor = 10
+	local recommended_minor = 11
 
 	if version.major == 0 and version.minor < required_minor then
 		report.error(
@@ -132,13 +133,32 @@ local function check_neovim_version(report)
 		return false
 	end
 
+	if version.major == 0 and version.minor >= required_minor and version.minor < recommended_minor then
+		report.ok(
+			string.format(
+				"Neovim v%d.%d.%d detected (meets minimum v0.%d.0)",
+				version.major,
+				version.minor,
+				version.patch,
+				required_minor
+			)
+		)
+		report.warn(
+			string.format(
+				"Recommend upgrading to v0.%d+ for native LSP features (vim.lsp.config)",
+				recommended_minor
+			)
+		)
+		return true
+	end
+
 	report.ok(
 		string.format(
-			"Neovim v%d.%d.%d detected (meets minimum v0.%d.0)",
+			"Neovim v%d.%d.%d detected (recommended v0.%d+)",
 			version.major,
 			version.minor,
 			version.patch,
-			required_minor
+			recommended_minor
 		)
 	)
 	return true
@@ -256,6 +276,61 @@ local function check_formatters(report)
 	end
 
 	report.ok(string.format("Formatters configured: %d across %d filetypes", formatter_count, filetype_count))
+
+	-- Check if formatters are available for current buffer's filetype
+	local current_ft = vim.bo.filetype
+	if current_ft and current_ft ~= "" then
+		local available_formatters = conform.list_formatters(0)
+		if available_formatters and #available_formatters > 0 then
+			local formatter_names = {}
+			for _, f in ipairs(available_formatters) do
+				if f.available then
+					table.insert(formatter_names, f.name)
+				end
+			end
+			if #formatter_names > 0 then
+				report.info(
+					string.format(
+						"Current filetype (%s): %s",
+						current_ft,
+						table.concat(formatter_names, ", ")
+					)
+				)
+			else
+				report.warn(string.format("Formatters configured for %s but none available", current_ft))
+			end
+		end
+	end
+
+	return true
+end
+
+local function check_copilot(report)
+	report.start("GitHub Copilot")
+
+	local ok, copilot = pcall(require, "copilot")
+	if not ok then
+		report.warn("Copilot not loaded; AI completions unavailable.")
+		return false
+	end
+
+	-- Check if copilot auth exists
+	local auth_file = vim.fn.expand("~/.config/github-copilot/hosts.json")
+	if vim.fn.filereadable(auth_file) == 1 then
+		report.ok("Copilot authentication file found")
+	else
+		report.warn("Copilot not authenticated; run :Copilot auth")
+		return false
+	end
+
+	-- Check if copilot-cmp is available
+	local cmp_ok, copilot_cmp = pcall(require, "copilot_cmp")
+	if cmp_ok then
+		report.info("Copilot integrated with nvim-cmp")
+	else
+		report.info("Copilot standalone mode (inline suggestions only)")
+	end
+
 	return true
 end
 
@@ -345,6 +420,7 @@ local function run_all_checks(report)
 	end
 
 	check_formatters(report)
+	check_copilot(report)
 	check_treesitter(report)
 
 	if not check_config_consistency(report) then

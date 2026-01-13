@@ -13,6 +13,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Fixed namespace conflicts**: Git toggles moved from `<leader>t` to `<leader>g`
   - `<leader>gb` - Toggle git blame (was `<leader>tb`)
   - `<leader>gd` - Toggle deleted lines (was `<leader>td`)
+- **Version requirements updated**: Neovim 0.10+ required, 0.11+ recommended
+  - Native LSP features (`vim.lsp.config()`) work best on 0.11+
+  - Compatibility checks and health checks updated accordingly
 
 ### Performance & UX Improvements
 - Removed auto-update checks and backup plugins for better performance
@@ -184,4 +187,9 @@ Select → `<leader>re` (extract function) → `<leader>rv` (variable) → `<lea
 All documentation in `docs/` directory:
 - `KEYBINDINGS.md` - Complete keybinding reference
 - `SETUP_FORMATTERS.md` - Formatter installation guide
+- `PLUGINS_REFERENCE.md` - Complete listing of all 69 plugins by category
+- `ARCHITECTURE.md` - Configuration architecture and plugin dependency graph
+- `LSP_GUIDE.md` - Language-specific LSP setup and troubleshooting
+- `TROUBLESHOOTING.md` - Advanced troubleshooting beyond README
+- `PERFORMANCE.md` - Startup optimization and profiling techniques
 - Use UPPERCASE for doc filenames
