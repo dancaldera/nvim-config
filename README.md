@@ -1,47 +1,16 @@
 # Neovim Configuration
 
-A modern, well-documented Neovim configuration optimized for full-stack development with support for JavaScript, TypeScript, Python, Go, C++, and web technologies.
+Modern Neovim setup optimized for full-stack development with AI-powered completion, LSP support, and science-based colorscheme.
 
-## ✨ Features
+## ✨ Key Features
 
-### ⚡ Performance
-- **Lightning Fast Startup**: ~76ms total startup time
-- **Lazy Loading**: 23 plugins loaded instantly, 32+ load on-demand
-- **Memory Efficient**: 3-5x less RAM than VSCode (~150-200MB vs 400-800MB)
-- **Smart Caching**: Optimized plugin loading with lazy.nvim
-- **Production Ready**: Professional-grade performance optimization
-
-### Core Features
-- **🚀 Modern Plugin Manager**: [lazy.nvim](https://github.com/folke/lazy.nvim) with optimized startup
-- **🔍 File Explorer**: [nvim-tree](https://github.com/nvim-tree/nvim-tree.lua) for intuitive file navigation
-- **🔎 Fuzzy Finding**: [Telescope](https://github.com/nvim-telescope/telescope.nvim) with enhanced UI and hidden file support
-- **💻 LSP Support**: Full Language Server Protocol with inlay hints and modern diagnostics
-- **🎨 Syntax Highlighting**: [Treesitter](https://github.com/nvim-treesitter/nvim-treesitter) for advanced syntax highlighting
-- **⚡ Autocompletion**: Dual completion system with AI suggestions (GitHub Copilot) + LSP/snippets (nvim-cmp)
-- **🎯 Code Formatting**: Automatic code formatting on save with language-specific formatters
-
-### Git & Version Control
-- **🔧 Git Integration**: Advanced git features with Gitsigns, Neogit, and DiffView
-- **📊 Diff Viewer**: Side-by-side diff view for commits and file history
-- **🎯 Blame & Hunks**: Inline blame, hunk preview, staging, and navigation
-
-### UI/UX Enhancements
-- **🌙 Beautiful Theme**: Custom Gruvbox colorscheme scientifically optimized for reduced eye strain
-- **📚 Which-Key**: Discover and learn keybindings
-- **🎨 Better UI**: Enhanced messages, notifications, inputs with Noice & Notify
-- **📊 Dashboard**: Beautiful start screen with quick actions
-- **🎯 Buffer Line**: Enhanced buffer tabs with diagnostics
-- **🔄 Smooth Scrolling**: Animated smooth scrolling
-- **📍 Code Context**: Breadcrumb navigation with nvim-navic
-
-### Development Tools
-- **🔍 Enhanced Diagnostics**: Trouble for better error navigation
-- **📝 TODO Comments**: Highlight and search TODO, FIXME, NOTE comments
-- **🖥️ Integrated Terminal**: ToggleTerm with float/split layouts
-- **📁 Project Management**: Auto-detect and switch between projects
-- **🔧 Better Folding**: Superior code folding with nvim-ufo
-- **🔎 Global Search**: Find and replace across files with Spectre
-- **📖 Markdown Preview**: Live preview for markdown files
+- **⚡ Lightning Fast**: ~76ms startup time, 3-5x less memory than VSCode
+- **🤖 AI Completion**: GitHub Copilot integration with inline suggestions
+- **💻 Full LSP Support**: 13+ language servers with auto-installation
+- **🎨 Eye-Friendly Theme**: Custom Gruvbox scientifically optimized to reduce eye strain
+- **🔍 Advanced Search**: Telescope fuzzy finder with live grep
+- **🔧 Git Integration**: Gitsigns for hunks, staging, and inline blame
+- **📦 55+ Plugins**: Carefully curated, lazy-loaded for performance
 
 ## 🛠️ Supported Languages
 
@@ -61,416 +30,189 @@ A modern, well-documented Neovim configuration optimized for full-stack developm
 
 ## 📋 Prerequisites
 
-Before installing this configuration, ensure you have:
+**Required:**
+- **Neovim >= 0.10.0** (optimized for 0.12.x) - Check with `nvim --version`
+- **Git** - For plugin management
+- **ripgrep** - For file search (`brew install ripgrep` on macOS)
 
-1. **Neovim >= 0.10.0** (This configuration is optimized for 0.12.x)
-   ```bash
-   # Check your Neovim version
-   nvim --version
-   ```
-   
-   **Note:** This configuration uses the latest plugin versions compatible with modern Neovim versions (0.10+).
+**Optional (install only for languages you use):**
+- **Node.js** - JavaScript/TypeScript LSP
+- **Python 3** - Python LSP
+- **Go** - Go LSP
+- **Rust** - Rust LSP
+- **fd** - Better file finding (`brew install fd`)
 
-2. **Git** (for plugin management)
+## 🚀 Quick Start
 
-3. **Node.js** (for LSP servers)
-
-4. **Python 3** (for Python LSP)
-
-5. **Go** (for Go LSP)
-
-6. **Clang** (for C/C++ LSP)
-
-7. **Rust** (for Rust LSP)
-
-8. **ripgrep** (for Telescope live grep)
-   ```bash
-   # Ubuntu/Debian
-   sudo apt install ripgrep
-   
-   # macOS
-   brew install ripgrep
-   
-   # Arch Linux
-   sudo pacman -S ripgrep
-   ```
-
-
-9. **fd** (optional, for better file finding)
-   ```bash
-   # Ubuntu/Debian
-   sudo apt install fd-find
-   
-   # macOS
-   brew install fd
-   
-   # Arch Linux
-   sudo pacman -S fd
-   ```
-
-## 🚀 Installation
-
-1. **Backup your existing Neovim configuration:**
-   ```bash
-   mv ~/.config/nvim ~/.config/nvim.backup
-   mv ~/.local/share/nvim ~/.local/share/nvim.backup
-   mv ~/.cache/nvim ~/.cache/nvim.backup
-   ```
-
-2. **Clone this configuration:**
-   ```bash
-   git clone <this-repo-url> ~/.config/nvim
-   ```
-
-3. **Start Neovim:**
-   ```bash
-   nvim
-   ```
-
-4. **Install plugins:** Lazy.nvim will automatically install all plugins on first launch.
-
-5. **Setup AI Completion (GitHub Copilot):**
-   ```vim
-   :Copilot auth
-   ```
-   - This will open your browser for authentication
-   - Sign in with GitHub (free for students/educators!)
-   - Enter the one-time code shown in Neovim
-   - Done! AI completion is now active 🎉
-
-6. **Install LSP servers:** Open Neovim and the language servers will be automatically installed via Mason. You can also manually install additional servers by running:
-   ```
-   :Mason
-   ```
-   
-   Pre-configured language servers:
-   - `ts_ls` for JavaScript/TypeScript  
-   - `lua_ls` for Lua
-   - `pyright` for Python
-   - `html` for HTML
-   - `cssls` for CSS
-   - `tailwindcss` for Tailwind CSS
-   - `emmet_ls` for Emmet
-   - `gopls` for Go
-   - `clangd` for C/C++
-   - `rust_analyzer` for Rust
-   - `jsonls` for JSON
-   - `yamlls` for YAML
-   - `bashls` for Bash
-
-## 📁 Configuration Structure
-
-```
-~/.config/nvim/
-├── init.lua                     # Main configuration entry point
-├── lua/
-│   ├── config/
-│   │   ├── lazy.lua            # Plugin manager setup (optimized)
-│   │   ├── options.lua         # Neovim options (enhanced)
-│   │   ├── keymaps.lua         # Key mappings (improved)
-│   │   └── compatibility.lua   # Version checking
-│   ├── colors/
-│   │   └── gruvbox-custom.lua  # Science-based custom colorscheme
-│   └── plugins/
-│       ├── colorscheme.lua        # Custom Gruvbox theme loader
-│       ├── nvim-tree.lua          # File explorer
-│       ├── telescope.lua          # Fuzzy finder (enhanced UI)
-│       ├── lsp.lua               # LSP with inlay hints
-│       ├── treesitter.lua        # Syntax highlighting
-│       ├── autocompletion.lua    # Completion with Tab navigation
-│       ├── formatting.lua        # Code formatting
-│       ├── utilities.lua         # Core utilities
-│       ├── enhanced-editing.lua  # Editor enhancements
-│       ├── ui-enhancements.lua   # UI improvements (NEW)
-│       ├── git-enhancements.lua  # Advanced git tools (NEW)
-│       └── dev-tools.lua         # Development tools (NEW)
-├── README.md
-├── CLAUDE.md                    # Development guide
-└── docs/
-    └── KEYBINDINGS.md
-```
-
-## ⚙️ Customization
-
-### Customizing Colors
-
-The colorscheme is scientifically optimized for reduced eye strain based on 2024-2025 research. To customize colors, edit `lua/colors/gruvbox-custom.lua`:
-
-```lua
--- All colors in one table for easy customization
-local colors = {
-  -- Base colors (optimized for ~9:1 contrast ratio)
-  bg0 = "#2e2e2e",        -- editor background
-  fg = "#d5c4a1",         -- foreground text
-  grey = "#a89984",       -- comments
-
-  -- Syntax colors (desaturated for reduced eye strain)
-  red = "#ea6962",        -- keywords
-  green = "#a9b665",      -- strings
-  yellow = "#e3c78a",     -- functions
-  -- ... modify any color here
-}
-```
-
-**Scientific basis:**
-- ~9:1 contrast ratio (WCAG AAA compliant, avoids halation effect)
-- Desaturated colors reduce visual fatigue during long coding sessions
-- Warm color palette reduces blue light exposure
-
-### Adding New LSP Servers
-
-To add support for new languages, edit `lua/plugins/lsp.lua`:
-
-1. Add the server to the `ensure_installed` list in mason-lspconfig
-2. Add the server configuration in the lspconfig setup section
-
-### Modifying Key Bindings
-
-Key bindings are centralized in:
-- `lua/config/keymaps.lua` - General keymaps
-- Individual plugin files - Plugin-specific keymaps
-
-## 🔧 Troubleshooting
-
-### Plugins Not Loading
+### 1. Install
 ```bash
-# Clear plugin cache and restart
-rm -rf ~/.local/share/nvim
+# Backup existing config (if any)
+mv ~/.config/nvim ~/.config/nvim.backup
+
+# Clone this config
+git clone <this-repo-url> ~/.config/nvim
+
+# Launch Neovim (plugins auto-install)
 nvim
 ```
 
-### LSP Not Working
-1. Check if the LSP server is installed: `:Mason`
-2. Check LSP status: `:LspInfo`
-3. Restart LSP: `:LspRestart`
+### 2. Setup AI Completion (Required!) 🎯
 
-### Mason LSP Server Missing Binary Symlinks
-If you get errors like "language server is either not installed, missing from PATH, or not executable":
+**This is the most important step!**
 
-```bash
-# Create missing symlink for lua-language-server
-ln -sf ~/.local/share/nvim/mason/packages/lua-language-server/lua-language-server ~/.local/share/nvim/mason/bin/lua-language-server
-
-# For other servers, find the executable and create symlink:
-# Example for typescript-language-server:
-ln -sf ~/.local/share/nvim/mason/packages/typescript-language-server/node_modules/.bin/typescript-language-server ~/.local/share/nvim/mason/bin/typescript-language-server
+```vim
+:Copilot auth
 ```
 
-This issue occurs when Mason doesn't properly create symlinks in the bin directory.
+**What happens:**
+1. 🌐 Browser opens
+2. 🔐 Sign in with GitHub
+3. 📋 Enter the code from Neovim
+4. ✅ Done! AI completion active
 
-### Treesitter Issues
-```bash
-# Update parsers
-:TSUpdate
+**Note:** GitHub Copilot is free for students, educators, and open source maintainers.
+
+### 3. Test It Works
+
+1. Create a test file: `:e test.js`
+2. Enter insert mode: `i`
+3. Type: `function add`
+4. **Look for gray ghost text** - that's AI!
+5. **Press `<Ctrl-g>` to accept** 🚀
+
+### 4. Verify Everything
+
+```vim
+:checkhealth    " Check system health
+:Mason          " View LSP servers
+:Lazy           " View installed plugins
 ```
 
-### Performance Issues
-1. Check startup time: `nvim --startuptime startup.log`
-2. Profile plugins: `:Lazy profile`
-3. Expected startup time: ~76ms (lightning fast!)
-4. If slower than 200ms, run `:Lazy sync` to optimize
+All LSP servers install automatically via Mason. Pre-configured servers: `ts_ls`, `lua_ls`, `pyright`, `html`, `cssls`, `tailwindcss`, `gopls`, `clangd`, `rust_analyzer`, `jsonls`, `yamlls`, `bashls`, `emmet_ls`.
 
-### Install Neovim latest version
-```bash
-sudo apt remove neovim
+## 🎯 Essential Keybindings
+
+**AI Completion (Most Important!):**
+```
+<Ctrl-g>     Accept AI suggestion  👈 REMEMBER THIS!
+<Ctrl-;>     Next AI suggestion
+<Ctrl-x>     Dismiss suggestion
+<M-CR>       Open Copilot panel
 ```
 
-```bash
-# Install from the offical repo
-sudo add-apt-repository ppa:neovim-ppa/unstable
-sudo apt update
-sudo apt install neovim
+**File Navigation:**
+```
+<leader>ff   Find files          (Space + f + f)
+<leader>fs   Search in files     (Space + f + s)
+<leader>e    Toggle file tree    (Space + e)
+<C-e>        Focus file tree
 ```
 
-
-## 🔄 Package Management & Updates
-
-### Updating Plugins
-
-This configuration uses [lazy.nvim](https://github.com/folke/lazy.nvim) as the plugin manager. Here's how to manage your plugins:
-
-#### Update All Plugins
-```bash
-# Open Neovim and run:
-:Lazy update
+**Code Navigation:**
+```
+gd           Go to definition
+K            Show documentation
+<leader>ca   Code actions        (Space + c + a)
+<leader>ti   Toggle inlay hints
 ```
 
-#### Update Specific Plugin
-```bash
-# In Neovim:
-:Lazy update <plugin-name>
+**Git (Gitsigns):**
+```
+]c / [c      Next/prev git hunk
+<leader>hp   Preview hunk        (Space + h + p)
+<leader>hs   Stage hunk          (Space + h + s)
+<leader>tb   Toggle blame        (Space + t + b)
 ```
 
-#### Check Plugin Status
-```bash
-# View all plugins and their status:
-:Lazy
+**Format & Lint:**
+```
+<leader>jf   Format buffer       (Space + j + f)
+<leader>jl   Toggle auto-lint    (Space + j + l)
 ```
 
-#### Sync Plugins (Clean + Update)
-```bash
-# Remove unused plugins and update existing ones:
-:Lazy sync
+**Diagnostics:**
+```
+<leader>xx   Show diagnostics    (Space + x + x)
+]d / [d      Next/prev diagnostic
 ```
 
-### Updating LSP Servers
+📖 **Full reference:** See `docs/KEYBINDINGS.md`
 
-LSP servers are managed by [Mason](https://github.com/williamboman/mason.nvim):
+## 💡 Pro Tips
 
-#### Update All LSP Servers
-```bash
-# In Neovim:
-:MasonUpdate
+### 1. Use Which-Key
+Press `<Space>` and wait - Which-Key shows all available keybindings!
+
+### 2. AI + Comments
+```javascript
+// Function to validate email and check domain
+// AI will suggest the entire function!
 ```
 
-#### Install/Update Specific Server
-```bash
-# Open Mason interface:
-:Mason
-# Navigate and press 'i' to install or 'u' to update
+### 3. Quick File Search
+- `<leader>ff` - Find files instantly
+- `<leader>fs` - Search text in project
+- `<leader>ft` - Find all TODOs
+
+## 🔧 Troubleshooting
+
+### AI Not Working?
+```vim
+:Copilot auth      " Re-authenticate
+:Copilot status    " Check status
 ```
 
-#### Update via Command Line
-```bash
-# Install specific server:
-:MasonInstall typescript-language-server
+### LSP Not Working?
+```vim
+:LspInfo      " Check server status
+:LspRestart   " Restart servers
+:Mason        " View/install servers
 ```
 
-### Updating Treesitter Parsers
-
-Keep syntax highlighting parsers up to date:
-
-```bash
-# Update all parsers:
-:TSUpdate
-
-# Update specific parser:
-:TSUpdate javascript
-
-# Install new parser:
-:TSInstall python
+### Plugins Not Loading?
+```vim
+:Lazy sync    " Sync all plugins
+:Lazy clean   " Remove unused
 ```
 
-### Configuration Maintenance
-
-#### Update This Configuration
+### Start Fresh (Nuclear Option)
 ```bash
-# Navigate to your Neovim config directory
-cd ~/.config/nvim
-
-# Pull latest changes (if using git)
-git pull origin main
-
-# Restart Neovim to apply changes
-```
-
-#### Clean Up Old Data
-```bash
-# Remove plugin cache (will reinstall on next start):
-rm -rf ~/.local/share/nvim/lazy
-
-# Remove LSP cache:
-rm -rf ~/.local/share/nvim/mason
-
-# Remove all Neovim data (nuclear option):
 rm -rf ~/.local/share/nvim ~/.cache/nvim
+nvim  # Reinstalls everything
 ```
 
-### Automated Updates
 
-You can create a script to automate updates:
+## 🔄 Updates
 
+### Update Everything
+```vim
+:Lazy update      " Update plugins
+:MasonUpdate      " Update LSP servers
+:TSUpdate         " Update Treesitter parsers
+```
+
+### Update Config (if using git)
 ```bash
-#!/bin/bash
-# save as ~/bin/nvim-update.sh and make executable
-
-echo "Updating Neovim configuration..."
 cd ~/.config/nvim && git pull
-
-echo "Starting Neovim to update plugins..."
-nvim --headless "+Lazy! sync" +qa
-nvim --headless "+MasonUpdate" +qa
-nvim --headless "+TSUpdate" +qa
-
-echo "Neovim configuration updated!"
 ```
 
-## 📖 Learning Resources
+## 📊 Performance
 
-- **Neovim Documentation**: `:help` or `https://neovim.io/doc/`
-- **Lua Guide**: `:help lua-guide`
-- **Plugin Documentation**: Use `:help <plugin-name>` for specific plugins
-- **Key Bindings**: See `KEYBINDINGS.md` for detailed shortcut explanations
+| Metric | This Config | VSCode |
+|--------|-------------|--------|
+| Startup | ~76ms ⚡ | 1-3 seconds |
+| Memory | 150-200MB | 400-800MB |
+| Plugins | 55 (32 lazy-loaded) | N/A |
 
-## ⚡ Quick Reference
+## 📚 Documentation
 
-### Performance Metrics
-```
-📊 Startup Time: ~76ms (Excellent!)
-🚀 Plugins Loaded: 23 instant, 32 on-demand
-💾 Memory Usage: ~150-200MB (3-5x less than VSCode)
-⚡ Speed Rating: A+ (Instant category)
-```
-
-### AI Completion (Must Read!)
-```vim
-:Copilot auth         " First-time setup (authenticate)
-<Ctrl-g>             " Accept AI suggestion (INSERT MODE)
-<Ctrl-;>             " Next AI suggestion
-<M-CR>               " Open Copilot panel for alternatives
-<Ctrl-x>             " Clear AI suggestion
-```
-📚 **Full guide**: See `COPILOT_SETUP.md`
-
-### Essential Keybindings
-```vim
-<leader>ff           " Find files
-<leader>fs           " Search in files
-<leader>ee           " Toggle file explorer
-<leader>gg           " Open Git UI (Neogit)
-<leader>xx           " Show diagnostics
-<Ctrl-g>            " Accept AI completion
-<Ctrl-Space>        " Trigger LSP completion
-```
-
-### First Steps After Install
-1. `:Copilot auth` - Setup AI completion (required)
-2. `:checkhealth` - Check everything is working
-3. `:Mason` - Verify LSP servers installed
-4. `:Lazy` - See installed plugins
-5. `nvim --startuptime startup.log` - Verify performance (~76ms)
-6. Install formatters (optional) - See `SETUP_FORMATTERS.md`
-7. Read `COPILOT_SETUP.md` - Learn AI completion
-
-## 📊 Performance Comparison
-
-| Editor/Config | Startup Time | Memory Usage | Plugin Count |
-|---------------|--------------|--------------|--------------|
-| **This Config** | **~76ms** ⚡ | **150-200MB** | **55 plugins** |
-| Basic Vim | 10-20ms | 20-50MB | 0 plugins |
-| Average Neovim | 150-300ms | 200-400MB | 20-30 plugins |
-| Heavy Neovim | 500-1000ms | 400-600MB | 80+ plugins |
-| VSCode | 1000-3000ms | 400-800MB | N/A |
-
-**Why This Config is Fast:**
-- ✅ Smart lazy loading (32 plugins load on-demand)
-- ✅ Optimized plugin selection (no bloat)
-- ✅ Efficient configuration (~3ms overhead)
-- ✅ Disabled unnecessary builtins
-- ✅ Event-based plugin loading
-
-## 📚 Documentation Files
-
-### Setup & Configuration
-- **FIRST_LAUNCH.md** - 🚀 Complete first-time setup guide
-- **COPILOT_SETUP.md** - ⭐ AI completion quick start
-- **SETUP_FORMATTERS.md** - 🔧 Install formatters (optional)
-- **COLORSCHEME.md** - 🎨 Science-based colorscheme guide
-
-### Usage & Reference
-- **AI_COMPLETION_GUIDE.md** - 🤖 Detailed AI usage guide
-- **KEYBINDINGS.md** - ⌨️ Complete keybinding reference
-- **CLAUDE.md** - 📖 Developer guide & architecture
+- **KEYBINDINGS.md** - Complete keybinding reference
+- **IMPLEMENTED_FEATURES.md** - All features and plugins
+- **COPILOT_SETUP.md** - AI completion guide
+- **AI_COMPLETION_GUIDE.md** - Advanced AI usage
+- **SETUP_FORMATTERS.md** - Install formatters (optional)
+- **COLORSCHEME.md** - Science-based theme details
+- **AGENTS.md** - Developer/AI assistant guide
 
 ## 🤝 Contributing
 
