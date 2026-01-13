@@ -1,8 +1,10 @@
 -- ============================================================================
--- Modern LSP Configuration for Neovim 0.12.x
+-- Core LSP Configuration
+-- Mason setup, LSP keymaps, inlay hints, and error handling
 -- ============================================================================
 
 return {
+	-- Mason - LSP/formatter/linter manager
 	{
 		"williamboman/mason.nvim",
 		dependencies = {
@@ -24,7 +26,7 @@ return {
 					-- Formatters & Linters
 					"prettier", -- Multi-language formatter
 					"stylua", -- Lua formatter
-					"eslint_d", -- JS/TS linter (FIX: ensures this is installed)
+					"eslint_d", -- JS/TS linter
 					"shfmt", -- Shell formatter
 					"ruff", -- Python linter/formatter
 					"isort", -- Python import sorter
@@ -36,190 +38,8 @@ return {
 			})
 		end,
 	},
-	{
-		"williamboman/mason-lspconfig.nvim",
-		dependencies = {
-			"williamboman/mason.nvim",
-			"hrsh7th/cmp-nvim-lsp",
-		},
-		config = function()
-			local cmp_nvim_lsp = require("cmp_nvim_lsp")
 
-			-- Get capabilities from nvim-cmp for all servers
-			local capabilities = cmp_nvim_lsp.default_capabilities()
-			capabilities.textDocument.foldingRange = {
-				dynamicRegistration = false,
-				lineFoldingOnly = true,
-			}
-
-			-- Configure servers using Neovim 0.11+ native API BEFORE mason-lspconfig setup
-			-- This way mason-lspconfig will automatically enable them when installed
-
-			-- Lua Language Server
-			vim.lsp.config("lua_ls", {
-				capabilities = capabilities,
-				settings = {
-					Lua = {
-						diagnostics = {
-							globals = { "vim" },
-						},
-						completion = {
-							callSnippet = "Replace",
-						},
-					},
-				},
-				on_init = function(_, _)
-					-- Silent initialization for better UX
-				end,
-			})
-
-			-- TypeScript/JavaScript
-			vim.lsp.config("ts_ls", {
-				capabilities = capabilities,
-				on_init = function(_, _)
-					-- Silent initialization for better UX
-				end,
-				settings = {
-					typescript = {
-						inlayHints = {
-							includeInlayParameterNameHints = "literals",
-							includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-							includeInlayFunctionParameterTypeHints = false,
-							includeInlayVariableTypeHints = false,
-							includeInlayVariableTypeHintsWhenTypeMatchesName = false,
-							includeInlayPropertyDeclarationTypeHints = false,
-							includeInlayFunctionLikeReturnTypeHints = false,
-							includeInlayEnumMemberValueHints = false,
-						},
-					},
-					javascript = {
-						inlayHints = {
-							includeInlayParameterNameHints = "literals",
-							includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-							includeInlayFunctionParameterTypeHints = false,
-							includeInlayVariableTypeHints = false,
-							includeInlayVariableTypeHintsWhenTypeMatchesName = false,
-							includeInlayPropertyDeclarationTypeHints = false,
-							includeInlayFunctionLikeReturnTypeHints = false,
-							includeInlayEnumMemberValueHints = false,
-						},
-					},
-				},
-			})
-
-			-- HTML
-			vim.lsp.config("html", {
-				capabilities = capabilities,
-				on_init = function(_, _)
-					-- Silent initialization for better UX
-				end,
-			})
-
-			-- CSS
-			vim.lsp.config("cssls", {
-				capabilities = capabilities,
-				on_init = function(_, _)
-					-- Silent initialization for better UX
-				end,
-			})
-
-			-- JSON
-			vim.lsp.config("jsonls", {
-				capabilities = capabilities,
-				on_init = function(_, _)
-					-- Silent initialization for better UX
-				end,
-			})
-
-			-- YAML
-			vim.lsp.config("yamlls", {
-				capabilities = capabilities,
-				on_init = function(_, _)
-					-- Silent initialization for better UX
-				end,
-			})
-
-			-- Python
-			vim.lsp.config("pyright", {
-				capabilities = capabilities,
-				on_init = function(_, _)
-					-- Silent initialization for better UX
-				end,
-			})
-
-			-- Go
-			vim.lsp.config("gopls", {
-				capabilities = capabilities,
-				on_init = function(_, _)
-					-- Silent initialization for better UX
-				end,
-			})
-
-			-- C/C++
-			vim.lsp.config("clangd", {
-				capabilities = capabilities,
-				on_init = function(_, _)
-					-- Silent initialization for better UX
-				end,
-			})
-
-			-- Rust
-			vim.lsp.config("rust_analyzer", {
-				capabilities = capabilities,
-				on_init = function(_, _)
-					-- Silent initialization for better UX
-				end,
-			})
-
-			-- Tailwind CSS
-			vim.lsp.config("tailwindcss", {
-				capabilities = capabilities,
-				on_init = function(_, _)
-					-- Silent initialization for better UX
-				end,
-			})
-
-			-- Bash
-			vim.lsp.config("bashls", {
-				capabilities = capabilities,
-				on_init = function(_, _)
-					-- Silent initialization for better UX
-				end,
-			})
-
-			-- Emmet
-			vim.lsp.config("emmet_ls", {
-				capabilities = capabilities,
-				on_init = function(_, _)
-					-- Silent initialization for better UX
-				end,
-			})
-
-			-- Now setup mason-lspconfig - it will automatically enable configured servers
-			require("mason-lspconfig").setup({
-				-- List of servers to automatically install
-				ensure_installed = {
-					-- Required servers
-					"lua_ls",
-					"ts_ls",
-					"html",
-					"cssls",
-					"jsonls",
-					"yamlls",
-					-- Optional but recommended servers
-					"pyright",
-					"gopls",
-					"clangd",
-					"rust_analyzer",
-					"tailwindcss",
-					"bashls",
-					"emmet_ls",
-				},
-				-- Automatically install servers that are configured but not installed
-				automatic_installation = true,
-			})
-		end,
-	},
+	-- LSP Configuration
 	{
 		"neovim/nvim-lspconfig",
 		dependencies = {
@@ -250,11 +70,12 @@ return {
 					local opts = { buffer = ev.buf, silent = true }
 					local client = vim.lsp.get_client_by_id(ev.data.client_id)
 
-					-- Enable inlay hints if supported (using new API)
+					-- Enable inlay hints if supported
 					if client and client:supports_method("textDocument/inlayHint") then
 						vim.lsp.inlay_hint.enable(true, { bufnr = ev.buf })
 					end
 
+					-- LSP Navigation
 					opts.desc = "Show LSP references"
 					keymap.set("n", "gR", "<cmd>Telescope lsp_references<CR>", opts)
 
@@ -270,21 +91,22 @@ return {
 					opts.desc = "Show LSP type definitions"
 					keymap.set("n", "gy", "<cmd>Telescope lsp_type_definitions<CR>", opts)
 
+					-- LSP Actions
 					opts.desc = "See available code actions"
 					keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts)
 
 					opts.desc = "Smart rename"
 					keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
 
-					-- Note: Diagnostic keymaps are in lua/plugins/enhanced-diagnostics.lua
-
+					-- LSP Documentation
 					opts.desc = "Show documentation for what is under cursor"
 					keymap.set("n", "K", vim.lsp.buf.hover, opts)
 
-					opts.desc = "Show signature help"
-					keymap.set("i", "<C-s>", vim.lsp.buf.signature_help, opts)
+					-- Note: Signature help is provided by lsp_signature.nvim plugin
+					-- Note: Diagnostic keymaps are in lua/plugins/enhanced-diagnostics.lua
 
-					-- Inlay hints cycle: none -> minimal -> moderate -> complete
+					-- Inlay Hints Toggle
+					-- Cycles through: none -> minimal -> moderate -> complete
 					local inlay_hint_levels = {
 						{ name = "none", params = "none", types = false, vars = false, returns = false, enums = false },
 						{

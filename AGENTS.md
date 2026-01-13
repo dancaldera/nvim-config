@@ -4,238 +4,184 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Recent Changes (2025)
 
-### Performance Optimizations
-- **Removed auto-updates.lua**: Eliminated hourly auto-update checks for better performance
-- **Removed backup.lua**: Simplified config management (use git for backups instead)
-- **Disabled auto health check**: Health checks now manual-only via `<leader>hc` or `:checkhealth`
+### January 2025 - Configuration Optimization
+- **File organization**: Split large plugin files for better maintainability
+  - `lsp.lua` (383 lines) → `lsp-core.lua` + `lsp-servers.lua`
+  - `dev-tools.lua` (388 lines) → `dev-tools.lua` + `productivity.lua`
+  - `ui-enhancements.lua` (427 lines) → 4 focused UI files
+- **Removed redundancies**: Eliminated duplicate LSP signature help keybinding
+- **Fixed namespace conflicts**: Git toggles moved from `<leader>t` to `<leader>g`
+  - `<leader>gb` - Toggle git blame (was `<leader>tb`)
+  - `<leader>gd` - Toggle deleted lines (was `<leader>td`)
 
-### Bug Fixes
-- **Fixed duplicate Trouble.nvim**: Removed duplicate configuration from dev-tools.lua
-- **Fixed bufferline bug**: Corrected undefined function call in session restoration
-- **Consolidated diagnostics**: Removed duplicate diagnostic configuration from lsp.lua
+### Performance & UX Improvements
+- Removed auto-update checks and backup plugins for better performance
+- Silent LSP initialization (no verbose startup notifications)
+- Manual-only health checks via `<leader>hc` or `:checkhealth`
 
-### Keybinding Improvements
-- **Fixed conflicts**:
-  - Changed "delete without yank" from `<leader>D` to `<leader>dd`
-  - Removed Noice scroll bindings to avoid conflicts
-- **Added quality-of-life bindings**:
-  - `<leader>y/Y/P` - System clipboard operations
-  - `<M-h/j/k/l>` - Better window resizing with Alt/Option keys
-  - `<C-s>` (insert mode) - LSP signature help
-- **Reorganized namespaces**:
-  - `<leader>t` - Toggle/Terminal (note: overloaded namespace)
-  - Clearer separation of concerns
-
-### Modern Plugin Additions
-- **flash.nvim**: Modern motion/navigation (replaces vim-sneak style plugins)
+### Modern Plugins
+- **flash.nvim**: Modern motion/navigation
 - **aerial.nvim**: Code outline sidebar (`<leader>a`)
-- **lsp_signature.nvim**: Function signature help as you type
-- **actions-preview.nvim**: Better code action preview with diff
-- **fidget.nvim**: LSP progress indicator
-- **refactoring.nvim**: Extract function, inline variable, etc. (`<leader>r` namespace)
-- **mini.ai**: Enhanced text objects for better code selection
+- **lsp_signature.nvim**: Auto-trigger function signature help
+- **actions-preview.nvim**: Code action preview with diff
+- **refactoring.nvim**: Extract function, inline variable (`<leader>r`)
+- **GitHub Copilot**: AI-powered completions (replaced Codeium)
 
-### Plugin Migrations
-- **GitHub Copilot**: Migrated from Codeium to GitHub Copilot for AI-powered completions
-
-### UX Improvements
-- **Silent LSP initialization**: Removed verbose LSP startup notifications
-- **Better diagnostics**: Enhanced configuration in enhanced-diagnostics.lua
-
-### Colorscheme Changes (2025)
-- **Removed Monokai Pro**: Replaced plugin-based theme with custom implementation
-- **Custom Gruvbox Dark**: Science-based colorscheme optimized for reduced eye strain
-  - Warm, eye-comfort optimized palette (default)
-  - Located in `lua/colors/gruvbox-custom.lua`
-- **Easy Customization**: Theme has single color table for easy modification
+### Colorscheme
+- **Custom Gruvbox Dark**: Science-based theme optimized for reduced eye strain
+- Located in `lua/colors/gruvbox-custom.lua`
 
 ## Development Commands
 
 ### Plugin Management
-- `:Lazy` - Open lazy.nvim plugin manager interface
+- `:Lazy` - Plugin manager interface
 - `:Lazy update` - Update all plugins
-- `:Lazy sync` - Clean unused plugins and update existing ones
-- `:Lazy profile` - Profile plugin loading times
+- `:Lazy sync` - Clean and update
+- `:Lazy profile` - Profile loading times
 
-### LSP and Language Servers
-- `:Mason` - Open Mason interface to manage LSP servers, formatters, and linters
-- `:MasonUpdate` - Update all installed tools
-- `:MasonInstall <tool>` - Install specific language server or tool
-- `:LspInfo` - Show LSP server status for current buffer
+### LSP & Language Servers
+- `:Mason` - Manage LSP servers/formatters/linters
+- `:LspInfo` - Show LSP status
 - `:LspRestart` - Restart LSP servers
 
-### Treesitter (Syntax Highlighting)
-- `:TSUpdate` - Update all Treesitter parsers
-- `:TSUpdate <language>` - Update specific language parser
-- `:TSInstall <language>` - Install new language parser
+### Treesitter
+- `:TSUpdate` - Update all parsers
+- `:TSInstall <language>` - Install parser
 
 ### Code Formatting
-- Files are automatically formatted on save using conform.nvim
-- Manual formatting: `<leader>mp` in normal or visual mode
-- Supported formatters: prettier (JS/TS/web), stylua (Lua), black/isort (Python), gofmt/goimports (Go), rustfmt (Rust), clang-format (C/C++)
-
-### Diagnostics and Health
-- `:checkhealth` - Run Neovim health checks
-- `:checkhealth lazy` - Check plugin manager health
-- `:checkhealth lsp` - Check LSP configuration health
+- Auto-format on save via conform.nvim
+- Manual: `<leader>mp` in normal/visual mode
+- Supported: prettier, stylua, black, gofmt, rustfmt, clang-format
 
 ## Architecture Overview
 
 ### Configuration Structure
-This is a modern Neovim configuration using lazy.nvim as the plugin manager, organized as follows:
-
-- **init.lua**: Entry point, sets leader key and loads core modules
-- **lua/config/**: Core configuration modules
-  - `lazy.lua`: Plugin manager setup with performance optimizations
-  - `options.lua`: Neovim options and settings (tabs, search, appearance)
-  - `keymaps.lua`: General key mappings for window/buffer/tab management
-  - `compatibility.lua`: Version compatibility checks (requires Neovim 0.9+)
-- **lua/colors/**: Custom colorscheme implementations
-  - `gruvbox-custom.lua`: Science-based custom Gruvbox colorscheme
-- **lua/plugins/**: Individual plugin configurations (auto-loaded by lazy.nvim)
+```
+.
+├── init.lua                    # Entry point
+├── lua/
+│   ├── config/                 # Core configuration
+│   │   ├── lazy.lua           # Plugin manager setup
+│   │   ├── options.lua        # Neovim settings
+│   │   ├── keymaps.lua        # General keybindings
+│   │   ├── autocmds.lua       # Auto commands
+│   │   └── compatibility.lua  # Version checks
+│   ├── colors/
+│   │   └── gruvbox-custom.lua # Custom colorscheme
+│   └── plugins/               # Plugin configurations
+│       ├── lsp-core.lua       # LSP setup & keymaps
+│       ├── lsp-servers.lua    # Server configurations
+│       ├── productivity.lua   # Projects, sessions, markdown
+│       ├── ui-statusline.lua  # Lualine
+│       ├── ui-notifications.lua # Notify, noice, dressing
+│       ├── ui-indicators.lua  # Indent, illuminate, folding
+│       ├── ui-bufferline.lua  # Cokeline, buffer management
+│       └── ...                # Other plugin configs
+```
 
 ### Plugin System
-Uses lazy.nvim with:
-- Event-based loading for performance
-- Automatic plugin installation
-- Plugin update checking enabled
-- Disabled builtin plugins for performance (gzip, netrw, etc.)
+- **lazy.nvim**: Event-based loading for performance
+- **Auto-installation**: Plugins install automatically
+- **Disabled builtins**: gzip, netrw, etc. for performance
 
-### Language Support Architecture
-Three-layer approach for language support:
+### Language Support (3-Layer)
 
-1. **LSP Layer** (`lsp.lua`):
-   - Mason for automatic LSP server management
-   - Pre-configured servers: ts_ls, lua_ls, pyright, gopls, clangd, rust_analyzer, etc.
-   - Unified keybindings across all languages
-   - Telescope integration for definitions, references, diagnostics
+1. **LSP Layer** (`lsp-core.lua`, `lsp-servers.lua`):
+   - Mason for automatic server management
+   - Servers: ts_ls, lua_ls, pyright, gopls, clangd, rust_analyzer, etc.
+   - Unified keybindings across languages
+   - Telescope integration
 
 2. **Completion Layer** (`autocompletion.lua`):
-   - **AI Completion**: GitHub Copilot for intelligent code suggestions (inline suggestions)
-   - **LSP Completion**: nvim-cmp with multiple sources (LSP, buffer, path, snippets)
-   - LuaSnip for snippet expansion
-   - VS Code-style pictograms via lspkind
-   - Dual completion system: AI suggestions + traditional completions work together
-   - Function signature help via lsp_signature.nvim
+   - **AI**: GitHub Copilot inline suggestions
+   - **LSP**: nvim-cmp with LSP/buffer/path/snippets
+   - **Snippets**: LuaSnip with VS Code snippets
+   - **Signature**: lsp_signature.nvim auto-trigger
 
 3. **Formatting Layer** (`formatting.lua`):
-   - Conform.nvim for code formatting
-   - Language-specific formatters with fallback to LSP
-   - Format-on-save enabled by default
+   - Conform.nvim with language-specific formatters
+   - Format-on-save enabled
 
 ### Key Plugin Responsibilities
 
-#### Core Functionality
-- **nvim-tree**: File explorer with git integration
-- **Telescope**: Fuzzy finder for files, text, LSP symbols, diagnostics (enhanced with better UI)
-- **Treesitter**: Syntax highlighting, text objects, auto-tagging
-- **Custom Gruvbox**: Science-based colorscheme optimized for reduced eye strain (see `docs/COLORSCHEME.md`)
-
-#### Git Integration
-- **Gitsigns**: Git integration with hunk management, staging, and inline blame
-
-#### Editor Enhancements
-- **nvim-ufo**: Superior code folding with Treesitter support
-- **nvim-surround**: Easy manipulation of surrounding characters
-- **nvim-autopairs**: Intelligent auto-pairing of brackets
-- **Comment.nvim**: Smart commenting with language detection
-- **vim-illuminate**: Highlight word under cursor across buffer
-
-#### UI/UX
-- **noice.nvim**: Better UI for messages, cmdline, and popupmenu
-- **nvim-notify**: Notification manager with animations
-- **dressing.nvim**: Better UI for inputs and selects
-- **neoscroll.nvim**: Smooth scrolling animations
-- **dashboard-nvim**: Beautiful start screen
-- **nvim-cokeline**: Enhanced buffer line with diagnostics
-- **which-key**: Keybinding discovery and documentation
-- **lualine**: Customizable statusline
-- **fidget.nvim**: LSP progress indicator with elegant notifications
-
-#### Development Tools
-- **Trouble**: Advanced diagnostics and LSP symbol navigation
-- **todo-comments**: Highlight and search TODO comments
-- **snacks.nvim terminal**: Integrated terminal with float/split layouts
-- **project.nvim**: Project management and switching
-- **nvim-navic**: Breadcrumb-style code context
-- **markdown-preview**: Live markdown preview
-- **aerial.nvim**: Code outline sidebar showing functions, classes, etc.
-- **lsp_signature.nvim**: Function signature help displayed as you type
-- **actions-preview.nvim**: Code action preview with diff before applying
-- **refactoring.nvim**: Advanced refactoring operations (extract, inline, etc.)
-
-#### Search & Navigation
-- **flash.nvim**: Modern motion plugin for quick jumps anywhere on screen
-- **nvim-spectre**: Global search and replace functionality
-- **nvim-bqf**: Enhanced quickfix window
-- **persistence.nvim**: Session management and restoration
-- **indent-blankline**: Visual indentation guides
-- **nvim-colorizer**: Highlight color codes in files
-- **mini.ai**: Enhanced text objects for better code selection
+**Core**: nvim-tree (file explorer), Telescope (fuzzy finder), Treesitter (syntax)
+**Git**: Gitsigns (hunks, staging, blame)
+**Editing**: nvim-ufo (folding), nvim-surround, mini.pairs, Comment.nvim
+**UI**: lualine, noice, notify, dressing, cokeline, which-key
+**Dev Tools**: Trouble, todo-comments, snacks (terminal/dashboard), aerial, refactoring
+**Navigation**: flash, nvim-spectre, persistence, mini.ai
 
 ## Working with This Configuration
 
-### Adding New Language Support
-1. Add LSP server to `ensure_installed` in `lua/plugins/lsp.lua`
-2. Add Treesitter parser to `ensure_installed` in `lua/plugins/treesitter.lua`
-3. Add formatter configuration in `lua/plugins/formatting.lua`
-4. Server will be auto-installed via Mason on next startup
+### Adding Language Support
+1. Add server to `ensure_installed` in `lua/plugins/lsp-servers.lua`
+2. Add parser to `ensure_installed` in `lua/plugins/treesitter.lua`
+3. Add formatter in `lua/plugins/formatting.lua`
+4. Auto-installed via Mason on startup
 
 ### Modifying Keybindings
-- General keymaps: `lua/config/keymaps.lua`
-- Plugin-specific keymaps: within respective plugin files
-- LSP keymaps: auto-configured in `lua/plugins/lsp.lua` via LspAttach autocmd
+- **General**: `lua/config/keymaps.lua`
+- **LSP**: `lua/plugins/lsp-core.lua` (LspAttach autocmd)
+- **Plugin-specific**: Within respective plugin files
 
-### Performance Considerations
-- Plugins use event-based loading (BufReadPre, BufNewFile, InsertEnter, etc.)
-- Builtin plugins are disabled in lazy.nvim config
-- Treesitter folding is configured but starts fully expanded (foldlevel=99)
+### Common Workflows
 
-### Version Compatibility
-- Requires Neovim 0.9+ (checked in compatibility.lua)
-- Optimized for Neovim 0.10+ features
-- Uses modern plugin versions and configuration patterns
+**File Navigation**
+`<leader>ff` → `<leader>fs` → `<leader>fp`
 
-### Common Workflow Patterns
-- **File navigation**: `<leader>ff` (find files) → `<leader>fs` (search text) → `<leader>fp` (find projects)
-- **Code exploration**:
-  - Basic: `gd` (definition) → `K` (hover docs) → `<C-s>` (signature help in insert mode) → `<leader>ca` (code actions with preview)
-  - Advanced: `<leader>a` (code outline) → `s` (flash jump) → `<leader>ti` (toggle inlay hints)
-- **Git workflow** (Gitsigns):
-  - Hunks: `]c` (next hunk) → `<leader>hp` (preview) → `<leader>hs` (stage)
-  - Blame: `<leader>tb` (toggle inline blame) → `<leader>hb` (blame line)
-  - Diff: `<leader>hd` (diff this) → `<leader>hD` (diff cached)
-- **Window management**:
-  - Navigation: `<leader>sv` (vertical split) → `<C-h/j/k/l>` (navigate) → `<leader>se` (equal size)
-  - Resizing: `<M-h/j/k/l>` (resize with Alt/Option keys)
-- **Diagnostics**: `<leader>xx` (Trouble diagnostics) → `]d`/`[d` (navigate) → `<leader>ca` (fix)
-- **Refactoring**: Select code → `<leader>re` (extract function) → `<leader>rv` (extract variable) → `<leader>ri` (inline)
-- **Search and replace**: `<leader>sr` (global search/replace) or `<leader>fs` + `<C-q>` (quickfix)
-- **Session management**: `<leader>qs` (restore session) → `<leader>qd` (stop saving)
-- **Terminal**: `<C-\>` (toggle) → `<leader>tf` (float) → `<leader>th` (horizontal) → `<leader>tv` (vertical)
-- **TODO management**: `]t` (next todo) → `[t` (prev todo) → `<leader>ft` (find todos)
-- **Formatting**: `<leader>jf` (format buffer) → `<leader>jl` (toggle auto-linting)
-- **File explorer**: `<leader>e` (toggle) → `<C-e>` (toggle focus)
-- **Folding**: `zR` (open all) → `zM` (close all) → `zr/zm` (open/close by level)
-- **Clipboard**: `<leader>y` (yank to system) → `<leader>P` (paste from system) → `<leader>dd` (delete without yank)
+**Code Exploration**
+`gd` (definition) → `K` (hover) → `<leader>ca` (code actions) → `<leader>a` (outline)
 
-### Keybinding Namespace Notes
-- **`<leader>t` namespace** is currently overloaded:
-  - `<leader>tb/td` - Git toggle commands (blame, deleted)
-  - `<leader>ti` - LSP inlay hints toggle
-  - `<leader>tf/th/tv/tc/tt` - Terminal commands
-  - This is a known limitation; use `:WhichKey <leader>t` to see all options
+**Git** (Updated keybindings)
+- Hunks: `]c`/`[c` (navigate) → `<leader>hp` (preview) → `<leader>hs` (stage)
+- Toggles: `<leader>gb` (blame) → `<leader>gd` (deleted lines)
+- Diff: `<leader>hd` (diff this) → `<leader>hD` (diff cached)
+
+**Window Management**
+`<leader>sv` (split) → `<C-h/j/k/l>` (navigate) → `<M-h/j/k/l>` (resize)
+
+**Diagnostics**
+`<leader>xx` (Trouble) → `]d`/`[d` (navigate) → `<leader>ca` (fix)
+
+**Refactoring**
+Select → `<leader>re` (extract function) → `<leader>rv` (variable) → `<leader>ri` (inline)
+
+**Terminal**
+`<C-\>` (toggle) → `<leader>tt` (toggle) → `<leader>tf/th/tv` (float/horizontal/vertical)
+
+**Sessions**
+`<leader>qs` (restore) → `<leader>qd` (stop saving)
+
+**Clipboard**
+`<leader>y` (yank) → `<leader>P` (paste) → `<leader>dd` (delete without yank)
+
+### Keybinding Namespaces
+
+- `<leader>a` - Aerial (code outline)
+- `<leader>b` - Buffer operations
+- `<leader>c` - Code actions
+- `<leader>d` - Diagnostics
+- `<leader>e` - File explorer
+- `<leader>f` - Find/Search
+- `<leader>g` - **Git toggles** (blame, deleted)
+- `<leader>h` - Git hunks
+- `<leader>j` - Format/Lint
+- `<leader>p` - Python
+- `<leader>q` - Session
+- `<leader>r` - Rename/Refactor/Restart
+- `<leader>s` - Split/Search
+- `<leader>t` - **Terminal/Toggle** (terminal commands)
+- `<leader>x` - Trouble/Diagnostics
 
 ### Error Recovery
-- LSP issues: `:LspRestart` or check `:Mason` for server installation
-- Plugin issues: `:Lazy sync` to clean and reinstall
-- Treesitter issues: `:TSUpdate` to update parsers
-- Full reset: Remove `~/.local/share/nvim` and restart
+- **LSP**: `:LspRestart` or check `:Mason`
+- **Plugins**: `:Lazy sync`
+- **Treesitter**: `:TSUpdate`
+- **Full reset**: Remove `~/.local/share/nvim` and restart
 
-## Documentation Guidelines
+## Documentation Structure
 
-### Documentation Files
-- All documentation files should be created in the `docs/` folder
-- Documentation filenames should be in UPPERCASE
-- Use descriptive names like `KEYBINDINGS.md`, `SETUP_GUIDE.md`, etc.
-- Documentation files are managed in the `docs/` directory for better organization
+All documentation in `docs/` directory:
+- `KEYBINDINGS.md` - Complete keybinding reference
+- `SETUP_FORMATTERS.md` - Formatter installation guide
+- Use UPPERCASE for doc filenames

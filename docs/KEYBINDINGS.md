@@ -167,8 +167,8 @@ Leader key: `<Space>`
 | `<leader>hb` | Normal | Blame line |
 | `<leader>hd` | Normal | Diff this |
 | `<leader>hD` | Normal | Diff this (cached) |
-| `<leader>tb` | Normal | Toggle inline line blame |
-| `<leader>td` | Normal | Toggle deleted lines |
+| `<leader>gb` | Normal | Toggle inline line blame |
+| `<leader>gd` | Normal | Toggle deleted lines |
 
 ---
 
