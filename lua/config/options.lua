@@ -95,11 +95,11 @@ opt.spell = false
 opt.spelllang = { "en_us" }
 
 -- Concealing
-opt.conceallevel = 0 -- show all characters by default (toggle render with <leader>tm)
+opt.conceallevel = 0 -- show all characters by default (toggle render with <leader>jm)
 opt.concealcursor = ""
 
 -- Formatting
 opt.formatoptions = "jcroqlnt"
 
 -- Session options
-opt.sessionoptions = { "buffers", "curdir", "tabpages", "winsize", "help", "globals", "skiprtp", "folds" }
+opt.sessionoptions = { "buffers", "curdir", "winsize", "help", "globals", "skiprtp", "folds" }

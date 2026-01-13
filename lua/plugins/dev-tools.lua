@@ -380,7 +380,7 @@ return {
 			})
 		end,
 		keys = {
-			{ "<leader>tm", "<cmd>RenderMarkdown toggle<cr>", desc = "Toggle markdown render" },
+			{ "<leader>jm", "<cmd>RenderMarkdown toggle<cr>", desc = "Toggle markdown render" },
 		},
 	},
 

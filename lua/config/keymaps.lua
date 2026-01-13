@@ -19,13 +19,6 @@ keymap.set("n", "<leader>sh", "<C-w>s", { desc = "Split window horizontally" })
 keymap.set("n", "<leader>se", "<C-w>=", { desc = "Make splits equal size" })
 keymap.set("n", "<leader>sx", "<cmd>close<CR>", { desc = "Close current split" })
 
--- Tab management (uppercase T to avoid conflict with toggles)
-keymap.set("n", "<leader>To", "<cmd>tabnew<CR>", { desc = "Open new tab" })
-keymap.set("n", "<leader>Tx", "<cmd>tabclose<CR>", { desc = "Close current tab" })
-keymap.set("n", "<leader>Tn", "<cmd>tabn<CR>", { desc = "Go to next tab" })
-keymap.set("n", "<leader>Tp", "<cmd>tabp<CR>", { desc = "Go to previous tab" })
-keymap.set("n", "<leader>Tf", "<cmd>tabnew %<CR>", { desc = "Open current buffer in new tab" })
-
 -- Better window navigation
 keymap.set("n", "<C-h>", "<C-w>h", { desc = "Navigate to left window" })
 keymap.set("n", "<C-j>", "<C-w>j", { desc = "Navigate to bottom window" })
