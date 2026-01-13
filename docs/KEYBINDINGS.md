@@ -55,21 +55,9 @@ Leader key: `<Space>`
 
 ---
 
-## Tab Management
-
-| Key | Mode | Description |
-|-----|------|-------------|
-| `<leader>To` | Normal | Open new tab |
-| `<leader>Tx` | Normal | Close current tab |
-| `<leader>Tn` | Normal | Go to next tab |
-| `<leader>Tp` | Normal | Go to previous tab |
-| `<leader>Tf` | Normal | Open current buffer in new tab |
-
-**Note:** Tab commands use uppercase T to avoid conflicts with toggle/terminal commands.
-
----
-
 ## Buffer Management
+
+**Note:** This configuration uses **nvim-cokeline** for buffer management.
 
 | Key | Mode | Description |
 |-----|------|-------------|
@@ -84,6 +72,7 @@ Leader key: `<Space>`
 | Key | Mode | Description |
 |-----|------|-------------|
 | `<leader>e` | Normal | Toggle nvim-tree file explorer |
+| `<C-e>` | Normal | Toggle focus between file explorer and buffer |
 | `<leader>w` | Normal | Write/save file |
 | `<leader>q` | Normal | Quit window |
 | `<leader>Q` | Normal | Quit all windows |
@@ -121,7 +110,7 @@ Leader key: `<Space>`
 | `<leader>ca` | Normal/Visual | Code actions (with preview) |
 | `<leader>rn` | Normal | Rename symbol |
 | `<leader>rs` | Normal | Restart LSP |
-| `<leader>th` | Normal | Toggle inlay hints |
+| `<leader>ti` | Normal | Toggle/cycle inlay hints |
 | `<leader>a` | Normal | Toggle Aerial (code outline) |
 
 ---
@@ -162,6 +151,9 @@ Leader key: `<Space>`
 ## Git Operations
 
 ### Git Hunks (Gitsigns)
+
+**Note:** This configuration uses **Gitsigns** for git integration.
+
 | Key | Mode | Description |
 |-----|------|-------------|
 | `]c` | Normal | Next git hunk |
@@ -175,27 +167,8 @@ Leader key: `<Space>`
 | `<leader>hb` | Normal | Blame line |
 | `<leader>hd` | Normal | Diff this |
 | `<leader>hD` | Normal | Diff this (cached) |
-| `<leader>tb` | Normal | Toggle line blame |
-| `<leader>td` | Normal | Toggle deleted |
-
-### Advanced Git
-| Key | Mode | Description |
-|-----|------|-------------|
-| `<leader>gg` | Normal | Open Neogit |
-| `<leader>gc` | Normal | Open Neogit commit |
-| `<leader>gd` | Normal | Open DiffView |
-| `<leader>gh` | Normal | Open DiffView file history |
-
-### Git Conflicts
-| Key | Mode | Description |
-|-----|------|-------------|
-| `<leader>gco` | Normal | Choose ours (current changes) |
-| `<leader>gct` | Normal | Choose theirs (incoming changes) |
-| `<leader>gcb` | Normal | Choose both |
-| `<leader>gc0` | Normal | Choose none |
-| `<leader>gcn` | Normal | Next conflict |
-| `<leader>gcp` | Normal | Previous conflict |
-| `<leader>gcl` | Normal | List conflicts (quickfix) |
+| `<leader>tb` | Normal | Toggle inline line blame |
+| `<leader>td` | Normal | Toggle deleted lines |
 
 ---
 
@@ -282,10 +255,12 @@ Leader key: `<Space>`
 | `<leader>ql` | Normal | Restore last session |
 | `<leader>qd` | Normal | Stop session saving |
 
-### Formatting
+### Formatting & Linting
 | Key | Mode | Description |
 |-----|------|-------------|
-| `<leader>mp` | Normal/Visual | Format buffer or markdown preview for .md files |
+| `<leader>jf` | Normal/Visual | Format buffer (conform.nvim) |
+| `<leader>jl` | Normal | Toggle auto-linting |
+| `<leader>mp` | Normal/Visual | Format buffer (alias) |
 
 ### Health & Diagnostics
 | Key | Mode | Description |
@@ -305,11 +280,14 @@ Leader key: `<Space>`
 This configuration uses logical namespaces for leader keybindings:
 
 - `<leader>f` - **Find/Search** (Telescope)
-- `<leader>g` - **Git** operations
-- `<leader>h` - **Git Hunks** (Gitsigns)
+- `<leader>g` - **Git** operations (Gitsigns)
+- `<leader>h` - **Git Hunks** (Gitsigns staging/reset)
 - `<leader>s` - **Search/Splits** (Spectre, window splits)
-- `<leader>t` - **Toggle/Terminal**
-- `<leader>T` - **Tabs** (uppercase T)
+- `<leader>t` - **Toggle/Terminal** ⚠️ **OVERLOADED NAMESPACE**
+  - `tb/td` - Git toggles (blame, deleted)
+  - `ti` - LSP inlay hints toggle
+  - `tf/th/tv/tc/tt` - Terminal commands
+- `<leader>j` - **Just** (quick actions: format, lint)
 - `<leader>r` - **Refactoring/Rename**
 - `<leader>d` - **Diagnostics**
 - `<leader>x` - **Trouble** (diagnostics/quickfix)
@@ -318,6 +296,8 @@ This configuration uses logical namespaces for leader keybindings:
 - `<leader>m` - **Markdown/Format**
 - `<leader>a` - **Aerial** (code outline)
 - `<leader>y/Y/P` - **Clipboard** operations
+
+**Note:** The `<leader>t` namespace is currently overloaded with multiple purposes. Use `:WhichKey <leader>t` to see all available options.
 
 ---
 

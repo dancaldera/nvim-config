@@ -97,10 +97,11 @@ K          = Show documentation
 <leader>ca = Code actions            (Space + c + a)
 ```
 
-### Git
+### Git (Gitsigns)
 ```
-<leader>gg = Open Git UI             (Space + g + g)
 <leader>hp = Preview git hunk        (Space + h + p)
+<leader>hs = Stage git hunk          (Space + h + s)
+<leader>tb = Toggle inline blame     (Space + t + b)
 ```
 
 ## 📚 Learn More
@@ -153,37 +154,10 @@ Write a comment describing what you want, and let AI write the code:
 - `<leader>fs` - Search any text in your project
 - `<leader>ft` - Find all TODOs
 
-### 4. Git Integration
-- `<leader>gg` - Opens beautiful Git UI
-- `]c` / `[c` - Jump between git changes
+### 4. Git Integration (Gitsigns)
+- `]c` / `[c` - Jump between git changes (hunks)
 - `<leader>hp` - Preview changes before staging
-
-## 🎓 Learning Path
-
-### Day 1 (Today!)
-- [x] `:Copilot auth` - Setup AI
-- [x] Learn `<Ctrl-g>` - Accept AI suggestions
-- [x] Try `<leader>ff` - Find files
-- [x] Use `<leader>ee` - Open file explorer
-
-### Day 2
-- [ ] Read `COPILOT_SETUP.md`
-- [ ] Try `<Ctrl-;>` for alternative AI suggestions
-- [ ] Try `<M-CR>` to open Copilot panel
-- [ ] Explore `<leader>fs` for text search
-- [ ] Use `gd` to jump to definitions
-
-### Day 3
-- [ ] Read `AI_COMPLETION_GUIDE.md`
-- [ ] Try Git features (`<leader>gg`)
-- [ ] Use `<leader>ca` for code actions
-- [ ] Explore TODO comments (`]t` / `[t`)
-
-### Week 1
-- [ ] Read full `README.md`
-- [ ] Customize colorscheme if desired
-- [ ] Add your own keybindings
-- [ ] Install additional LSP servers
+- `<leader>hs` - Stage current hunk
 
 ## 🚀 You're Ready!
 

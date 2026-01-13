@@ -17,15 +17,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Keybinding Improvements
 - **Fixed conflicts**:
   - Changed "delete without yank" from `<leader>D` to `<leader>dd`
-  - Moved tab commands from `<leader>t` to `<leader>T` (uppercase)
   - Removed Noice scroll bindings to avoid conflicts
 - **Added quality-of-life bindings**:
   - `<leader>y/Y/P` - System clipboard operations
   - `<M-h/j/k/l>` - Better window resizing with Alt/Option keys
   - `<C-s>` (insert mode) - LSP signature help
 - **Reorganized namespaces**:
-  - `<leader>t` - Toggle/Terminal/Theme
-  - `<leader>T` - Tabs
+  - `<leader>t` - Toggle/Terminal (note: overloaded namespace)
   - Clearer separation of concerns
 
 ### Modern Plugin Additions
@@ -34,7 +32,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **lsp_signature.nvim**: Function signature help as you type
 - **actions-preview.nvim**: Better code action preview with diff
 - **fidget.nvim**: LSP progress indicator
-- **git-conflict.nvim**: Visual git conflict resolution
 - **refactoring.nvim**: Extract function, inline variable, etc. (`<leader>r` namespace)
 - **mini.ai**: Enhanced text objects for better code selection
 
@@ -47,14 +44,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Colorscheme Changes (2025)
 - **Removed Monokai Pro**: Replaced plugin-based theme with custom implementation
-- **Theme System**: Three scientifically-designed dark themes with instant switching
-  - **Gruvbox Dark** (`<leader>t1`): Warm, eye-comfort optimized (default)
-  - **Solarized Dark** (`<leader>t2`): Precision colors, mathematically-balanced contrast
-  - **Nord Dark** (`<leader>t3`): Arctic, bluish palette with clean design
-- **Persistent Preference**: Theme selection saved across Neovim sessions
-- **List Themes**: `<leader>tl` displays all available themes with descriptions
-- **Eye Strain Optimization**: All themes designed for reduced eye strain
-- **Easy Customization**: Each theme has single color table in `lua/colors/`
+- **Custom Gruvbox Dark**: Science-based colorscheme optimized for reduced eye strain
+  - Warm, eye-comfort optimized palette (default)
+  - Located in `lua/colors/gruvbox-custom.lua`
+- **Easy Customization**: Theme has single color table for easy modification
 
 ## Development Commands
 
@@ -139,10 +132,7 @@ Three-layer approach for language support:
 - **Custom Gruvbox**: Science-based colorscheme optimized for reduced eye strain (see `docs/COLORSCHEME.md`)
 
 #### Git Integration
-- **Gitsigns**: Git integration with hunk management
-- **Neogit**: Advanced Git UI with Telescope integration
-- **Diffview**: Side-by-side diff view for files and commits
-- **git-conflict.nvim**: Visual git conflict resolution with intuitive keybindings
+- **Gitsigns**: Git integration with hunk management, staging, and inline blame
 
 #### Editor Enhancements
 - **nvim-ufo**: Superior code folding with Treesitter support
@@ -157,7 +147,7 @@ Three-layer approach for language support:
 - **dressing.nvim**: Better UI for inputs and selects
 - **neoscroll.nvim**: Smooth scrolling animations
 - **dashboard-nvim**: Beautiful start screen
-- **bufferline.nvim**: Enhanced buffer line with diagnostics
+- **nvim-cokeline**: Enhanced buffer line with diagnostics
 - **which-key**: Keybinding discovery and documentation
 - **lualine**: Customizable statusline
 - **fidget.nvim**: LSP progress indicator with elegant notifications
@@ -210,23 +200,31 @@ Three-layer approach for language support:
 - **File navigation**: `<leader>ff` (find files) → `<leader>fs` (search text) → `<leader>fp` (find projects)
 - **Code exploration**:
   - Basic: `gd` (definition) → `K` (hover docs) → `<C-s>` (signature help in insert mode) → `<leader>ca` (code actions with preview)
-  - Advanced: `<leader>a` (code outline) → `s` (flash jump) → `<leader>th` (toggle inlay hints)
-- **Git workflow**:
+  - Advanced: `<leader>a` (code outline) → `s` (flash jump) → `<leader>ti` (toggle inlay hints)
+- **Git workflow** (Gitsigns):
   - Hunks: `]c` (next hunk) → `<leader>hp` (preview) → `<leader>hs` (stage)
-  - Advanced: `<leader>gg` (Neogit) → `<leader>gd` (DiffView) → `<leader>gh` (file history)
-  - Conflicts: `<leader>gcn` (next conflict) → `<leader>gco` (choose ours) → `<leader>gct` (choose theirs)
+  - Blame: `<leader>tb` (toggle inline blame) → `<leader>hb` (blame line)
+  - Diff: `<leader>hd` (diff this) → `<leader>hD` (diff cached)
 - **Window management**:
   - Navigation: `<leader>sv` (vertical split) → `<C-h/j/k/l>` (navigate) → `<leader>se` (equal size)
   - Resizing: `<M-h/j/k/l>` (resize with Alt/Option keys)
-- **Tab management**: `<leader>To` (new tab) → `<leader>Tn/Tp` (next/prev) → `<leader>Tx` (close)
 - **Diagnostics**: `<leader>xx` (Trouble diagnostics) → `]d`/`[d` (navigate) → `<leader>ca` (fix)
 - **Refactoring**: Select code → `<leader>re` (extract function) → `<leader>rv` (extract variable) → `<leader>ri` (inline)
 - **Search and replace**: `<leader>sr` (global search/replace) or `<leader>fs` + `<C-q>` (quickfix)
 - **Session management**: `<leader>qs` (restore session) → `<leader>qd` (stop saving)
 - **Terminal**: `<C-\>` (toggle) → `<leader>tf` (float) → `<leader>th` (horizontal) → `<leader>tv` (vertical)
 - **TODO management**: `]t` (next todo) → `[t` (prev todo) → `<leader>ft` (find todos)
+- **Formatting**: `<leader>jf` (format buffer) → `<leader>jl` (toggle auto-linting)
+- **File explorer**: `<leader>e` (toggle) → `<C-e>` (toggle focus)
 - **Folding**: `zR` (open all) → `zM` (close all) → `zr/zm` (open/close by level)
 - **Clipboard**: `<leader>y` (yank to system) → `<leader>P` (paste from system) → `<leader>dd` (delete without yank)
+
+### Keybinding Namespace Notes
+- **`<leader>t` namespace** is currently overloaded:
+  - `<leader>tb/td` - Git toggle commands (blame, deleted)
+  - `<leader>ti` - LSP inlay hints toggle
+  - `<leader>tf/th/tv/tc/tt` - Terminal commands
+  - This is a known limitation; use `:WhichKey <leader>t` to see all options
 
 ### Error Recovery
 - LSP issues: `:LspRestart` or check `:Mason` for server installation

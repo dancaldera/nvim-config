@@ -112,7 +112,8 @@ To verify formatters are working:
 1. **Open a file** of the language you want to test (e.g., `.js`, `.py`, `.lua`)
 2. **Make some changes** and mess up the formatting
 3. **Save the file** (`:w`) - it should auto-format
-4. **Or manually format** with `<Space>mp`
+4. **Or manually format** with `<leader>jf` (or `<leader>mp` alias)
+5. **Toggle auto-linting** with `<leader>jl` to enable/disable automatic linting
 
 If the file formats correctly, your formatter is installed and working!
 
