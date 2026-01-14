@@ -63,7 +63,7 @@ keymap.set("n", "<A->>", "<Plug>(cokeline-switch-next)", { desc = "Move buffer r
 keymap.set("n", "<leader>1", "<Plug>(cokeline-pick-focus)", { desc = "Pick buffer to focus", silent = true })
 
 -- Terminal mode keybindings
-keymap.set("t", "jk", "<C-\\><C-n>", { desc = "Exit terminal mode with jk" })
+keymap.set("t", "<C-n>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 keymap.set("t", "<C-h>", "<C-\\><C-n><C-w>h", { desc = "Navigate to left window from terminal" })
 keymap.set("t", "<C-j>", "<C-\\><C-n><C-w>j", { desc = "Navigate to bottom window from terminal" })
 keymap.set("t", "<C-k>", "<C-\\><C-n><C-w>k", { desc = "Navigate to top window from terminal" })

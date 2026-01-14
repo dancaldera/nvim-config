@@ -152,11 +152,19 @@ return {
 			end
 
 			-- Auto-close terminal on any exit (including non-zero codes)
+			-- But skip persistent terminals (marked with buffer-local flag)
 			vim.api.nvim_create_autocmd("TermClose", {
 				group = vim.api.nvim_create_augroup("snacks_terminal_autoclose", { clear = true }),
 				callback = function(event)
-					-- Only auto-close if it's a snacks terminal
 					local buf = event.buf
+
+					-- Check if terminal should persist
+					local persist = vim.b[buf].snacks_terminal_persist
+					if persist then
+						return -- Don't delete persistent terminals
+					end
+
+					-- Auto-close ephemeral terminals
 					if vim.bo[buf].filetype == "snacks_terminal" or vim.bo[buf].buftype == "terminal" then
 						vim.schedule(function()
 							if vim.api.nvim_buf_is_valid(buf) then
@@ -167,6 +175,48 @@ return {
 				end,
 			})
 		end,
+
+		-- ========================================================================
+		-- Terminal Instance Tracking for CLI Tools
+		-- ========================================================================
+		init = function()
+			-- Terminal instance tracking table
+			_G.cli_terminals = {}
+
+			-- Helper function to toggle named terminal with persistence
+			_G.toggle_cli_terminal = function(name, cmd, opts)
+				opts = opts or {}
+				opts.win = opts.win or { position = "float" }
+
+				-- Create unique ID for this terminal
+				local term_id = "cli_tool_" .. name
+
+				-- Check if terminal already exists and is valid
+				if _G.cli_terminals[term_id] then
+					local term = _G.cli_terminals[term_id]
+					if term.buf and vim.api.nvim_buf_is_valid(term.buf) then
+						-- Terminal exists, toggle its window
+						term:toggle()
+						return term
+					else
+						-- Buffer was deleted, clean up reference
+						_G.cli_terminals[term_id] = nil
+					end
+				end
+
+				-- Create new terminal
+				local term = require("snacks").terminal(cmd, opts)
+
+				-- Mark buffer as persistent
+				if term and term.buf then
+					vim.api.nvim_buf_set_var(term.buf, "snacks_terminal_persist", true)
+					_G.cli_terminals[term_id] = term
+				end
+
+				return term
+			end
+		end,
+
 		keys = {
 			-- Main toggle (count-aware: 1<leader>tt, 2<leader>tt, etc.)
 			{
@@ -251,41 +301,78 @@ return {
 				end,
 				desc = "Lazygit",
 			},
-			-- AI & Tools Openers
+			-- AI & Tools Openers (Persistent Toggles)
 			{
 				"<leader>lc",
 				function()
-					require("snacks").terminal("claude")
+					toggle_cli_terminal("claude", "claude")
 				end,
-				desc = "Open Claude",
+				desc = "Toggle Claude",
 			},
 			{
 				"<leader>lG",
 				function()
-					require("snacks").terminal("gemini")
+					toggle_cli_terminal("gemini", "gemini")
 				end,
-				desc = "Open Gemini",
+				desc = "Toggle Gemini",
 			},
 			{
 				"<leader>lx",
 				function()
-					require("snacks").terminal("codex")
+					toggle_cli_terminal("codex", "codex")
 				end,
-				desc = "Open Codex",
+				desc = "Toggle Codex",
 			},
 			{
 				"<leader>lo",
 				function()
-					require("snacks").terminal("opencode")
+					toggle_cli_terminal("opencode", "opencode")
 				end,
-				desc = "Open Opencode",
+				desc = "Toggle Opencode",
 			},
 			{
 				"<leader>la",
 				function()
-					require("snacks").terminal("copilot")
+					toggle_cli_terminal("copilot", "copilot")
 				end,
-				desc = "Open Copilot CLI",
+				desc = "Toggle Copilot CLI",
+			},
+			-- Terminal Management
+			{
+				"<leader>lK",
+				function()
+					local count = 0
+					for name, term in pairs(_G.cli_terminals) do
+						if term and term.buf and vim.api.nvim_buf_is_valid(term.buf) then
+							vim.api.nvim_buf_delete(term.buf, { force = true })
+							count = count + 1
+						end
+						_G.cli_terminals[name] = nil
+					end
+					vim.notify(
+						string.format("Closed %d CLI tool terminal%s", count, count ~= 1 and "s" or ""),
+						vim.log.levels.INFO
+					)
+				end,
+				desc = "Kill all CLI tools",
+			},
+			{
+				"<leader>ll",
+				function()
+					local active = {}
+					for name, term in pairs(_G.cli_terminals) do
+						if term and term.buf and vim.api.nvim_buf_is_valid(term.buf) then
+							table.insert(active, name:gsub("^cli_tool_", ""))
+						end
+					end
+
+					if #active > 0 then
+						vim.notify("Active CLI tools: " .. table.concat(active, ", "), vim.log.levels.INFO)
+					else
+						vim.notify("No active CLI tool terminals", vim.log.levels.INFO)
+					end
+				end,
+				desc = "List active CLI tools",
 			},
 		},
 	},
