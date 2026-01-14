@@ -161,13 +161,13 @@ return {
 				},
 				-- Format on save disabled by default
 				-- To enable: uncomment and configure format_on_save below
-				-- To format manually: use <leader>mp
+				-- To format manually: use <leader>cf or <leader>jf
 				-- format_on_save = { timeout_ms = 500, lsp_fallback = true },
 				-- Notification for formatting
 				notify_on_error = true,
 			})
 
-			vim.keymap.set({ "n", "v" }, "<leader>mp", function()
+			vim.keymap.set({ "n", "v" }, "<leader>cf", function()
 				conform.format({
 					lsp_format = "fallback",
 					async = false,
@@ -182,7 +182,7 @@ return {
 					async = false,
 					timeout_ms = 1000,
 				})
-			end, { desc = "Format file (Just Format)" })
+			end, { desc = "Format file (alias for <leader>cf)" })
 		end,
 	},
 
