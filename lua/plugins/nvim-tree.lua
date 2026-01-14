@@ -45,58 +45,6 @@ return {
 			},
 		})
 
-		-- ============================================================================
-		-- Folder Colors - Aligned with Gruvbox Custom Colorscheme
-		-- ============================================================================
-		-- Define colors matching gruvbox-custom.lua palette
-		local colors = {
-			blue = "#7daea3", -- Muted seafoam blue (for default folders)
-			yellow = "#d8a657", -- Warm golden yellow (for opened folders)
-			aqua = "#89b482", -- Sage green (for folder icons)
-			orange = "#e78a4e", -- Warm terracotta (for special folders)
-			green = "#a9b665", -- Olive green (for git added folders)
-			red = "#ea6962", -- Soft coral red (for empty folders)
-			purple = "#d3869b", -- Muted raspberry (for symlink folders)
-			grey = "#a89984", -- Comments color (for collapsed folders)
-		}
-
-		-- Helper function for setting highlights
-		local function hl(group, settings)
-			vim.api.nvim_set_hl(0, group, settings)
-		end
-
-		-- Folder icon colors
-		hl("NvimTreeFolderIcon", { fg = colors.blue }) -- Default folder icon
-		hl("NvimTreeOpenedFolderIcon", { fg = colors.yellow }) -- Opened folder icon
-
-		-- Folder name colors
-		hl("NvimTreeFolderName", { fg = colors.blue }) -- Closed folder name
-		hl("NvimTreeOpenedFolderName", { fg = colors.yellow, bold = true }) -- Opened folder name
-		hl("NvimTreeEmptyFolderName", { fg = colors.grey, italic = true }) -- Empty folder name
-
-		-- Special folder types
-		hl("NvimTreeSymlinkFolderName", { fg = colors.purple, italic = true }) -- Symlinked folders
-		hl("NvimTreeRootFolder", { fg = colors.orange, bold = true }) -- Root folder
-
-		-- File colors (for consistency)
-		hl("NvimTreeNormal", { fg = colors.grey }) -- Default file color
-		hl("NvimTreeExecFile", { fg = colors.green, bold = true }) -- Executable files
-		hl("NvimTreeSpecialFile", { fg = colors.orange, underline = true }) -- Special files
-		hl("NvimTreeSymlink", { fg = colors.purple, italic = true }) -- Symlinked files
-		hl("NvimTreeImageFile", { fg = colors.aqua }) -- Image files
-
-		-- Git integration colors (matching gruvbox-custom.lua git signs)
-		hl("NvimTreeGitNew", { fg = colors.green }) -- New files
-		hl("NvimTreeGitDirty", { fg = colors.yellow }) -- Modified files
-		hl("NvimTreeGitDeleted", { fg = colors.red }) -- Deleted files
-		hl("NvimTreeGitStaged", { fg = colors.aqua }) -- Staged files
-		hl("NvimTreeGitMerge", { fg = colors.orange }) -- Merge conflicts
-		hl("NvimTreeGitRenamed", { fg = colors.purple }) -- Renamed files
-
-		-- Indent markers and UI elements
-		hl("NvimTreeIndentMarker", { fg = colors.grey }) -- Indent guide lines
-		hl("NvimTreeVertSplit", { fg = colors.grey }) -- Vertical split border
-
 		-- Keymaps
 		local keymap = vim.keymap
 

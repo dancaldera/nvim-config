@@ -1,15 +1,24 @@
 -- ============================================================================
--- Colorscheme Configuration
+-- Colorscheme Configuration - Kanagawa
 -- ============================================================================
 
 return {
 	{
-		name = "custom-themes",
-		dir = vim.fn.stdpath("config"),
+		"rebelot/kanagawa.nvim",
 		priority = 1000,
 		config = function()
-			-- Load Gruvbox Dark theme
-			dofile(vim.fn.stdpath("config") .. "/lua/colors/gruvbox-custom.lua")
+			require("kanagawa").setup({
+				compile = false,
+				undercurl = true,
+				commentStyle = { italic = true },
+				keywordStyle = { italic = true },
+				statementStyle = { bold = true },
+				transparent = false,
+				dimInactive = false,
+				terminalColors = true,
+				theme = "wave",
+			})
+			vim.cmd("colorscheme kanagawa")
 		end,
 	},
 }
