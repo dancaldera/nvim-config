@@ -106,6 +106,62 @@ return {
 					vim.cmd("LspRestart")
 				end,
 			})
+
+			-- Auto-select venv function
+			local function auto_select_venv()
+				local ok, swenv_api = pcall(require, "swenv.api")
+				if not ok then
+					return nil
+				end
+
+				-- Don't override existing selection
+				if swenv_api.get_current_venv() then
+					return nil
+				end
+
+				local venvs = swenv_api.get_venvs()
+				if not venvs or #venvs == 0 then
+					return nil
+				end
+
+				-- Select first local/project venv only
+				local venv = venvs[1]
+				if
+					venv.name:match("%(local%)")
+					or venv.name:match("^poetry:")
+					or venv.name:match("^uv:")
+					or venv.name:match("^pipenv:")
+				then
+					swenv_api.set_venv(venv.name)
+					return venv
+				end
+				return nil
+			end
+
+			-- Auto-detect venv on Python file open
+			vim.api.nvim_create_autocmd("BufEnter", {
+				pattern = "*.py",
+				group = vim.api.nvim_create_augroup("PythonAutoVenv", { clear = true }),
+				callback = function()
+					local cwd = vim.fn.getcwd()
+					if vim.g._python_venv_cwd == cwd then
+						return
+					end
+					vim.g._python_venv_cwd = cwd
+
+					vim.defer_fn(function()
+						auto_select_venv()
+					end, 50)
+				end,
+			})
+
+			-- Reset on directory change
+			vim.api.nvim_create_autocmd("DirChanged", {
+				group = vim.api.nvim_create_augroup("PythonAutoVenvDir", { clear = true }),
+				callback = function()
+					vim.g._python_venv_cwd = nil
+				end,
+			})
 		end,
 	},
 }

@@ -144,10 +144,7 @@ local function check_neovim_version(report)
 			)
 		)
 		report.warn(
-			string.format(
-				"Recommend upgrading to v0.%d+ for native LSP features (vim.lsp.config)",
-				recommended_minor
-			)
+			string.format("Recommend upgrading to v0.%d+ for native LSP features (vim.lsp.config)", recommended_minor)
 		)
 		return true
 	end
@@ -289,13 +286,7 @@ local function check_formatters(report)
 				end
 			end
 			if #formatter_names > 0 then
-				report.info(
-					string.format(
-						"Current filetype (%s): %s",
-						current_ft,
-						table.concat(formatter_names, ", ")
-					)
-				)
+				report.info(string.format("Current filetype (%s): %s", current_ft, table.concat(formatter_names, ", ")))
 			else
 				report.warn(string.format("Formatters configured for %s but none available", current_ft))
 			end
