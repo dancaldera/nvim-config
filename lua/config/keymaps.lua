@@ -48,19 +48,23 @@ keymap.set("n", "<leader>w", "<cmd>w<CR>", { desc = "Save file" })
 keymap.set("n", "<leader>q", "<cmd>q<CR>", { desc = "Quit" })
 keymap.set("n", "<leader>x", "<cmd>wq<CR>", { desc = "Save and quit" })
 
--- Buffer navigation (nvim-cokeline)
-keymap.set("n", "<S-l>", "<Plug>(cokeline-focus-next)", { desc = "Next buffer", silent = true })
-keymap.set("n", "<S-h>", "<Plug>(cokeline-focus-prev)", { desc = "Previous buffer", silent = true })
+-- Buffer navigation (bufferline.nvim)
+keymap.set("n", "<S-l>", "<cmd>BufferLineCycleNext<CR>", { desc = "Next buffer", silent = true })
+keymap.set("n", "<S-h>", "<cmd>BufferLineCyclePrev<CR>", { desc = "Previous buffer", silent = true })
 keymap.set("n", "<S-x>", function()
 	require("mini.bufremove").delete(0, false)
 end, { desc = "Close current buffer" })
 
 -- Buffer reordering (move buffers left/right in tabline)
-keymap.set("n", "<A-<>", "<Plug>(cokeline-switch-prev)", { desc = "Move buffer left", silent = true })
-keymap.set("n", "<A->>", "<Plug>(cokeline-switch-next)", { desc = "Move buffer right", silent = true })
+keymap.set("n", "<A-<>", "<cmd>BufferLineMovePrev<CR>", { desc = "Move buffer left", silent = true })
+keymap.set("n", "<A->>", "<cmd>BufferLineMoveNext<CR>", { desc = "Move buffer right", silent = true })
 
--- Quick jump to buffer position (by-index plugin for cokeline)
-keymap.set("n", "<leader>1", "<Plug>(cokeline-pick-focus)", { desc = "Pick buffer to focus", silent = true })
+-- Buffer picking and management
+keymap.set("n", "<leader>1", "<cmd>BufferLinePick<CR>", { desc = "Pick buffer to focus", silent = true })
+keymap.set("n", "<leader>bp", "<cmd>BufferLineTogglePin<CR>", { desc = "Pin/unpin buffer", silent = true })
+keymap.set("n", "<leader>bo", "<cmd>BufferLineCloseOthers<CR>", { desc = "Close other buffers", silent = true })
+keymap.set("n", "<leader>bl", "<cmd>BufferLineCloseRight<CR>", { desc = "Close buffers to right", silent = true })
+keymap.set("n", "<leader>bh", "<cmd>BufferLineCloseLeft<CR>", { desc = "Close buffers to left", silent = true })
 
 -- Terminal mode keybindings
 keymap.set("t", "<C-n>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
