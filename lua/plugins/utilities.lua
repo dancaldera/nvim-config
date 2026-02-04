@@ -87,8 +87,7 @@ return {
 		"folke/which-key.nvim",
 		event = "VeryLazy",
 		opts = {
-			timeout = true,
-			timeoutlen = 500,
+			delay = 0,
 		},
 		config = function(_, opts)
 			local wk = require("which-key")

@@ -62,7 +62,7 @@ opt.undodir = vim.fn.stdpath("data") .. "/undo"
 
 -- Update time
 opt.updatetime = 250
-opt.timeoutlen = 300
+opt.timeoutlen = 1000
 
 -- Completion
 opt.completeopt = "menu,menuone,noselect"
