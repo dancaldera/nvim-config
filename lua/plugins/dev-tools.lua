@@ -384,17 +384,16 @@ return {
 				function()
 					local github = require("config.github")
 					github.switch_account()
-					vim.cmd("LualineRefresh")
 				end,
-				desc = "Toggle GitHub account",
+				desc = "Select GitHub account",
 			},
 			{
-				"<leader>gas",
+				"<leader>gS",
 				function()
 					local github = require("config.github")
-					github.show_status()
+					github.quick_status()
 				end,
-				desc = "Show GitHub auth status",
+				desc = "Quick GitHub status",
 			},
 			{
 				"<leader>gt",

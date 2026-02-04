@@ -49,9 +49,9 @@ M.generate_commit_message = function(diff, fallback_message)
 	)
 
 	local curl_cmd = string.format(
-		'curl -s https://api.openai.com/v1/chat/completions -H "Authorization: Bearer %s" -H "Content-Type: application/json" -d \'%s\'',
+		'curl -s https://api.openai.com/v1/chat/completions -H "Authorization: Bearer %s" -H "Content-Type: application/json" -d %s',
 		api_key,
-		json_body
+		vim.fn.shellescape(json_body)
 	)
 
 	local output = vim.fn.system(curl_cmd)
@@ -88,9 +88,9 @@ M.test_api_key = function()
 
 	local test_json = '{"model": "gpt-4o", "messages": [{"role": "user", "content": "test"}], "max_tokens": 10}'
 	local curl_cmd = string.format(
-		'curl -s https://api.openai.com/v1/chat/completions -H "Authorization: Bearer %s" -H "Content-Type: application/json" -d \'%s\'',
+		'curl -s https://api.openai.com/v1/chat/completions -H "Authorization: Bearer %s" -H "Content-Type: application/json" -d %s',
 		api_key,
-		test_json
+		vim.fn.shellescape(test_json)
 	)
 
 	local output = vim.fn.system(curl_cmd)
