@@ -179,6 +179,7 @@ Leader key: `<Space>`
 |-----|------|-------------|
 | `<leader>gc` | Normal | Commit with AI-generated message (stages current file if nothing staged) |
 | `<leader>gP` | Normal | Push to remote |
+| `<leader>gC` | Normal | Auto-commit all changes (stages all, AI message, edit before committing) |
 | `<leader>gA` | Normal | Auto-commit & push (stages all, AI message, edit before committing) |
 
 ### GitHub Account Management

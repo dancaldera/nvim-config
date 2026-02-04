@@ -260,6 +260,7 @@ Complete listing of all plugins in this Neovim configuration, organized by categ
 - **Keybindings:**
   - `<leader>gc` (smart commit with AI message, stages current file if needed)
   - `<leader>gP` (push to remote)
+  - `<leader>gC` (auto-commit all changes with AI message, no push)
   - `<leader>gA` (auto-commit all & push in one command)
 - **Environment:** Requires `OPENAI_API_KEY` in shell or `.zshrc`/`.bashrc`
 - **Why:** Streamline git workflow with intelligent commit messages

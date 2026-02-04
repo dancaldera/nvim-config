@@ -175,7 +175,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 `<leader>xx` (Trouble) → `<leader>xc` (copy to clipboard) → `]d`/`[d` (navigate) → `<leader>ca` (fix)
 
 **Git Workflow (AI-powered)**
-`<leader>gc` (commit with AI) → `<leader>gA` (auto-commit & push) → `<leader>gP` (push only)
+`<leader>gc` (commit with AI) → `<leader>gC` (auto-commit all) → `<leader>gA` (auto-commit & push) → `<leader>gP` (push only)
 
 **GitHub Accounts**
 `<leader>ga` (toggle account) → `<leader>gas` (show status)

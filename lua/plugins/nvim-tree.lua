@@ -12,6 +12,8 @@ return {
 		vim.g.loaded_netrw = 1
 		vim.g.loaded_netrwPlugin = 1
 
+		local api = require("nvim-tree.api")
+
 		nvimtree.setup({
 			view = {
 				width = 35,
@@ -43,6 +45,25 @@ return {
 			git = {
 				ignore = false,
 			},
+			update_focused_file = {
+				enable = true,
+				update_root = true,
+			},
+			on_attach = function(bufnr)
+				local function opts(desc)
+					return { desc = desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
+				end
+
+				api.config.mappings.default_on_attach(bufnr)
+				vim.keymap.set("n", "-", api.tree.change_root_to_parent, opts("Up"))
+				vim.keymap.set("n", "<C-]>", api.tree.change_root_to_node, opts("CD"))
+				vim.keymap.set("n", "a", api.fs.create, opts("Create"))
+				vim.keymap.set("n", "d", api.fs.remove, opts("Delete"))
+				vim.keymap.set("n", "r", api.fs.rename, opts("Rename"))
+				vim.keymap.set("n", "x", api.fs.cut, opts("Cut"))
+				vim.keymap.set("n", "c", api.fs.copy.node, opts("Copy"))
+				vim.keymap.set("n", "p", api.fs.paste, opts("Paste"))
+			end,
 		})
 
 		-- Keymaps
@@ -69,3 +90,4 @@ return {
 		end, { desc = "Toggle focus between file explorer and buffer" })
 	end,
 }
+
