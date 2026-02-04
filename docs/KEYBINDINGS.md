@@ -129,10 +129,13 @@ Leader key: `<Space>`
 | `]w` | Normal | Go to next warning |
 | `<leader>xx` | Normal | Toggle Trouble diagnostics |
 | `<leader>xX` | Normal | Toggle Trouble buffer diagnostics |
-| `<leader>cs` | Normal | Toggle Trouble symbols |
-| `<leader>cl` | Normal | Toggle Trouble LSP definitions/references |
+| `<leader>xc` | Normal | Copy all diagnostics to clipboard |
+| `<leader>xs` | Normal | Toggle Trouble symbols |
+| `<leader>xl` | Normal | Toggle Trouble LSP definitions/references |
 | `<leader>xL` | Normal | Toggle Trouble location list |
 | `<leader>xQ` | Normal | Toggle Trouble quickfix list |
+
+**Note:** `<leader>xc` copies diagnostics in format: `file:line:col [severity] message`
 
 ---
 
@@ -169,6 +172,23 @@ Leader key: `<Space>`
 | `<leader>hD` | Normal | Diff this (cached) |
 | `<leader>gb` | Normal | Toggle inline line blame |
 | `<leader>gd` | Normal | Toggle deleted lines |
+
+### Git Workflow (AI-powered)
+
+| Key | Mode | Description |
+|-----|------|-------------|
+| `<leader>gc` | Normal | Commit with AI-generated message (stages current file if nothing staged) |
+| `<leader>gP` | Normal | Push to remote |
+| `<leader>gA` | Normal | Auto-commit & push (stages all, AI message, edit before committing) |
+
+### GitHub Account Management
+
+| Key | Mode | Description |
+|-----|------|-------------|
+| `<leader>ga` | Normal | Toggle GitHub account (cycle through all accounts) |
+| `<leader>gas` | Normal | Show GitHub auth status (full details in floating terminal) |
+
+**Note:** GitHub account appears in status line as ` @username` when in a git repository.
 
 ---
 

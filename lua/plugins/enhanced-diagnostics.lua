@@ -40,7 +40,42 @@ return {
 			},
 			{ "<leader>xL", "<cmd>Trouble loclist toggle<cr>", desc = "Location List (Trouble)" },
 			{ "<leader>xQ", "<cmd>Trouble qflist toggle<cr>", desc = "Quickfix List (Trouble)" },
-			-- Enhanced diagnostic navigation
+			{ "<leader>xc", function()
+				local diagnostics = vim.diagnostic.get(nil, {
+					severity = {
+						vim.diagnostic.severity.ERROR,
+						vim.diagnostic.severity.WARN,
+						vim.diagnostic.severity.INFO,
+						vim.diagnostic.severity.HINT,
+					},
+				})
+
+				if #diagnostics == 0 then
+					vim.notify("No diagnostics found", vim.log.levels.INFO)
+					return
+				end
+
+				local severity_map = {
+					[vim.diagnostic.severity.ERROR] = "ERROR",
+					[vim.diagnostic.severity.WARN] = "WARN",
+					[vim.diagnostic.severity.INFO] = "INFO",
+					[vim.diagnostic.severity.HINT] = "HINT",
+				}
+
+				local formatted = {}
+				for _, diag in ipairs(diagnostics) do
+					local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(diag.bufnr), ":~:.")
+					local line = diag.lnum + 1
+					local col = diag.col + 1
+					local severity = severity_map[diag.severity] or "UNKNOWN"
+					local message = diag.message:gsub("\n", " ")
+					table.insert(formatted, string.format("%s:%d:%d [%s] %s", filename, line, col, severity, message))
+				end
+
+				local text = table.concat(formatted, "\n")
+				vim.fn.setreg("+", text)
+				vim.notify(string.format("Copied %d diagnostics to clipboard", #diagnostics), vim.log.levels.INFO)
+			end, desc = "Copy diagnostics to clipboard" },
 			{ "<leader>de", "<cmd>Trouble diagnostics toggle filter.severity=ERROR<cr>", desc = "Errors only" },
 			{ "<leader>dw", "<cmd>Trouble diagnostics toggle filter.severity=WARN<cr>", desc = "Warnings only" },
 			{ "<leader>di", "<cmd>Trouble diagnostics toggle filter.severity=INFO<cr>", desc = "Info only" },

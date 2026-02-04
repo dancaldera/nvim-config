@@ -38,6 +38,28 @@ return {
 						},
 						{
 							function()
+								local git_root = vim.fn.system("git rev-parse --show-toplevel 2>/dev/null")
+								if vim.v.shell_error ~= 0 or vim.trim(git_root) == "" then
+									return ""
+								end
+
+								local github = require("config.github")
+								local account = github.get_current_account()
+
+								if account then
+									return string.format(" @%s", account)
+								end
+
+								return ""
+							end,
+							cond = function()
+								local git_root = vim.fn.system("git rev-parse --show-toplevel 2>/dev/null")
+								return vim.v.shell_error == 0 and vim.trim(git_root) ~= "" and package.loaded["config.github"]
+							end,
+							color = { fg = "#7C3AED", gui = "bold" },
+						},
+						{
+							function()
 								-- Try swenv first, fallback to $VIRTUAL_ENV
 								local ok, swenv = pcall(require, "swenv.api")
 								if ok then

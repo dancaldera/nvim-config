@@ -2,7 +2,7 @@
 
 Complete listing of all plugins in this Neovim configuration, organized by category.
 
-**Total Plugins:** 69 | **Lazy-loaded:** Yes | **Auto-installed:** Via lazy.nvim
+**Total Plugins:** 70 | **Lazy-loaded:** Yes | **Auto-installed:** Via lazy.nvim
 
 ---
 
@@ -216,7 +216,7 @@ Complete listing of all plugins in this Neovim configuration, organized by categ
 
 ---
 
-## Git Integration (5 plugins)
+## Git Integration (6 plugins)
 
 ### gitsigns.nvim
 - **Purpose:** Git hunks, staging, blame in sign column
@@ -247,11 +247,48 @@ Complete listing of all plugins in this Neovim configuration, organized by categ
 - **Keybindings:** `<leader>hd` (diff this), `<leader>hD` (diff cached)
 - **Why:** Better than `git diff` in terminal
 
-### nvim-navic
-- **Purpose:** Breadcrumb navigation (LSP-powered)
-- **Location:** `lua/plugins/lsp-core.lua`
-- **Display:** Shows in lualine statusline
-- **Why:** Know where you are in deeply nested code
+### vim-fugitive
+- **Purpose:** Git commands integration in Neovim
+- **Location:** `lua/plugins/git-workflow.lua`
+- **Commands:** `:Git`
+- **Why:** Seamless git command execution
+
+### git-workflow (AI-powered)
+- **Purpose:** AI-generated commit messages with OpenAI, auto-commit & push
+- **Location:** `lua/plugins/git-workflow.lua`
+- **Dependencies:** `lua/config/openai.lua`, `lua/config/github.lua`
+- **Keybindings:**
+  - `<leader>gc` (smart commit with AI message, stages current file if needed)
+  - `<leader>gP` (push to remote)
+  - `<leader>gA` (auto-commit all & push in one command)
+- **Environment:** Requires `OPENAI_API_KEY` in shell or `.zshrc`/`.bashrc`
+- **Why:** Streamline git workflow with intelligent commit messages
+
+---
+
+## Configuration Modules
+
+### openai.lua
+- **Purpose:** OpenAI API integration for AI-powered features
+- **Location:** `lua/config/openai.lua`
+- **Functions:**
+  - `get_api_key()` - Load `OPENAI_API_KEY` from environment or shell configs (`.zshrc`, `.bashrc`, `.zprofile`)
+  - `generate_commit_message(diff, fallback)` - Generate commit messages using GPT-4o
+- **Used by:** `lua/plugins/git-workflow.lua`
+- **Environment:** Requires `OPENAI_API_KEY` environment variable
+- **Why:** Centralized OpenAI integration with caching and fallbacks
+
+### github.lua
+- **Purpose:** GitHub account management and detection
+- **Location:** `lua/config/github.lua`
+- **Functions:**
+  - `get_current_account()` - Get active GitHub username
+  - `get_all_accounts()` - Get list of all configured accounts
+  - `switch_account()` - Toggle to next non-active GitHub account
+  - `show_status()` - Display full GitHub auth status in floating terminal
+- **Used by:** `lua/plugins/dev-tools.lua`, `lua/plugins/ui-statusline.lua`
+- **Display:** Shows in lualine as ` @username` when in git repo
+- **Why:** Manage multiple GitHub accounts seamlessly
 
 ---
 

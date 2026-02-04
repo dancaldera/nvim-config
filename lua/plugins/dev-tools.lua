@@ -379,6 +379,31 @@ return {
 				end,
 				desc = "List active CLI tools",
 			},
+			{
+				"<leader>ga",
+				function()
+					local github = require("config.github")
+					github.switch_account()
+					vim.cmd("LualineRefresh")
+				end,
+				desc = "Toggle GitHub account",
+			},
+			{
+				"<leader>gas",
+				function()
+					local github = require("config.github")
+					github.show_status()
+				end,
+				desc = "Show GitHub auth status",
+			},
+			{
+				"<leader>gt",
+				function()
+					local openai = require("config.openai")
+					openai.test_api_key()
+				end,
+				desc = "Test OpenAI API key",
+			},
 		},
 	},
 
