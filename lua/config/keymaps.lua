@@ -56,8 +56,8 @@ keymap.set("n", "<S-x>", function()
 end, { desc = "Close current buffer" })
 
 -- Buffer reordering (move buffers left/right in tabline)
-keymap.set("n", "<A-<>", "<cmd>BufferLineMovePrev<CR>", { desc = "Move buffer left", silent = true })
-keymap.set("n", "<A->>", "<cmd>BufferLineMoveNext<CR>", { desc = "Move buffer right", silent = true })
+keymap.set("n", "<A-,>", "<cmd>BufferLineMovePrev<CR>", { desc = "Move buffer left", silent = true })
+keymap.set("n", "<A-.>", "<cmd>BufferLineMoveNext<CR>", { desc = "Move buffer right", silent = true })
 
 -- Buffer picking and management
 keymap.set("n", "<leader>1", "<cmd>BufferLinePick<CR>", { desc = "Pick buffer to focus", silent = true })

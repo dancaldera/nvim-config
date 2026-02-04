@@ -33,8 +33,8 @@ return {
 					"black", -- Python formatter
 					"golangci-lint", -- Go linter
 				},
-				auto_update = true,
-				run_on_start = true,
+				auto_update = false,
+				run_on_start = false,
 			})
 		end,
 	},

@@ -2,8 +2,8 @@
 -- Auto Commands Configuration
 -- ============================================================================
 
--- Auto-save on focus lost or buffer leave
-vim.api.nvim_create_autocmd({ "FocusLost", "BufLeave" }, {
+-- Auto-save on focus lost (predictable, avoids writes on buffer switches)
+vim.api.nvim_create_autocmd({ "FocusLost" }, {
 	group = vim.api.nvim_create_augroup("AutoSave", { clear = true }),
 	pattern = "*",
 	callback = function()
@@ -15,9 +15,9 @@ vim.api.nvim_create_autocmd({ "FocusLost", "BufLeave" }, {
 		if
 			vim.bo.modified
 			and not vim.bo.readonly
+			and vim.bo.modifiable
 			and vim.fn.expand("%") ~= ""
 			and vim.bo.buftype == ""
-			and vim.fn.filereadable(vim.fn.expand("%")) == 1
 		then
 			vim.cmd("silent! write")
 		end

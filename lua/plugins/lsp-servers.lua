@@ -11,6 +11,14 @@ return {
 			"hrsh7th/cmp-nvim-lsp",
 		},
 		config = function()
+			if not (vim.lsp and vim.lsp.config) then
+				vim.notify(
+					"Neovim 0.11+ is required for vim.lsp.config-based setup. Upgrade to enable LSP servers.",
+					vim.log.levels.ERROR
+				)
+				return
+			end
+
 			local cmp_nvim_lsp = require("cmp_nvim_lsp")
 
 			-- Get capabilities from nvim-cmp for all servers

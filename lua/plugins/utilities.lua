@@ -62,6 +62,24 @@ return {
 		end,
 	},
 
+	-- Smooth scrolling (VS Code-like feel)
+	{
+		"karb94/neoscroll.nvim",
+		event = "VeryLazy",
+		config = function()
+			require("neoscroll").setup({
+				mappings = { "<C-u>", "<C-d>", "<C-b>", "<C-f>", "<C-y>", "<C-e>" },
+				hide_cursor = true,
+				stop_eof = true,
+				respect_scrolloff = true,
+				cursor_scrolls_alone = true,
+				easing_function = "quadratic",
+				pre_hook = nil,
+				post_hook = nil,
+			})
+		end,
+	},
+
 	-- Note: Statusline (lualine) moved to lua/plugins/ui-statusline.lua
 
 	-- Which-key

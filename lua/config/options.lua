@@ -80,6 +80,8 @@ opt.laststatus = 3 -- Global statusline
 -- Scrolling
 opt.scrolloff = 8
 opt.sidescrolloff = 8
+opt.smoothscroll = true
+opt.scrolljump = 2
 
 -- Performance
 opt.lazyredraw = false
