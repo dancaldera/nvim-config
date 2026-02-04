@@ -53,7 +53,7 @@ return {
 							return
 						end
 
-						local result = vim.fn.system(string.format('git commit -m %s', vim.fn.shellescape(message)))
+						local result = vim.fn.system(string.format("git commit -m %s", vim.fn.shellescape(message)))
 						if vim.v.shell_error ~= 0 then
 							vim.notify("Commit failed: " .. result, vim.log.levels.ERROR)
 						else
@@ -113,7 +113,7 @@ return {
 							return
 						end
 
-						local result = vim.fn.system(string.format('git commit -m %s', vim.fn.shellescape(message)))
+						local result = vim.fn.system(string.format("git commit -m %s", vim.fn.shellescape(message)))
 						if vim.v.shell_error ~= 0 then
 							vim.notify("Commit failed: " .. result, vim.log.levels.ERROR)
 						else
@@ -160,7 +160,8 @@ return {
 							return
 						end
 
-						local commit_result = vim.fn.system(string.format('git commit -m %s', vim.fn.shellescape(message)))
+						local commit_result =
+							vim.fn.system(string.format("git commit -m %s", vim.fn.shellescape(message)))
 						if vim.v.shell_error ~= 0 then
 							vim.notify("Commit failed: " .. commit_result, vim.log.levels.ERROR)
 							return

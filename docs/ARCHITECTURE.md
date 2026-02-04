@@ -58,10 +58,10 @@ Deep dive into the Neovim configuration structure, loading strategy, and plugin 
 │   │   │   ├── enhanced-editing.lua (79)   # Surround, pairs, comments, folding
 │   │   │   └── enhanced-diagnostics.lua (111) # Trouble.nvim
 │   │   │
-│   │   ├── Dev Tools (3 files, 750 lines):
-│   │   │   ├── dev-tools.lua (294)         # TODO, terminal (snacks)
-│   │   │   ├── productivity.lua (135)      # Projects, markdown, sessions
-│   │   │   └── modern-enhancements.lua (321) # Flash, aerial, refactoring, spectre
+    │   │   ├── Dev Tools (3 files, 750 lines):
+    │   │   │   ├── dev-tools.lua (294)         # TODO, terminal (snacks)
+    │   │   │   ├── productivity.lua (135)      # Projects, markdown, sessions
+    │   │   │   └── modern-enhancements.lua (321) # Flash, refactoring, spectre
 │   │   │
 │   │   ├── Git (1 file, 105 lines):
 │   │   │   └── git-enhancements.lua (105)  # Gitsigns, neogit, diffview, conflict
@@ -79,7 +79,7 @@ Deep dive into the Neovim configuration structure, loading strategy, and plugin 
 └── docs/
     ├── KEYBINDINGS.md                      # Complete keymap reference
     ├── SETUP_FORMATTERS.md                 # Formatter installation
-    ├── PLUGINS_REFERENCE.md                # All 69 plugins documented
+    ├── PLUGINS_REFERENCE.md                # All 68 plugins documented
     ├── ARCHITECTURE.md                     # This file
     ├── LSP_GUIDE.md                        # Language-specific LSP setup
     ├── TROUBLESHOOTING.md                  # Advanced troubleshooting
@@ -115,7 +115,7 @@ Deep dive into the Neovim configuration structure, loading strategy, and plugin 
 
 ### 2. Lazy Loading Events
 
-69 plugins use various loading triggers:
+68 plugins use various loading triggers:
 
 | Event | When Triggered | Example Plugins |
 |-------|----------------|-----------------|
@@ -228,7 +228,6 @@ nvim-treesitter (root)
 ├── Used by:
 │   ├── nvim-ufo (folding)
 │   ├── nvim-ts-context-commentstring → Comment.nvim
-│   ├── aerial.nvim (code outline)
 │   ├── refactoring.nvim
 │   └── flash.nvim (Treesitter search)
 │
@@ -400,7 +399,7 @@ Both can run simultaneously!
 
 - **enhanced-editing.lua:** Surround, pairs, comments, folding
 - **enhanced-diagnostics.lua:** Trouble.nvim (better diagnostics)
-- **modern-enhancements.lua:** Flash, aerial, refactoring, spectre
+- **modern-enhancements.lua:** Flash, refactoring, spectre
 - **telescope.lua, nvim-tree.lua:** Search and file navigation
 
 ### Layer 5: Language-Specific (python.lua, git-*.lua)
@@ -428,8 +427,8 @@ Time  | Event
   0ms | Neovim starts
   2ms | init.lua loads
   5ms | compatibility.lua checks version
- 10ms | lazy.lua bootstraps plugin manager
- 15ms | lazy.nvim discovers 69 plugins
+  10ms | lazy.lua bootstraps plugin manager
+  15ms | lazy.nvim discovers 68 plugins
  20ms | options.lua sets vim options
  25ms | keymaps.lua sets general keybindings
  30ms | autocmds.lua registers auto commands
@@ -499,7 +498,7 @@ vim.g.loaded_matchparen = 1      -- Using vim-illuminate instead
 | Keybinding | `keys = { "s", "S" }` | Loads on first keypress |
 | Dependency | `dependencies = { ... }` | Loads with parent |
 
-**Savings:** ~400ms startup time (vs loading all 69 plugins)
+**Savings:** ~400ms startup time (vs loading all 68 plugins)
 
 ### 3. Compiled Plugins
 

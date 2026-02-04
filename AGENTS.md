@@ -52,7 +52,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Modern Plugins
 - **flash.nvim**: Modern motion/navigation
-- **aerial.nvim**: Code outline sidebar (`<leader>a`)
 - **lsp_signature.nvim**: Auto-trigger function signature help
 - **actions-preview.nvim**: Code action preview with diff
 - **refactoring.nvim**: Extract function, inline variable (`<leader>r`)
@@ -139,7 +138,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Git**: Gitsigns (hunks, staging, blame)
 **Editing**: nvim-ufo (folding), nvim-surround, mini.pairs, Comment.nvim
 **UI**: lualine, noice, notify, dressing, cokeline, which-key
-**Dev Tools**: Trouble, todo-comments, snacks (terminal/dashboard), aerial, refactoring
+**Dev Tools**: Trouble, todo-comments, snacks (terminal/dashboard), refactoring
 **Navigation**: flash, nvim-spectre, persistence, mini.ai
 
 ## Working with This Configuration
@@ -161,7 +160,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 `<leader>ff` → `<leader>fs` → `<leader>fp`
 
 **Code Exploration**
-`gd` (definition) → `K` (hover) → `<leader>ca` (code actions) → `<leader>a` (outline)
+`gd` (definition) → `K` (hover) → `<leader>ca` (code actions)
 
 **Git** (Updated keybindings)
 - Hunks: `]c`/`[c` (navigate) → `<leader>hp` (preview) → `<leader>hs` (stage)
@@ -194,7 +193,6 @@ Select → `<leader>re` (extract function) → `<leader>rv` (variable) → `<lea
 
 ### Keybinding Namespaces
 
-- `<leader>a` - Aerial (code outline)
 - `<leader>b` - Buffer operations
 - `<leader>c` - Code actions
 - `<leader>d` - Diagnostics
@@ -221,7 +219,7 @@ Select → `<leader>re` (extract function) → `<leader>rv` (variable) → `<lea
 All documentation in `docs/` directory:
 - `KEYBINDINGS.md` - Complete keybinding reference
 - `SETUP_FORMATTERS.md` - Formatter installation guide
-- `PLUGINS_REFERENCE.md` - Complete listing of all 69 plugins by category
+- `PLUGINS_REFERENCE.md` - Complete listing of all 68 plugins by category
 - `ARCHITECTURE.md` - Configuration architecture and plugin dependency graph
 - `LSP_GUIDE.md` - Language-specific LSP setup and troubleshooting
 - `TROUBLESHOOTING.md` - Advanced troubleshooting beyond README

@@ -186,12 +186,13 @@ return {
 			-- Helper function to toggle named terminal with persistence
 			_G.toggle_cli_terminal = function(name, cmd, opts)
 				opts = opts or {}
-				opts.win = opts.win or {
-					position = "float",
-					width = 0.9,
-					height = 0.85,
-					border = "rounded",
-				}
+				opts.win = opts.win
+					or {
+						position = "float",
+						width = 0.9,
+						height = 0.85,
+						border = "rounded",
+					}
 
 				-- Create unique ID for this terminal
 				local term_id = "cli_tool_" .. name

@@ -111,7 +111,6 @@ Leader key: `<Space>`
 | `<leader>rn` | Normal | Rename symbol |
 | `<leader>rs` | Normal | Restart LSP |
 | `<leader>ti` | Normal | Toggle/cycle inlay hints |
-| `<leader>a` | Normal | Toggle Aerial (code outline) |
 
 ---
 

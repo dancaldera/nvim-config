@@ -451,12 +451,6 @@ Complete listing of all plugins in this Neovim configuration, organized by categ
 - **Keywords:** TODO, HACK, WARN, PERF, NOTE, FIX
 - **Why:** Track TODOs across project
 
-### aerial.nvim
-- **Purpose:** Code outline sidebar (functions, classes, etc.)
-- **Location:** `lua/plugins/modern-enhancements.lua`
-- **Keybindings:** `<leader>a` (toggle outline)
-- **Why:** Navigate large files by structure
-
 ### nvim-lint
 - **Purpose:** Linting framework (runs linters async)
 - **Location:** `lua/plugins/formatting.lua`
@@ -518,7 +512,6 @@ Complete listing of all plugins in this Neovim configuration, organized by categ
 | mason.nvim | LSP | lsp-servers.lua | `:Mason` |
 | trouble.nvim | Diagnostics | enhanced-diagnostics.lua | `<leader>xx` |
 | flash.nvim | Motion | modern-enhancements.lua | `s` |
-| aerial.nvim | Outline | modern-enhancements.lua | `<leader>a` |
 | refactoring.nvim | Refactoring | modern-enhancements.lua | `<leader>re` |
 | conform.nvim | Formatting | formatting.lua | `<leader>mp` |
 | snacks.nvim | Multi | dev-tools.lua | `<C-\>` (terminal) |
@@ -601,10 +594,9 @@ lazy.nvim (root)
 │   ├── snacks.nvim (multi-component)
 │   └── actions-preview.nvim → telescope
 │
-├── Dev Tools
+│ ├── Dev Tools
 │   ├── trouble.nvim
 │   ├── todo-comments.nvim → plenary.nvim
-│   ├── aerial.nvim
 │   ├── nvim-lint
 │   ├── conform.nvim
 │   └── markdown-preview.nvim

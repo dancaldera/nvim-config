@@ -54,7 +54,9 @@ return {
 							end,
 							cond = function()
 								local git_root = vim.fn.system("git rev-parse --show-toplevel 2>/dev/null")
-								return vim.v.shell_error == 0 and vim.trim(git_root) ~= "" and package.loaded["config.github"]
+								return vim.v.shell_error == 0
+									and vim.trim(git_root) ~= ""
+									and package.loaded["config.github"]
 							end,
 							color = { fg = "#7C3AED", gui = "bold" },
 						},
