@@ -4,6 +4,34 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Recent Changes (2025)
 
+### February 2025 - AI-Powered Git Workflow & Enhanced Diagnostics
+
+**AI-Powered Git Workflow**
+- **git-workflow.lua**: Smart commit with AI-generated messages using OpenAI GPT-4o
+  - `<leader>gc` - Commit with AI message (stages current file if nothing staged)
+  - `<leader>gP` - Push to remote
+  - `<leader>gA` - Auto-commit all & push (one-shot command)
+  - All commits allow editing AI-generated message before committing
+  - Fallback: `[timestamp] Auto-commit` if OpenAI API unavailable
+  - Requires `OPENAI_API_KEY` in environment or `.zshrc`/`.bashrc`/`.zprofile`
+
+**GitHub Account Management**
+- **github.lua**: Multi-account GitHub CLI support
+  - `<leader>ga` - Toggle between GitHub accounts (cycles through all accounts)
+  - `<leader>gas` - Show full GitHub auth status (floating terminal)
+  - Account caching (60s TTL) to minimize CLI calls
+  - Status line display: ` @username` when in git repository
+
+**Enhanced Diagnostics**
+- **diagnostics copy**: Export all diagnostics to clipboard
+  - `<leader>xc` - Copy all diagnostics to system clipboard
+  - Format: `file:line:col [severity] message`
+  - Notifications show count of copied diagnostics
+
+**New Configuration Modules**
+- **openai.lua**: OpenAI API integration with caching and environment loading
+- **github.lua**: GitHub account management and status detection
+
 ### January 2025 - Configuration Optimization
 - **File organization**: Split large plugin files for better maintainability
   - `lsp.lua` (383 lines) → `lsp-core.lua` + `lsp-servers.lua`
@@ -144,7 +172,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 `<leader>sv` (split) → `<C-h/j/k/l>` (navigate) → `<M-h/j/k/l>` (resize)
 
 **Diagnostics**
-`<leader>xx` (Trouble) → `]d`/`[d` (navigate) → `<leader>ca` (fix)
+`<leader>xx` (Trouble) → `<leader>xc` (copy to clipboard) → `]d`/`[d` (navigate) → `<leader>ca` (fix)
+
+**Git Workflow (AI-powered)**
+`<leader>gc` (commit with AI) → `<leader>gA` (auto-commit & push) → `<leader>gP` (push only)
+
+**GitHub Accounts**
+`<leader>ga` (toggle account) → `<leader>gas` (show status)
 
 **Refactoring**
 Select → `<leader>re` (extract function) → `<leader>rv` (variable) → `<leader>ri` (inline)
@@ -166,7 +200,7 @@ Select → `<leader>re` (extract function) → `<leader>rv` (variable) → `<lea
 - `<leader>d` - Diagnostics
 - `<leader>e` - File explorer
 - `<leader>f` - Find/Search
-- `<leader>g` - **Git toggles** (blame, deleted)
+- `<leader>g` - **Git operations** (workflow, accounts, toggles)
 - `<leader>h` - Git hunks
 - `<leader>j` - Format/Lint
 - `<leader>p` - Python
