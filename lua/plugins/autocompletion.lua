@@ -86,6 +86,10 @@ return {
 			local luasnip = require("luasnip")
 			local lspkind = require("lspkind")
 
+			-- Autopairs integration: auto-insert () after confirming a function/method
+			local cmp_autopairs = require("nvim-autopairs.completion.cmp")
+			cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
+
 			-- Note: snippet loading is now handled in LuaSnip config
 
 			cmp.setup({

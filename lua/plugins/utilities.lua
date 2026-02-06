@@ -3,14 +3,38 @@
 -- ============================================================================
 
 return {
-	-- Autopairs - Using mini.pairs (lighter, part of mini.nvim ecosystem)
+	-- Autopairs - Treesitter-aware with cmp integration
 	{
-		"echasnovski/mini.pairs",
+		"windwp/nvim-autopairs",
 		event = "InsertEnter",
-		opts = {
-			-- Treesitter integration for better context awareness
-			modes = { insert = true, command = false, terminal = false },
-		},
+		dependencies = { "nvim-treesitter/nvim-treesitter" },
+		config = function()
+			local autopairs = require("nvim-autopairs")
+			autopairs.setup({
+				check_ts = true, -- Treesitter-aware: won't pair inside strings/comments
+				ts_config = {
+					lua = { "string", "source" }, -- Don't add pairs in lua string/source nodes
+					javascript = { "string", "template_string" },
+					typescript = { "string", "template_string" },
+					java = false, -- Don't check treesitter for java
+				},
+				disable_filetype = { "TelescopePrompt", "spectre_panel" },
+				enable_check_bracket_line = true, -- Won't add closing bracket if one already exists on the line
+				fast_wrap = {
+					map = "<M-e>", -- Alt+e to wrap next word/expression with a pair
+					chars = { "{", "[", "(", '"', "'" },
+					pattern = [=[[%'%"%>%]%)%}%,]]=],
+					end_key = "$",
+					before_key = "h",
+					after_key = "l",
+					cursor_pos_before = true,
+					keys = "qwertyuiopzxcvbnmasdfghjkl",
+					manual_position = true,
+					highlight = "PmenuSel",
+					highlight_grey = "LineNr",
+				},
+			})
+		end,
 	},
 
 	-- Surround
