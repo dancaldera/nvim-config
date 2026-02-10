@@ -1,629 +1,449 @@
-# Plugin Reference
+# Plugins Reference
 
-Complete listing of all plugins in this Neovim configuration, organized by category.
+Complete reference for all 42 plugins used in this Neovim configuration, organized by category.
 
-**Total Plugins:** 70 | **Lazy-loaded:** Yes | **Auto-installed:** Via lazy.nvim
-
----
-
-## Core Infrastructure (7 plugins)
-
-### lazy.nvim
-- **Purpose:** Plugin manager with event-based lazy loading
-- **Location:** `lua/config/lazy.lua`
-- **Commands:** `:Lazy`, `:Lazy sync`, `:Lazy update`, `:Lazy profile`
-- **Why:** Modern, async plugin manager with minimal startup overhead
-
-### plenary.nvim
-- **Purpose:** Common Lua utilities library (dependency for many plugins)
-- **Used by:** telescope, gitsigns, neogit, refactoring, and more
-- **Why:** Provides async, job control, and functional programming utilities
-
-### nvim-web-devicons
-- **Purpose:** File type icons for UI elements
-- **Used by:** nvim-tree, telescope, lualine, cokeline
-- **Why:** Visual file type identification across all UI components
-
-### nui.nvim
-- **Purpose:** UI component library for building popups, splits, inputs
-- **Used by:** noice, telescope, neo-tree alternatives
-- **Why:** Consistent UI components across plugins
-
-### promise-async
-- **Purpose:** Async/await utilities for Lua
-- **Used by:** nvim-ufo (folding)
-- **Why:** Better async code organization
-
-### which-key.nvim
-- **Purpose:** Interactive keybinding discovery UI
-- **Location:** `lua/plugins/utilities.lua`
-- **Keybinding:** Press `<Space>` and wait
-- **Why:** Discover available keybindings without memorization
-
-### nvim-lsp-file-operations
-- **Purpose:** LSP-aware file operations (rename, move files updates imports)
-- **Location:** `lua/plugins/lsp-core.lua`
-- **Why:** Keep imports in sync when refactoring
+> **Neovim Version**: 0.10+ required, 0.11+ recommended
 
 ---
 
-## Language Server Protocol (8 plugins)
+## Table of Contents
 
-### mason.nvim
-- **Purpose:** LSP server, formatter, and linter installer
-- **Location:** `lua/plugins/lsp-servers.lua`
-- **Commands:** `:Mason`, `:MasonUpdate`, `:MasonInstall <tool>`
-- **Why:** One-stop shop for all language tooling installation
-
-### mason-lspconfig.nvim
-- **Purpose:** Bridge between mason and nvim-lspconfig
-- **Location:** `lua/plugins/lsp-servers.lua`
-- **Why:** Auto-install LSP servers for detected languages
-
-### mason-tool-installer.nvim
-- **Purpose:** Auto-install formatters and linters defined in config
-- **Location:** `lua/plugins/lsp-servers.lua`
-- **Why:** Ensures all tools are available without manual installation
-
-### nvim-lspconfig
-- **Purpose:** LSP server configurations (13+ languages)
-- **Location:** `lua/plugins/lsp-servers.lua`
-- **Servers:** ts_ls, lua_ls, pyright, gopls, rust_analyzer, clangd, html, cssls, jsonls, yamlls, tailwindcss, bashls, dockerls
-- **Why:** Official LSP configuration collection
-
-### lazydev.nvim
-- **Purpose:** Lua development with Neovim API completion
-- **Location:** `lua/plugins/lsp-core.lua`
-- **Why:** Better completion when writing Neovim configs
-
-### luvit-meta
-- **Purpose:** Type definitions for Neovim Lua API
-- **Used by:** lazydev.nvim
-- **Why:** Accurate type information for vim.* APIs
-
-### cmp-nvim-lsp
-- **Purpose:** LSP completion source for nvim-cmp
-- **Location:** `lua/plugins/autocompletion.lua`
-- **Why:** Connects LSP to completion engine
-
-### lspkind.nvim
-- **Purpose:** VS Code-like pictograms in completion menu
-- **Location:** `lua/plugins/autocompletion.lua`
-- **Why:** Visual indicators for completion item types
+- [LSP & Language Intelligence](#lsp--language-intelligence)
+- [Completion & Snippets](#completion--snippets)
+- [Editor Enhancements](#editor-enhancements)
+- [UI & Visual](#ui--visual)
+- [Git Integration](#git-integration)
+- [Developer Tools](#developer-tools)
+- [Diagnostics](#diagnostics)
+- [Treesitter](#treesitter)
+- [Navigation & Search](#navigation--search)
+- [File Management](#file-management)
+- [Formatting & Linting](#formatting--linting)
+- [Colorscheme](#colorscheme)
+- [Language-Specific](#language-specific)
+- [Custom Modules](#custom-modules)
+- [Quick Reference Table](#quick-reference-table)
 
 ---
 
-## Completion & AI (9 plugins)
+## LSP & Language Intelligence
 
-### copilot.lua
-- **Purpose:** GitHub Copilot integration (AI code completion)
-- **Location:** `lua/plugins/autocompletion.lua`
-- **Commands:** `:Copilot auth`, `:Copilot status`
-- **Keybindings:** `<C-g>` (accept), `<C-;>` (next), `<C-x>` (dismiss)
-- **Why:** AI-powered inline code suggestions
+**Config file**: `lua/plugins/lsp.lua`
 
-### copilot-cmp
-- **Purpose:** GitHub Copilot as nvim-cmp source
-- **Location:** `lua/plugins/autocompletion.lua`
-- **Why:** Show Copilot suggestions in completion menu
+### williamboman/mason.nvim
+Package manager for LSP servers, formatters, linters, and DAP adapters. Provides a UI (`:Mason`) for browsing and installing tools.
 
-### nvim-cmp
-- **Purpose:** Completion engine (main)
-- **Location:** `lua/plugins/autocompletion.lua`
-- **Keybindings:** `<Tab>` (next), `<S-Tab>` (prev), `<CR>` (confirm)
-- **Why:** Fast, extensible completion framework
+### williamboman/mason-lspconfig.nvim
+Bridges mason.nvim and nvim-lspconfig, ensuring installed servers are automatically configured and started.
 
-### LuaSnip
-- **Purpose:** Snippet engine with VS Code snippet support
-- **Location:** `lua/plugins/autocompletion.lua`
-- **Keybindings:** `<Tab>` (expand/jump), `<S-Tab>` (jump back)
-- **Why:** Powerful snippet system with lots of available snippets
+### WhoIsSethDaniel/mason-tool-installer.nvim
+Declarative auto-installation of formatters and linters via Mason. Tools listed in `ensure_installed` are installed on startup without manual intervention.
 
-### friendly-snippets
-- **Purpose:** Collection of VS Code-style snippets for many languages
-- **Used by:** LuaSnip
-- **Why:** Pre-built snippets for common code patterns
+### neovim/nvim-lspconfig
+Core LSP client configuration. Provides default configs for dozens of language servers. Servers configured include: `ts_ls`, `lua_ls`, `pyright`, `gopls`, `clangd`, `rust_analyzer`, and others.
 
-### cmp_luasnip
-- **Purpose:** LuaSnip completion source for nvim-cmp
-- **Location:** `lua/plugins/autocompletion.lua`
-- **Why:** Show snippets in completion menu
+| Keybinding | Action |
+|---|---|
+| `gd` | Go to definition |
+| `gD` | Go to declaration |
+| `gr` | Go to references |
+| `gi` | Go to implementation |
+| `K` | Hover documentation |
+| `<leader>ca` | Code actions |
+| `<leader>rn` | Rename symbol |
+| `<leader>D` | Type definition |
+| `]d` / `[d` | Next/previous diagnostic |
 
-### cmp-buffer
-- **Purpose:** Buffer text completion source
-- **Location:** `lua/plugins/autocompletion.lua`
-- **Why:** Autocomplete from words in current buffer
+### hrsh7th/cmp-nvim-lsp
+Extends nvim-cmp with LSP completion capabilities. Advertises additional completion features to language servers. Shared between `lsp.lua` and `completion.lua`.
 
-### cmp-path
-- **Purpose:** File path completion source
-- **Location:** `lua/plugins/autocompletion.lua`
-- **Why:** Autocomplete file/directory paths
+### antosha417/nvim-lsp-file-operations
+LSP-aware file operations. When files are renamed or moved (e.g., via nvim-tree), import paths are automatically updated through the language server.
 
-### lsp_signature.nvim
-- **Purpose:** Function signature help popup
-- **Location:** `lua/plugins/lsp-core.lua`
-- **Auto-trigger:** Shows when typing function calls
-- **Why:** See function parameters without invoking hover
+### folke/lazydev.nvim
+Development support for Neovim Lua configuration and plugin authoring. Provides type annotations, completion, and documentation for the Neovim API, `vim.uv`, and plugin APIs.
+
+### Bilal2453/luvit-meta
+Type definitions for `vim.uv` (libuv bindings). Used by lazydev.nvim to provide accurate completions for async I/O operations.
 
 ---
 
-## Syntax & Parsing (3 plugins)
+## Completion & Snippets
 
-### nvim-treesitter
-- **Purpose:** Modern syntax highlighting and code parsing
-- **Location:** `lua/plugins/treesitter.lua`
-- **Commands:** `:TSUpdate`, `:TSInstall <language>`, `:TSModuleInfo`
-- **Languages:** 40+ parsers auto-installed
-- **Why:** Accurate syntax highlighting, faster than regex
+**Config file**: `lua/plugins/completion.lua`
 
-### nvim-ts-autotag
-- **Purpose:** Auto-close and rename HTML/JSX tags
-- **Location:** `lua/plugins/treesitter.lua`
-- **Languages:** HTML, JSX, TSX, XML
-- **Why:** Saves time writing markup
+### zbirenbaum/copilot.lua
+GitHub Copilot integration providing inline ghost text suggestions.
 
-### nvim-ts-context-commentstring
-- **Purpose:** Smart comment detection (e.g., `//` in JSX, `{/* */}` in JS)
-- **Location:** `lua/plugins/treesitter.lua`
-- **Used by:** Comment.nvim
-- **Why:** Context-aware commenting in mixed-language files
+| Keybinding | Action |
+|---|---|
+| `C-g` | Accept suggestion |
+| `C-;` | Next suggestion |
+| `C-x` | Dismiss suggestion |
 
----
+### hrsh7th/nvim-cmp
+Main completion engine. Aggregates completions from multiple sources (LSP, buffer, path, snippets) into a single popup menu with fuzzy matching and sorting.
 
-## Navigation & Search (7 plugins)
+| Keybinding | Action |
+|---|---|
+| `Tab` | Next item / expand snippet |
+| `S-Tab` | Previous item |
+| `CR` | Confirm selection |
+| `C-Space` | Trigger completion |
+| `C-e` | Abort completion |
 
-### telescope.nvim
-- **Purpose:** Fuzzy finder with live grep, LSP integration
-- **Location:** `lua/plugins/telescope.lua`
-- **Keybindings:** `<leader>ff` (files), `<leader>fs` (search), `<leader>fb` (buffers)
-- **Why:** Fast, extensible search for everything
+### hrsh7th/cmp-buffer
+Completion source that suggests words from open buffers.
 
-### telescope-fzf-native.nvim
-- **Purpose:** Native FZF sorting algorithm (compiled)
-- **Location:** `lua/plugins/telescope.lua`
-- **Build:** Requires C compiler (auto-compiled on install)
-- **Why:** 10x faster fuzzy matching than Lua implementation
+### hrsh7th/cmp-path
+Completion source for filesystem paths. Supports both absolute and relative paths.
 
-### flash.nvim
-- **Purpose:** Modern f/F motion commands with labels
-- **Location:** `lua/plugins/modern-enhancements.lua`
-- **Keybindings:** `s` (search), `S` (Treesitter search), `r` (remote)
-- **Why:** Jump anywhere in visible area with 2-3 keystrokes
+### L3MON4D3/LuaSnip
+Snippet engine with support for VS Code snippet format, variable transforms, and choice nodes. Loads snippets from friendly-snippets.
 
-### nvim-tree.lua
-- **Purpose:** File tree explorer
-- **Location:** `lua/plugins/nvim-tree.lua`
-- **Keybindings:** `<leader>e` (toggle), `<leader>ef` (find file)
-- **Why:** Visual file system navigation
+### rafamadriz/friendly-snippets
+Collection of pre-built snippets in VS Code format covering most popular languages and frameworks.
 
-### nvim-spectre
-- **Purpose:** Find and replace across files
-- **Location:** `lua/plugins/modern-enhancements.lua`
-- **Keybindings:** `<leader>sr` (open), `<leader>sw` (search word)
-- **Why:** Powerful project-wide search and replace
+### saadparwaiz1/cmp_luasnip
+Bridge between LuaSnip and nvim-cmp, exposing snippets as a completion source.
 
-### project.nvim
-- **Purpose:** Project detection and management
-- **Location:** `lua/plugins/productivity.lua`
-- **Keybindings:** `<leader>fp` (find projects)
-- **Why:** Auto-detect project root, switch projects quickly
-
-### buffer_manager.nvim
-- **Purpose:** Buffer management UI
-- **Location:** `lua/plugins/utilities.lua`
-- **Keybindings:** `<leader>bm` (open manager)
-- **Why:** Visual buffer organization
+### onsails/lspkind.nvim
+Adds VS Code-like pictograms (icons) to completion menu items, indicating the kind of each completion (function, variable, class, etc.).
 
 ---
 
-## Git Integration (6 plugins)
+## Editor Enhancements
 
-### gitsigns.nvim
-- **Purpose:** Git hunks, staging, blame in sign column
-- **Location:** `lua/plugins/git-enhancements.lua`
-- **Keybindings:**
-  - `]c` / `[c` (next/prev hunk)
-  - `<leader>hp` (preview hunk), `<leader>hs` (stage hunk)
-  - `<leader>gb` (toggle blame), `<leader>gd` (toggle deleted)
-- **Why:** See git changes inline without leaving editor
+**Config file**: `lua/plugins/editor.lua`
 
-### neogit
-- **Purpose:** Magit-style git interface
-- **Location:** `lua/plugins/git-enhancements.lua`
-- **Commands:** `:Neogit`
-- **Keybindings:** `<leader>gg` (open)
-- **Why:** Full-featured git UI for complex workflows
+### windwp/nvim-autopairs
+Automatically inserts matching brackets, quotes, and parentheses. Integrates with nvim-cmp to insert pairs after selecting a function completion.
 
-### git-conflict.nvim
-- **Purpose:** Git conflict resolution helpers
-- **Location:** `lua/plugins/git-enhancements.lua`
-- **Keybindings:** `co` (ours), `ct` (theirs), `cb` (both), `cn` (none)
-- **Why:** Resolve merge conflicts visually
+### kylechui/nvim-surround
+Manipulate surrounding characters (brackets, quotes, tags, etc.).
 
-### diffview.nvim
-- **Purpose:** Git diff viewer with file history
-- **Location:** `lua/plugins/git-enhancements.lua`
-- **Commands:** `:DiffviewOpen`, `:DiffviewFileHistory`
-- **Keybindings:** `<leader>hd` (diff this), `<leader>hD` (diff cached)
-- **Why:** Better than `git diff` in terminal
+| Keybinding | Action |
+|---|---|
+| `ys{motion}{char}` | Add surrounding |
+| `ds{char}` | Delete surrounding |
+| `cs{old}{new}` | Change surrounding |
 
-### vim-fugitive
-- **Purpose:** Git commands integration in Neovim
-- **Location:** `lua/plugins/git-workflow.lua`
-- **Commands:** `:Git`
-- **Why:** Seamless git command execution
+### numToStr/Comment.nvim
+Toggle comments with motions and visual selections.
 
-### git-workflow (AI-powered)
-- **Purpose:** AI-generated commit messages with OpenAI, auto-commit & push
-- **Location:** `lua/plugins/git-workflow.lua`
-- **Dependencies:** `lua/config/openai.lua`, `lua/config/github.lua`
-- **Keybindings:**
-  - `<leader>gc` (smart commit with AI message, stages current file if needed)
-  - `<leader>gP` (push to remote)
-  - `<leader>gC` (auto-commit all changes with AI message, no push)
-  - `<leader>gA` (auto-commit all & push in one command)
-- **Environment:** Requires `OPENAI_API_KEY` in shell or `.zshrc`/`.bashrc`
-- **Why:** Streamline git workflow with intelligent commit messages
+| Keybinding | Action |
+|---|---|
+| `gcc` | Toggle line comment |
+| `gc{motion}` | Toggle comment over motion |
+| `gbc` | Toggle block comment |
+
+### JoosepAlviste/nvim-ts-context-commentstring
+Provides context-aware comment strings using Treesitter. Ensures correct comment syntax in embedded languages (e.g., JSX inside JavaScript, CSS inside HTML).
+
+### folke/which-key.nvim
+Displays a popup of available keybindings as you type a leader key sequence. Groups keybindings by namespace with descriptions.
+
+### ThePrimeagen/refactoring.nvim
+Code refactoring operations powered by Treesitter.
+
+| Keybinding | Action |
+|---|---|
+| `<leader>re` | Extract function (visual) |
+| `<leader>rv` | Extract variable (visual) |
+| `<leader>ri` | Inline variable |
+
+### echasnovski/mini.ai
+Enhanced text objects for function arguments, function bodies, class bodies, and more. Extends `a`/`i` text objects beyond Vim defaults.
 
 ---
 
-## Configuration Modules
+## UI & Visual
+
+**Config file**: `lua/plugins/ui.lua`
+
+### nvim-lualine/lualine.nvim
+Fully customizable status line. Configured with sections showing mode, branch, diff, diagnostics, filename, LSP server, filetype, progress, location, and GitHub account indicator (` @username`).
+
+### nvim-tree/nvim-web-devicons
+Provides file-type-specific icons (requires a Nerd Font). Used by lualine, bufferline, nvim-tree, telescope, and other UI plugins.
+
+### SmiteshP/nvim-navic
+Displays LSP breadcrumb navigation (e.g., `class > method > block`) in the status line or winbar, showing the current code context.
+
+### akinsho/bufferline.nvim
+Renders open buffers as a tab line at the top of the editor. Shows diagnostics indicators and supports buffer ordering.
+
+| Keybinding | Action |
+|---|---|
+| `S-h` | Previous buffer |
+| `S-l` | Next buffer |
+| `S-x` | Close current buffer (quit if last) |
+
+### echasnovski/mini.bufremove
+Provides buffer deletion commands that preserve window layout. When you close a buffer, the window stays open with another buffer rather than closing. Includes a smart close helper (`_G._smart_buf_close`) that quits Neovim when closing the last listed buffer, avoiding empty `[No Name]` buffers. The bufferline auto-hides when only one buffer is open.
+
+### echasnovski/mini.indentscope
+Draws an animated vertical line showing the current indent scope. Helps visualize code blocks and nesting levels.
+
+### RRethy/vim-illuminate
+Automatically highlights other occurrences of the symbol under the cursor throughout the visible buffer. Uses LSP, Treesitter, or regex depending on availability.
+
+### kevinhwang91/nvim-ufo
+Advanced code folding using Treesitter and LSP as fold providers. Supports fold previewing and customizable fold text.
+
+### kevinhwang91/promise-async
+Async/await library required by nvim-ufo for non-blocking fold computation.
+
+---
+
+## Git Integration
+
+**Config file**: `lua/plugins/git.lua`
+
+### lewis6991/gitsigns.nvim
+Git integration showing added/changed/deleted lines in the sign column. Supports hunk-level staging, unstaging, and inline blame.
+
+| Keybinding | Action |
+|---|---|
+| `]c` / `[c` | Next/previous hunk |
+| `<leader>hs` | Stage hunk |
+| `<leader>hr` | Reset hunk |
+| `<leader>hp` | Preview hunk |
+| `<leader>hS` | Stage buffer |
+| `<leader>hu` | Undo stage hunk |
+| `<leader>hd` | Diff this |
+| `<leader>hD` | Diff this (cached) |
+| `<leader>gb` | Toggle line blame |
+| `<leader>gd` | Toggle deleted lines |
+
+### tpope/vim-fugitive
+Git command wrapper (`:Git`, `:Gread`, `:Gwrite`, etc.). Also serves as the foundation for the AI-powered commit workflow.
+
+| Keybinding | Action |
+|---|---|
+| `<leader>gc` | Commit with AI-generated message |
+| `<leader>gA` | Auto-commit all & push |
+| `<leader>gP` | Push to remote |
+
+The AI commit workflow uses OpenAI GPT-4o to generate commit messages from staged diffs. Messages can be edited before committing. Falls back to `[timestamp] Auto-commit` if the API is unavailable.
+
+---
+
+## Developer Tools
+
+**Config file**: `lua/plugins/dev-tools.lua`
+
+### folke/todo-comments.nvim
+Highlights and indexes comment annotations: `TODO`, `FIXME`, `HACK`, `WARN`, `PERF`, `NOTE`. Searchable via Telescope and Trouble.
+
+### nvim-lua/plenary.nvim
+Common Lua utility library providing async primitives, path handling, testing, and HTTP utilities. Required by Telescope, gitsigns, and other plugins.
+
+### folke/snacks.nvim
+Multi-purpose plugin providing:
+- **Dashboard**: Startup screen with recent files, projects, and shortcuts
+- **Terminal**: Toggle-able terminal windows
+- **Notifications**: Sole notification backend (`vim.notify` override)
+- **Lazygit**: Integrated lazygit interface
+
+| Keybinding | Action |
+|---|---|
+| `C-\` | Toggle terminal |
+| `<leader>tt` | Toggle terminal |
+| `<leader>tf` | Float terminal |
+| `<leader>th` | Horizontal terminal |
+| `<leader>tv` | Vertical terminal |
+
+### ahmedkhalf/project.nvim
+Automatic project root detection using LSP, patterns (`.git`, `Makefile`, `package.json`), etc. Integrates with Telescope for project switching (`<leader>fp`).
+
+---
+
+## Diagnostics
+
+**Config file**: `lua/plugins/diagnostics.lua`
+
+### folke/trouble.nvim
+Pretty list for diagnostics, references, quickfix, and location lists. Provides structured views of workspace problems.
+
+| Keybinding | Action |
+|---|---|
+| `<leader>xx` | Toggle diagnostics |
+| `<leader>xc` | Copy all diagnostics to clipboard |
+
+---
+
+## Treesitter
+
+**Config file**: `lua/plugins/treesitter.lua`
+
+### nvim-treesitter/nvim-treesitter
+Incremental syntax parsing and highlighting. Provides accurate, language-aware syntax highlighting, code folding, and powers other plugins (refactoring, text objects, comment strings).
+
+Run `:TSUpdate` to update parsers, `:TSInstall <language>` to add new ones.
+
+### windwp/nvim-ts-autotag
+Automatically closes and renames HTML, JSX, TSX, Vue, and Svelte tags using Treesitter for accurate tag matching.
+
+---
+
+## Navigation & Search
+
+**Config file**: `lua/plugins/telescope.lua`
+
+### nvim-telescope/telescope.nvim
+Extensible fuzzy finder over files, buffers, LSP symbols, git history, and more. Core navigation tool for the configuration.
+
+| Keybinding | Action |
+|---|---|
+| `<leader>ff` | Find files |
+| `<leader>fs` | Live grep (search text) |
+| `<leader>fb` | Find buffers |
+| `<leader>fh` | Help tags |
+| `<leader>fp` | Find projects |
+| `<leader>fr` | Recent files |
+
+### nvim-telescope/telescope-fzf-native.nvim
+Native C implementation of FZF's sorting algorithm for Telescope. Provides significantly faster fuzzy matching compared to the Lua implementation.
+
+---
+
+## File Management
+
+**Config file**: `lua/plugins/nvim-tree.lua`
+
+### nvim-tree/nvim-tree.lua
+File explorer sidebar with git status indicators, file operations (create, rename, delete, copy, move), and LSP-aware file renaming via nvim-lsp-file-operations.
+
+| Keybinding | Action |
+|---|---|
+| `<leader>e` | Toggle file explorer |
+
+---
+
+## Formatting & Linting
+
+**Config file**: `lua/plugins/formatting.lua`
+
+### stevearc/conform.nvim
+Code formatter supporting multiple formatters per filetype with fallback chains. Formats on save by default.
+
+| Language | Formatter(s) |
+|---|---|
+| JavaScript/TypeScript | prettier, biome |
+| Lua | stylua |
+| Python | black |
+| Go | gofmt |
+| Rust | rustfmt |
+| C/C++ | clang-format |
+| Shell | shfmt |
+
+| Keybinding | Action |
+|---|---|
+| `<leader>mp` | Format file/selection |
+
+### mfussenegger/nvim-lint
+Asynchronous linter engine. Runs linters on file events and populates the diagnostics list.
+
+---
+
+## Colorscheme
+
+**Config file**: `lua/plugins/colorscheme.lua`
+
+### rebelot/kanagawa.nvim
+Kanagawa colorscheme using the wave theme variant. A dark theme inspired by the famous painting by Katsushika Hokusai.
+
+---
+
+## Language-Specific
+
+**Config file**: `lua/plugins/python.lua`
+
+### AckslD/swenv.nvim
+Python virtual environment switcher. Detects and switches between venvs, updating the LSP server (pyright) to use the selected environment.
+
+| Keybinding | Action |
+|---|---|
+| `<leader>pe` | Select Python venv |
+
+---
+
+## Custom Modules
+
+These are not plugins but custom Lua modules in `lua/config/`:
 
 ### openai.lua
-- **Purpose:** OpenAI API integration for AI-powered features
-- **Location:** `lua/config/openai.lua`
-- **Functions:**
-  - `get_api_key()` - Load `OPENAI_API_KEY` from environment or shell configs (`.zshrc`, `.bashrc`, `.zprofile`)
-  - `generate_commit_message(diff, fallback)` - Generate commit messages using GPT-4o
-- **Used by:** `lua/plugins/git-workflow.lua`
-- **Environment:** Requires `OPENAI_API_KEY` environment variable
-- **Why:** Centralized OpenAI integration with caching and fallbacks
+OpenAI API integration providing GPT-4o access for AI-generated commit messages. Handles API key loading from environment variables (checks `OPENAI_API_KEY` in env, `.zshrc`, `.bashrc`, `.zprofile`). Includes response caching.
 
 ### github.lua
-- **Purpose:** GitHub account management and detection
-- **Location:** `lua/config/github.lua`
-- **Functions:**
-  - `get_current_account()` - Get active GitHub username
-  - `get_all_accounts()` - Get list of all configured accounts
-  - `switch_account()` - Toggle to next non-active GitHub account
-  - `show_status()` - Display full GitHub auth status in floating terminal
-- **Used by:** `lua/plugins/dev-tools.lua`, `lua/plugins/ui-statusline.lua`
-- **Display:** Shows in lualine as ` @username` when in git repo
-- **Why:** Manage multiple GitHub accounts seamlessly
+Multi-account GitHub CLI management. Cycles through authenticated GitHub accounts with caching (60s TTL) to minimize `gh` CLI calls.
 
----
-
-## Code Editing (8 plugins)
-
-### nvim-surround
-- **Purpose:** Manipulate surrounding brackets, quotes, tags
-- **Location:** `lua/plugins/enhanced-editing.lua`
-- **Keybindings:** `ys` (add), `ds` (delete), `cs` (change)
-- **Example:** `ysiw"` surrounds word with quotes
-- **Why:** Fast bracket/quote manipulation
-
-### mini.pairs
-- **Purpose:** Auto-pair insertion and deletion
-- **Location:** `lua/plugins/enhanced-editing.lua`
-- **Auto-pairs:** `()`, `[]`, `{}`, `""`, `''`, ````
-- **Why:** Balanced brackets automatically
-
-### mini.ai
-- **Purpose:** Extended text objects (function args, etc.)
-- **Location:** `lua/plugins/enhanced-editing.lua`
-- **Text objects:** `a/i` + `f` (function), `c` (class), `a` (argument)
-- **Example:** `daa` deletes an argument
-- **Why:** More granular selection than default vim
-
-### mini.bufremove
-- **Purpose:** Better buffer deletion (preserves window layout)
-- **Location:** `lua/plugins/enhanced-editing.lua`
-- **Keybindings:** `<leader>bd` (delete buffer)
-- **Why:** Close buffer without closing window
-
-### mini.indentscope
-- **Purpose:** Visual indent level indicators
-- **Location:** `lua/plugins/ui-indicators.lua`
-- **Display:** Animated indent guide for current scope
-- **Why:** See current code block boundaries
-
-### Comment.nvim
-- **Purpose:** Toggle comments with `gcc`
-- **Location:** `lua/plugins/enhanced-editing.lua`
-- **Keybindings:** `gcc` (line), `gc` (visual), `gbc` (block)
-- **Why:** Smart context-aware commenting
-
-### refactoring.nvim
-- **Purpose:** Code refactoring operations (extract, inline, etc.)
-- **Location:** `lua/plugins/modern-enhancements.lua`
-- **Keybindings:**
-  - `<leader>re` (extract function), `<leader>rf` (extract block)
-  - `<leader>ri` (inline variable), `<leader>rv` (extract variable)
-- **Why:** Safe, automated refactorings
-
-### nvim-ufo
-- **Purpose:** Better code folding with Treesitter
-- **Location:** `lua/plugins/enhanced-editing.lua`
-- **Keybindings:** `zR` (open all), `zM` (close all), `za` (toggle)
-- **Why:** Treesitter-aware folding, faster than default
-
----
-
-## UI Enhancement (13 plugins)
-
-### lualine.nvim
-- **Purpose:** Status line with git, LSP, diagnostics
-- **Location:** `lua/plugins/ui-statusline.lua`
-- **Sections:** mode, git branch, filename, diagnostics, LSP, encoding, progress
-- **Why:** Beautiful, informative status line
-
-### nvim-cokeline
-- **Purpose:** Buffer line (tabs for buffers)
-- **Location:** `lua/plugins/ui-bufferline.lua`
-- **Keybindings:** `<S-h>` / `<S-l>` (navigate), `<A-<>` / `<A->>` (reorder)
-- **Why:** Visual buffer management with mouse support
-
-### noice.nvim
-- **Purpose:** Better UI for messages, cmdline, popups
-- **Location:** `lua/plugins/ui-notifications.lua`
-- **Features:** Cmdline popup, message notifications, LSP progress
-- **Why:** Modern, non-intrusive UI messaging
-
-### nvim-notify
-- **Purpose:** Notification manager with animations
-- **Location:** `lua/plugins/ui-notifications.lua`
-- **Used by:** noice, LSP, plugins
-- **Why:** Beautiful, dismissible notifications
-
-### dressing.nvim
-- **Purpose:** Styled input/select UI (uses Telescope)
-- **Location:** `lua/plugins/ui-notifications.lua`
-- **Enhanced:** `vim.ui.select`, `vim.ui.input`
-- **Why:** Better looking prompts and selectors
-
-### fidget.nvim
-- **Purpose:** LSP progress indicator (bottom-right corner)
-- **Location:** `lua/plugins/ui-notifications.lua`
-- **Display:** Shows LSP server activity
-- **Why:** Know when LSP is working
-
-### vim-illuminate
-- **Purpose:** Highlight symbol references under cursor
-- **Location:** `lua/plugins/ui-indicators.lua`
-- **Auto-trigger:** Highlights same symbol across buffer
-- **Why:** See where variable/function is used
-
-### nvim-colorizer.lua
-- **Purpose:** Highlight color codes (#ff0000, rgb(255,0,0))
-- **Location:** `lua/plugins/ui-indicators.lua`
-- **Languages:** CSS, HTML, JavaScript, Lua
-- **Why:** Visual color preview in code
-
-### nvim-bqf
-- **Purpose:** Better quickfix list UI
-- **Location:** `lua/plugins/utilities.lua`
-- **Features:** Preview, search, filter
-- **Why:** Enhanced quickfix window
-
-### neoscroll.nvim
-- **Purpose:** Smooth scrolling animations
-- **Location:** `lua/plugins/utilities.lua`
-- **Why:** Easier to track cursor during scrolls
-
-### render-markdown.nvim
-- **Purpose:** Render markdown in-buffer (headings, lists, code blocks)
-- **Location:** `lua/plugins/productivity.lua`
-- **Languages:** Markdown
-- **Why:** WYSIWYG markdown editing experience
-
-### snacks.nvim (multi-feature)
-- **Purpose:** Dashboard, terminal, scrollbar, git, indent animations
-- **Location:** `lua/plugins/dev-tools.lua`
-- **Components:**
-  - **Dashboard:** Startup screen with recent files
-  - **Terminal:** Floating terminal (`<C-\>`, `<leader>tt`)
-  - **Git:** Blame/browse lines
-  - **Indent:** Animated indent guides
-- **Why:** Multiple small utilities in one plugin
-
-### actions-preview.nvim
-- **Purpose:** Code action preview with diff
-- **Location:** `lua/plugins/lsp-core.lua`
-- **Keybindings:** `<leader>ca` (code actions)
-- **Why:** See code action changes before applying
-
----
-
-## Development Tools (6 plugins)
-
-### trouble.nvim
-- **Purpose:** Diagnostics, references, quickfix list UI
-- **Location:** `lua/plugins/enhanced-diagnostics.lua`
-- **Keybindings:**
-  - `<leader>xx` (diagnostics), `<leader>xX` (buffer diagnostics)
-  - `<leader>xq` (quickfix), `<leader>xl` (location list)
-- **Why:** Better diagnostics navigation
-
-### todo-comments.nvim
-- **Purpose:** Highlight and search TODO/FIXME/NOTE comments
-- **Location:** `lua/plugins/dev-tools.lua`
-- **Keybindings:** `<leader>ft` (search todos), `]t` / `[t` (next/prev)
-- **Keywords:** TODO, HACK, WARN, PERF, NOTE, FIX
-- **Why:** Track TODOs across project
-
-### nvim-lint
-- **Purpose:** Linting framework (runs linters async)
-- **Location:** `lua/plugins/formatting.lua`
-- **Linters:** eslint, ruff, shellcheck, yamllint
-- **Why:** Catch errors beyond LSP
-
-### conform.nvim
-- **Purpose:** Code formatting with project-aware formatter selection
-- **Location:** `lua/plugins/formatting.lua`
-- **Keybindings:** `<leader>mp` (format), auto-format on save
-- **Formatters:** prettier, biome, stylua, black, gofmt, rustfmt, clang-format, shfmt
-- **Why:** Consistent code formatting
-
-### markdown-preview.nvim
-- **Purpose:** Live markdown preview in browser
-- **Location:** `lua/plugins/productivity.lua`
-- **Commands:** `:MarkdownPreview`, `:MarkdownPreviewToggle`
-- **Why:** WYSIWYG markdown preview
-
----
-
-## Session & Productivity (2 plugins)
-
-### persistence.nvim
-- **Purpose:** Session auto-save and restore
-- **Location:** `lua/plugins/productivity.lua`
-- **Keybindings:** `<leader>qs` (restore), `<leader>ql` (last), `<leader>qd` (stop)
-- **Why:** Resume work exactly where you left off
-
-### swenv.nvim
-- **Purpose:** Python virtual environment switcher
-- **Location:** `lua/plugins/python.lua`
-- **Keybindings:** `<leader>pe` (select venv)
-- **Why:** Switch Python venv without restarting Neovim
-
----
-
-## Colorscheme (1 plugin)
-
-### Custom Gruvbox Dark
-- **Purpose:** Science-based colorscheme optimized for eye strain reduction
-- **Location:** `lua/colors/gruvbox-custom.lua`, loaded in `lua/plugins/colorscheme.lua`
-- **Features:** Reduced contrast, warm colors, low blue light
-- **Why:** Comfortable for long coding sessions
+| Keybinding | Action |
+|---|---|
+| `<leader>ga` | Toggle GitHub account |
+| `<leader>gas` | Show GitHub auth status |
 
 ---
 
 ## Quick Reference Table
 
-| Plugin | Category | Config File | Primary Keybinding |
-|--------|----------|-------------|-------------------|
-| telescope.nvim | Search | telescope.lua | `<leader>ff` |
-| nvim-tree.lua | Navigation | nvim-tree.lua | `<leader>e` |
-| nvim-cmp | Completion | autocompletion.lua | `<Tab>` |
-| copilot.lua | AI | autocompletion.lua | `<C-g>` |
-| gitsigns.nvim | Git | git-enhancements.lua | `]c`, `<leader>hp` |
-| lualine.nvim | UI | ui-statusline.lua | (statusline) |
-| nvim-treesitter | Syntax | treesitter.lua | (auto) |
-| mason.nvim | LSP | lsp-servers.lua | `:Mason` |
-| trouble.nvim | Diagnostics | enhanced-diagnostics.lua | `<leader>xx` |
-| flash.nvim | Motion | modern-enhancements.lua | `s` |
-| refactoring.nvim | Refactoring | modern-enhancements.lua | `<leader>re` |
-| conform.nvim | Formatting | formatting.lua | `<leader>mp` |
-| snacks.nvim | Multi | dev-tools.lua | `<C-\>` (terminal) |
-| noice.nvim | UI | ui-notifications.lua | (auto) |
+| # | Plugin | Category | Config File | Primary Keybinding |
+|---|---|---|---|---|
+| 1 | mason.nvim | LSP | lsp.lua | `:Mason` |
+| 2 | mason-lspconfig.nvim | LSP | lsp.lua | (auto) |
+| 3 | mason-tool-installer.nvim | LSP | lsp.lua | (auto) |
+| 4 | nvim-lspconfig | LSP | lsp.lua | `gd`, `K`, `<leader>ca` |
+| 5 | cmp-nvim-lsp | LSP | lsp.lua | (auto) |
+| 6 | nvim-lsp-file-operations | LSP | lsp.lua | (auto) |
+| 7 | lazydev.nvim | LSP | lsp.lua | (auto) |
+| 8 | luvit-meta | LSP | lsp.lua | (auto) |
+| 9 | copilot.lua | Completion | completion.lua | `C-g` |
+| 10 | nvim-cmp | Completion | completion.lua | `Tab`, `CR` |
+| 11 | cmp-buffer | Completion | completion.lua | (auto) |
+| 12 | cmp-path | Completion | completion.lua | (auto) |
+| 13 | LuaSnip | Completion | completion.lua | `Tab` |
+| 14 | friendly-snippets | Completion | completion.lua | (auto) |
+| 15 | cmp_luasnip | Completion | completion.lua | (auto) |
+| 16 | lspkind.nvim | Completion | completion.lua | (auto) |
+| 17 | nvim-autopairs | Editor | editor.lua | (auto) |
+| 18 | nvim-surround | Editor | editor.lua | `ys`, `ds`, `cs` |
+| 19 | Comment.nvim | Editor | editor.lua | `gcc`, `gc` |
+| 20 | nvim-ts-context-commentstring | Editor | editor.lua | (auto) |
+| 21 | which-key.nvim | Editor | editor.lua | `<Space>` (wait) |
+| 22 | refactoring.nvim | Editor | editor.lua | `<leader>re` |
+| 23 | mini.ai | Editor | editor.lua | `a`/`i` text objects |
+| 24 | lualine.nvim | UI | ui.lua | (statusline) |
+| 25 | nvim-web-devicons | UI | ui.lua | (auto) |
+| 26 | nvim-navic | UI | ui.lua | (breadcrumbs) |
+| 27 | bufferline.nvim | UI | ui.lua | `S-h`, `S-l` |
+| 28 | mini.bufremove | UI | ui.lua | `S-x` |
+| 29 | mini.indentscope | UI | ui.lua | (auto) |
+| 30 | vim-illuminate | UI | ui.lua | (auto) |
+| 31 | nvim-ufo | UI | ui.lua | `zR`, `zM` |
+| 32 | promise-async | UI | ui.lua | (auto) |
+| 33 | gitsigns.nvim | Git | git.lua | `]c`, `<leader>hs` |
+| 34 | vim-fugitive | Git | git.lua | `<leader>gc` |
+| 35 | todo-comments.nvim | Dev Tools | dev-tools.lua | `<leader>ft`, `]t` |
+| 36 | plenary.nvim | Dev Tools | dev-tools.lua | (library) |
+| 37 | snacks.nvim | Dev Tools | dev-tools.lua | `C-\`, `<leader>tt` |
+| 38 | project.nvim | Dev Tools | dev-tools.lua | `<leader>fp` |
+| 39 | trouble.nvim | Diagnostics | diagnostics.lua | `<leader>xx` |
+| 40 | nvim-treesitter | Treesitter | treesitter.lua | (auto) |
+| 41 | nvim-ts-autotag | Treesitter | treesitter.lua | (auto) |
+| 42 | telescope.nvim | Navigation | telescope.lua | `<leader>ff` |
+| 43 | telescope-fzf-native.nvim | Navigation | telescope.lua | (auto) |
+| 44 | nvim-tree.lua | File Mgmt | nvim-tree.lua | `<leader>e` |
+| 45 | conform.nvim | Formatting | formatting.lua | `<leader>mp` |
+| 46 | nvim-lint | Linting | formatting.lua | (auto) |
+| 47 | kanagawa.nvim | Colorscheme | colorscheme.lua | (auto) |
+| 48 | swenv.nvim | Language | python.lua | `<leader>pe` |
+
+> **Note**: Some plugins (cmp-nvim-lsp, plenary, nvim-web-devicons) appear as dependencies in multiple files but are counted once. The table shows 48 rows to indicate per-file placement; unique plugin count is **42**.
 
 ---
 
-## Plugin Dependencies Graph
-
-```
-lazy.nvim (root)
-├── Core
-│   ├── plenary.nvim (many plugins)
-│   ├── nvim-web-devicons (UI plugins)
-│   ├── nui.nvim (noice, telescope)
-│   └── which-key.nvim (standalone)
-│
-├── LSP Layer
-│   ├── mason.nvim
-│   │   ├── mason-lspconfig.nvim
-│   │   │   └── nvim-lspconfig (13+ servers)
-│   │   └── mason-tool-installer.nvim
-│   ├── lazydev.nvim → luvit-meta
-│   └── nvim-lsp-file-operations
-│
-├── Completion Layer
-│   ├── nvim-cmp (engine)
-│   │   ├── cmp-nvim-lsp (LSP source)
-│   │   ├── cmp-buffer (buffer source)
-│   │   ├── cmp-path (path source)
-│   │   ├── cmp_luasnip (snippet source)
-│   │   └── copilot-cmp (AI source)
-│   ├── LuaSnip → friendly-snippets
-│   ├── copilot.lua (standalone + cmp source)
-│   ├── lspkind.nvim (pictograms)
-│   └── lsp_signature.nvim (signatures)
-│
-├── Syntax & Parsing
-│   └── nvim-treesitter
-│       ├── nvim-ts-autotag
-│       └── nvim-ts-context-commentstring → Comment.nvim
-│
-├── Navigation
-│   ├── telescope.nvim → telescope-fzf-native.nvim
-│   ├── flash.nvim
-│   ├── nvim-tree.lua
-│   ├── nvim-spectre → plenary.nvim
-│   ├── project.nvim → telescope
-│   └── buffer_manager.nvim
-│
-├── Git
-│   ├── gitsigns.nvim
-│   ├── neogit → plenary.nvim
-│   ├── git-conflict.nvim
-│   ├── diffview.nvim
-│   └── nvim-navic → lualine
-│
-├── Editing
-│   ├── nvim-surround
-│   ├── mini.pairs
-│   ├── mini.ai
-│   ├── mini.bufremove
-│   ├── mini.indentscope
-│   ├── Comment.nvim
-│   ├── refactoring.nvim → plenary.nvim
-│   └── nvim-ufo → promise-async
-│
-├── UI
-│   ├── lualine.nvim → nvim-web-devicons
-│   ├── nvim-cokeline → nvim-web-devicons
-│   ├── noice.nvim → nui.nvim, nvim-notify
-│   ├── nvim-notify
-│   ├── dressing.nvim → telescope
-│   ├── fidget.nvim
-│   ├── vim-illuminate
-│   ├── nvim-colorizer.lua
-│   ├── nvim-bqf
-│   ├── neoscroll.nvim
-│   ├── render-markdown.nvim
-│   ├── snacks.nvim (multi-component)
-│   └── actions-preview.nvim → telescope
-│
-│ ├── Dev Tools
-│   ├── trouble.nvim
-│   ├── todo-comments.nvim → plenary.nvim
-│   ├── nvim-lint
-│   ├── conform.nvim
-│   └── markdown-preview.nvim
-│
-└── Session/Language-Specific
-    ├── persistence.nvim
-    └── swenv.nvim (Python)
-```
-
----
-
-## Installation Notes
-
-- **All plugins auto-install** on first Neovim launch via lazy.nvim
-- **Compiled plugins** (telescope-fzf-native) build automatically
-- **LSP servers** auto-install when you open a file of that type
-- **Formatters/linters** auto-install via mason-tool-installer
-- **Manual installation not required** for any plugin
-
-## Performance Notes
-
-- **Startup time:** ~76ms (69 plugins)
-- **Lazy loading:** Event-based (VeryLazy, BufReadPre, InsertEnter, cmd)
-- **Memory:** 150-200MB (idle with LSP)
-- **Optimization:** Disabled builtins (gzip, netrw, etc.)
-
-## Troubleshooting Plugins
+## Troubleshooting
 
 | Issue | Command | Fix |
 |-------|---------|-----|

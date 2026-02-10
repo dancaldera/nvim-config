@@ -212,7 +212,7 @@ return {
 				end
 			end
 
-			vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
+			vim.api.nvim_create_autocmd({ "BufWritePost", "InsertLeave" }, {
 				group = lint_augroup,
 				callback = function()
 					-- Check if auto-linting is enabled

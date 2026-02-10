@@ -314,13 +314,7 @@ local function check_copilot(report)
 		return false
 	end
 
-	-- Check if copilot-cmp is available
-	local cmp_ok, copilot_cmp = pcall(require, "copilot_cmp")
-	if cmp_ok then
-		report.info("Copilot integrated with nvim-cmp")
-	else
-		report.info("Copilot standalone mode (inline suggestions only)")
-	end
+	report.info("Copilot configured for inline suggestions (ghost text mode)")
 
 	return true
 end
@@ -442,6 +436,15 @@ function M.check()
 		use_health = true,
 	})
 	return run_all_checks(reporter)
+end
+
+function M.check_config_consistency()
+	local reporter = make_reporter({
+		use_notify = true,
+		use_health = false,
+		notify_level = vim.log.levels.INFO,
+	})
+	return check_config_consistency(reporter)
 end
 
 -- Auto-check disabled for performance - use :checkhealth or <leader>hc manually

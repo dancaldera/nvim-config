@@ -46,14 +46,13 @@ keymap.set("n", "N", "Nzzzv", { desc = "Previous search result and center" })
 -- Save and quit
 keymap.set("n", "<leader>w", "<cmd>w<CR>", { desc = "Save file" })
 keymap.set("n", "<leader>q", "<cmd>q<CR>", { desc = "Quit" })
-keymap.set("n", "<leader>x", "<cmd>wq<CR>", { desc = "Save and quit" })
 
 -- Buffer navigation (bufferline.nvim)
 keymap.set("n", "<S-l>", "<cmd>BufferLineCycleNext<CR>", { desc = "Next buffer", silent = true })
 keymap.set("n", "<S-h>", "<cmd>BufferLineCyclePrev<CR>", { desc = "Previous buffer", silent = true })
 keymap.set("n", "<S-x>", function()
-	require("mini.bufremove").delete(0, false)
-end, { desc = "Close current buffer" })
+	_G._smart_buf_close(false)
+end, { desc = "Close current buffer (quit if last)" })
 
 -- Buffer reordering (move buffers left/right in tabline)
 keymap.set("n", "<A-,>", "<cmd>BufferLineMovePrev<CR>", { desc = "Move buffer left", silent = true })
@@ -109,8 +108,8 @@ keymap.set("n", "<M-k>", "<cmd>resize -2<CR>", { desc = "Decrease window height"
 keymap.set("n", "<leader>hc", "<cmd>lua require('config.health').check_health()<CR>", { desc = "Run health check" })
 keymap.set(
 	"n",
-	"<leader>hs",
+	"<leader>hC",
 	"<cmd>lua require('config.health').check_config_consistency()<CR>",
 	{ desc = "Check config consistency" }
 )
-keymap.set("n", "<leader>hd", "<cmd>checkhealth<CR>", { desc = "Run Neovim health check" })
+keymap.set("n", "<leader>hN", "<cmd>checkhealth<CR>", { desc = "Run Neovim health check" })

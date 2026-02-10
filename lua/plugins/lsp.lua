@@ -1,6 +1,5 @@
 -- ============================================================================
--- Core LSP Configuration
--- Mason setup, LSP keymaps, inlay hints, and error handling
+-- LSP Configuration (Mason + Servers + Keymaps)
 -- ============================================================================
 
 return {
@@ -23,15 +22,14 @@ return {
 
 			require("mason-tool-installer").setup({
 				ensure_installed = {
-					-- Formatters & Linters
-					"prettier", -- Multi-language formatter
-					"stylua", -- Lua formatter
-					"eslint_d", -- JS/TS linter
-					"shfmt", -- Shell formatter
-					"ruff", -- Python linter/formatter
-					"isort", -- Python import sorter
-					"black", -- Python formatter
-					"golangci-lint", -- Go linter
+					"prettier",
+					"stylua",
+					"eslint_d",
+					"shfmt",
+					"ruff",
+					"isort",
+					"black",
+					"golangci-lint",
 				},
 				auto_update = false,
 				run_on_start = false,
@@ -39,7 +37,7 @@ return {
 		end,
 	},
 
-	-- LSP Configuration
+	-- LSP Configuration + Keymaps
 	{
 		"neovim/nvim-lspconfig",
 		dependencies = {
@@ -60,8 +58,6 @@ return {
 		},
 		config = function()
 			local keymap = vim.keymap
-
-			-- Note: Diagnostic configuration is in lua/plugins/enhanced-diagnostics.lua
 
 			-- Keymaps on LSP attach
 			vim.api.nvim_create_autocmd("LspAttach", {
@@ -102,44 +98,23 @@ return {
 					opts.desc = "Show documentation for what is under cursor"
 					keymap.set("n", "K", vim.lsp.buf.hover, opts)
 
-					-- Note: Signature help is provided by lsp_signature.nvim plugin
-					-- Note: Diagnostic keymaps are in lua/plugins/enhanced-diagnostics.lua
-
-					-- Inlay Hints Toggle
-					-- Cycles through: none -> minimal -> moderate -> complete
+					-- Inlay Hints Toggle (cycles: none -> minimal -> moderate -> complete)
 					local inlay_hint_levels = {
 						{ name = "none", params = "none", types = false, vars = false, returns = false, enums = false },
-						{
-							name = "minimal",
-							params = "literals",
-							types = false,
-							vars = false,
-							returns = false,
-							enums = false,
-						},
-						{
-							name = "moderate",
-							params = "all",
-							types = false,
-							vars = false,
-							returns = true,
-							enums = true,
-						},
+						{ name = "minimal", params = "literals", types = false, vars = false, returns = false, enums = false },
+						{ name = "moderate", params = "all", types = false, vars = false, returns = true, enums = true },
 						{ name = "complete", params = "all", types = true, vars = true, returns = true, enums = true },
 					}
-					vim.b.inlay_hint_level = vim.b.inlay_hint_level or 2 -- default: minimal
+					vim.b.inlay_hint_level = vim.b.inlay_hint_level or 2
 
 					local function set_inlay_hints(level)
 						local cfg = inlay_hint_levels[level]
 						local clients = vim.lsp.get_clients({ bufnr = 0 })
 						for _, c in ipairs(clients) do
 							if c.name == "ts_ls" then
-								---@diagnostic disable-next-line: inject-field
 								c.settings = c.settings or {}
 								for _, lang in ipairs({ "typescript", "javascript" }) do
-									---@diagnostic disable-next-line: inject-field
 									c.settings[lang] = c.settings[lang] or {}
-									---@diagnostic disable-next-line: inject-field
 									c.settings[lang].inlayHints = {
 										includeInlayParameterNameHints = cfg.params,
 										includeInlayParameterNameHintsWhenArgumentMatchesName = false,
@@ -172,34 +147,138 @@ return {
 					keymap.set("n", "<leader>rs", ":LspRestart<CR>", opts)
 				end,
 			})
+		end,
+	},
 
-			-- Enhanced error handling for LSP
-			local function setup_lsp_error_handling()
-				-- Handle LSP startup failures
-				vim.api.nvim_create_autocmd("LspAttach", {
-					group = vim.api.nvim_create_augroup("LspStartupCheck", { clear = true }),
-					callback = function(ev)
-						local client = vim.lsp.get_client_by_id(ev.data.client_id)
-						if not client then
-							vim.notify("Failed to attach LSP client", vim.log.levels.ERROR)
-							return
-						end
-
-						-- Check if server is actually initialized
-						vim.defer_fn(function()
-							if not client.initialized then
-								vim.notify(
-									string.format("LSP server '%s' failed to initialize properly", client.name),
-									vim.log.levels.ERROR
-								)
-							end
-						end, 2000)
-					end,
-				})
+	-- LSP Server Configurations (Neovim 0.11+ native API)
+	{
+		"williamboman/mason-lspconfig.nvim",
+		dependencies = {
+			"williamboman/mason.nvim",
+			"hrsh7th/cmp-nvim-lsp",
+		},
+		config = function()
+			if not (vim.lsp and vim.lsp.config) then
+				vim.notify(
+					"Neovim 0.11+ is required for vim.lsp.config-based setup. Upgrade to enable LSP servers.",
+					vim.log.levels.ERROR
+				)
+				return
 			end
 
-			-- Initialize error handling
-			setup_lsp_error_handling()
+			local capabilities = require("cmp_nvim_lsp").default_capabilities()
+			capabilities.textDocument.foldingRange = {
+				dynamicRegistration = false,
+				lineFoldingOnly = true,
+			}
+
+			-- Servers with default config (capabilities only)
+			local simple_servers = {
+				"html", "cssls", "jsonls", "yamlls", "gopls",
+				"clangd", "rust_analyzer", "tailwindcss", "bashls", "emmet_ls",
+			}
+
+			for _, server in ipairs(simple_servers) do
+				vim.lsp.config(server, { capabilities = capabilities })
+			end
+
+			-- Lua
+			vim.lsp.config("lua_ls", {
+				capabilities = capabilities,
+				settings = {
+					Lua = {
+						diagnostics = { globals = { "vim" } },
+						completion = { callSnippet = "Replace" },
+					},
+				},
+			})
+
+			-- TypeScript/JavaScript
+			vim.lsp.config("ts_ls", {
+				capabilities = capabilities,
+				settings = {
+					typescript = {
+						inlayHints = {
+							includeInlayParameterNameHints = "literals",
+							includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+							includeInlayFunctionParameterTypeHints = false,
+							includeInlayVariableTypeHints = false,
+							includeInlayVariableTypeHintsWhenTypeMatchesName = false,
+							includeInlayPropertyDeclarationTypeHints = false,
+							includeInlayFunctionLikeReturnTypeHints = false,
+							includeInlayEnumMemberValueHints = false,
+						},
+					},
+					javascript = {
+						inlayHints = {
+							includeInlayParameterNameHints = "literals",
+							includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+							includeInlayFunctionParameterTypeHints = false,
+							includeInlayVariableTypeHints = false,
+							includeInlayVariableTypeHintsWhenTypeMatchesName = false,
+							includeInlayPropertyDeclarationTypeHints = false,
+							includeInlayFunctionLikeReturnTypeHints = false,
+							includeInlayEnumMemberValueHints = false,
+						},
+					},
+				},
+			})
+
+			-- Python (with venv detection)
+			vim.lsp.config("pyright", {
+				capabilities = capabilities,
+				before_init = function(_, config)
+					local python_path = nil
+
+					-- Try swenv first
+					local ok, swenv_api = pcall(require, "swenv.api")
+					if ok then
+						local venv = swenv_api.get_current_venv()
+						if venv and venv.path then
+							local bin = venv.path .. "/bin/python"
+							if vim.fn.executable(bin) == 1 then
+								python_path = bin
+							end
+						end
+					end
+
+					-- Fallback: check common local venv paths
+					if not python_path then
+						local cwd = config.root_dir or vim.fn.getcwd()
+						for _, name in ipairs({ ".venv", "venv", ".env" }) do
+							local bin = cwd .. "/" .. name .. "/bin/python"
+							if vim.fn.executable(bin) == 1 then
+								python_path = bin
+								break
+							end
+						end
+					end
+
+					if python_path then
+						config.settings = config.settings or {}
+						config.settings.python = config.settings.python or {}
+						config.settings.python.pythonPath = python_path
+					end
+				end,
+				settings = {
+					python = {
+						analysis = {
+							autoSearchPaths = true,
+							useLibraryCodeForTypes = true,
+						},
+					},
+				},
+			})
+
+			-- Setup mason-lspconfig (auto-enable configured servers)
+			require("mason-lspconfig").setup({
+				ensure_installed = {
+					"lua_ls", "ts_ls", "html", "cssls", "jsonls", "yamlls",
+					"pyright", "gopls", "clangd", "rust_analyzer",
+					"tailwindcss", "bashls", "emmet_ls",
+				},
+				automatic_installation = true,
+			})
 		end,
 	},
 }

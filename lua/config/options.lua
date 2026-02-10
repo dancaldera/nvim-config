@@ -29,6 +29,9 @@ opt.incsearch = true
 -- Cursor line
 opt.cursorline = true
 
+-- Cursor style (no blinking)
+opt.guicursor = "n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20,a:blinkon0"
+
 -- Appearance
 opt.termguicolors = true
 opt.background = "dark"
@@ -67,21 +70,22 @@ opt.timeoutlen = 1000
 -- Completion
 opt.completeopt = "menu,menuone,noselect"
 opt.pumheight = 10
-opt.pumblend = 10 -- Popup transparency
+opt.pumblend = 0 -- No popup transparency (avoids compositing overhead)
 
 -- File encoding
 opt.fileencoding = "utf-8"
 
 -- Command line
-opt.cmdheight = 1
+opt.cmdheight = 0
 opt.showcmd = true
 opt.laststatus = 3 -- Global statusline
+opt.wildmode = "noselect,full" -- Don't auto-select first wildmenu match
+opt.wildoptions = "pum,fuzzy" -- Popup menu with fuzzy matching
 
 -- Scrolling
 opt.scrolloff = 8
 opt.sidescrolloff = 8
 opt.smoothscroll = true
-opt.scrolljump = 2
 
 -- Performance
 opt.lazyredraw = false
