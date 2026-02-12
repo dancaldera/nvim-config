@@ -11,16 +11,13 @@ return {
 			-- Disable default Tab map, let nvim-cmp handle it
 			vim.g.copilot_no_tab_map = true
 
-			-- Custom keybindings for Copilot
+			-- Simplified Copilot keybindings: only accept and dismiss
 			vim.keymap.set("i", "<C-g>", 'copilot#Accept("\\<CR>")', {
 				expr = true,
 				replace_keycodes = false,
 				desc = "Accept Copilot suggestion",
 			})
-			vim.keymap.set("i", "<C-]>", "<Plug>(copilot-next)", { desc = "Next Copilot suggestion" })
-			vim.keymap.set("i", "<C-{>", "<Plug>(copilot-previous)", { desc = "Previous Copilot suggestion" })
 			vim.keymap.set("i", "<C-x>", "<Plug>(copilot-dismiss)", { desc = "Dismiss Copilot" })
-			vim.keymap.set("i", "<C-q>", "<Plug>(copilot-suggest)", { desc = "Request Copilot suggestion" })
 		end,
 	},
 
@@ -69,6 +66,7 @@ return {
 					["<C-f>"] = cmp.mapping.scroll_docs(4),
 					["<C-Space>"] = cmp.mapping.complete(),
 					["<C-e>"] = cmp.mapping.abort(),
+					["<Esc>"] = cmp.mapping.abort(),
 					["<CR>"] = cmp.mapping.confirm({ select = true }),
 					["<Tab>"] = cmp.mapping(function(fallback)
 						if cmp.visible() then
