@@ -11,12 +11,16 @@ return {
 			-- Disable default Tab map, let nvim-cmp handle it
 			vim.g.copilot_no_tab_map = true
 
-			-- Custom keybinding for accepting suggestions (C-g)
+			-- Custom keybindings for Copilot
 			vim.keymap.set("i", "<C-g>", 'copilot#Accept("\\<CR>")', {
 				expr = true,
 				replace_keycodes = false,
 				desc = "Accept Copilot suggestion",
 			})
+			vim.keymap.set("i", "<C-.>", "<Plug>(copilot-next)", { desc = "Next Copilot suggestion" })
+			vim.keymap.set("i", "<C-,>", "<Plug>(copilot-previous)", { desc = "Previous Copilot suggestion" })
+			vim.keymap.set("i", "<C-x>", "<Plug>(copilot-dismiss)", { desc = "Dismiss Copilot" })
+			vim.keymap.set("i", "<C-q>", "<Plug>(copilot-suggest)", { desc = "Request Copilot suggestion" })
 		end,
 	},
 
