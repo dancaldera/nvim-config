@@ -1,42 +1,23 @@
 -- ============================================================================
--- Completion Configuration (Copilot inline + nvim-cmp)
+-- Completion Configuration (Copilot + nvim-cmp)
 -- ============================================================================
 
 return {
-	-- GitHub Copilot (inline ghost text only)
+	-- GitHub Copilot (official plugin)
 	{
-		"zbirenbaum/copilot.lua",
-		cmd = "Copilot",
+		"github/copilot.vim",
 		event = "InsertEnter",
-		opts = {
-			panel = {
-				enabled = true,
-				auto_refresh = false,
-				keymap = {
-					jump_prev = "[[",
-					jump_next = "]]",
-					accept = "<CR>",
-					refresh = "gr",
-					open = "<M-CR>",
-				},
-				layout = { position = "bottom", ratio = 0.4 },
-			},
-			suggestion = {
-				enabled = true,
-				auto_trigger = true,
-				debounce = 150,
-				keymap = {
-					accept = "<C-g>",
-					accept_word = false,
-					accept_line = false,
-					next = "<C-;>",
-					prev = "<C-,>",
-					dismiss = "<C-x>",
-				},
-			},
-			filetypes = { ["*"] = true },
-			copilot_node_command = "node",
-		},
+		config = function()
+			-- Disable default Tab map, let nvim-cmp handle it
+			vim.g.copilot_no_tab_map = true
+
+			-- Custom keybinding for accepting suggestions (C-g)
+			vim.keymap.set("i", "<C-g>", 'copilot#Accept("\\<CR>")', {
+				expr = true,
+				replace_keycodes = false,
+				desc = "Accept Copilot suggestion",
+			})
+		end,
 	},
 
 	-- LSP/Snippet Completion (nvim-cmp)
@@ -118,9 +99,6 @@ return {
 					confirm_resolve_timeout = 80,
 					async_budget = 1,
 					max_view_entries = 200,
-				},
-				experimental = {
-					ghost_text = false, -- Disabled to avoid conflict with Copilot ghost text
 				},
 				formatting = {
 					format = lspkind.cmp_format({
