@@ -54,6 +54,17 @@ keymap.set("n", "<S-x>", function()
 	_G._smart_buf_close(false)
 end, { desc = "Close current buffer (quit if last)" })
 
+-- Quick buffer access with Command+Control+number
+for i = 1, 9 do
+	keymap.set(
+		"n",
+		"<D-C-" .. i .. ">",
+		"<cmd>BufferLineGoToBuffer " .. i .. "<CR>",
+		{ desc = "Go to buffer " .. i, silent = true }
+	)
+end
+keymap.set("n", "<D-C-0>", "<cmd>BufferLineGoToBuffer -1<CR>", { desc = "Go to last buffer", silent = true })
+
 -- Buffer reordering (move buffers left/right in tabline)
 keymap.set("n", "<A-,>", "<cmd>BufferLineMovePrev<CR>", { desc = "Move buffer left", silent = true })
 keymap.set("n", "<A-.>", "<cmd>BufferLineMoveNext<CR>", { desc = "Move buffer right", silent = true })

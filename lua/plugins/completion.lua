@@ -110,15 +110,15 @@ return {
 					{ name = "buffer", priority = 500 },
 					{ name = "path", priority = 250 },
 				}),
-			performance = {
-				debounce = 60,
-				throttle = 30,
-				fetching_timeout = 500,
-				filtering_context_budget = 3,
-				confirm_resolve_timeout = 80,
-				async_budget = 1,
-				max_view_entries = 200,
-			},
+				performance = {
+					debounce = 60,
+					throttle = 30,
+					fetching_timeout = 500,
+					filtering_context_budget = 3,
+					confirm_resolve_timeout = 80,
+					async_budget = 1,
+					max_view_entries = 200,
+				},
 				experimental = {
 					ghost_text = false, -- Disabled to avoid conflict with Copilot ghost text
 				},

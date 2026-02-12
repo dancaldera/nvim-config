@@ -101,8 +101,22 @@ return {
 					-- Inlay Hints Toggle (cycles: none -> minimal -> moderate -> complete)
 					local inlay_hint_levels = {
 						{ name = "none", params = "none", types = false, vars = false, returns = false, enums = false },
-						{ name = "minimal", params = "literals", types = false, vars = false, returns = false, enums = false },
-						{ name = "moderate", params = "all", types = false, vars = false, returns = true, enums = true },
+						{
+							name = "minimal",
+							params = "literals",
+							types = false,
+							vars = false,
+							returns = false,
+							enums = false,
+						},
+						{
+							name = "moderate",
+							params = "all",
+							types = false,
+							vars = false,
+							returns = true,
+							enums = true,
+						},
 						{ name = "complete", params = "all", types = true, vars = true, returns = true, enums = true },
 					}
 					vim.b.inlay_hint_level = vim.b.inlay_hint_level or 2
@@ -174,8 +188,16 @@ return {
 
 			-- Servers with default config (capabilities only)
 			local simple_servers = {
-				"html", "cssls", "jsonls", "yamlls", "gopls",
-				"clangd", "rust_analyzer", "tailwindcss", "bashls", "emmet_ls",
+				"html",
+				"cssls",
+				"jsonls",
+				"yamlls",
+				"gopls",
+				"clangd",
+				"rust_analyzer",
+				"tailwindcss",
+				"bashls",
+				"emmet_ls",
 			}
 
 			for _, server in ipairs(simple_servers) do
@@ -273,9 +295,19 @@ return {
 			-- Setup mason-lspconfig (auto-enable configured servers)
 			require("mason-lspconfig").setup({
 				ensure_installed = {
-					"lua_ls", "ts_ls", "html", "cssls", "jsonls", "yamlls",
-					"pyright", "gopls", "clangd", "rust_analyzer",
-					"tailwindcss", "bashls", "emmet_ls",
+					"lua_ls",
+					"ts_ls",
+					"html",
+					"cssls",
+					"jsonls",
+					"yamlls",
+					"pyright",
+					"gopls",
+					"clangd",
+					"rust_analyzer",
+					"tailwindcss",
+					"bashls",
+					"emmet_ls",
 				},
 				automatic_installation = true,
 			})

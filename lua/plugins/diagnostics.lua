@@ -25,7 +25,11 @@ return {
 			{ "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", desc = "Diagnostics (Trouble)" },
 			{ "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", desc = "Buffer Diagnostics" },
 			{ "<leader>xs", "<cmd>Trouble symbols toggle focus=false<cr>", desc = "Symbols (Trouble)" },
-			{ "<leader>xl", "<cmd>Trouble lsp toggle focus=false win.position=right<cr>", desc = "LSP Definitions/References" },
+			{
+				"<leader>xl",
+				"<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
+				desc = "LSP Definitions/References",
+			},
 			{ "<leader>xL", "<cmd>Trouble loclist toggle<cr>", desc = "Location List" },
 			{ "<leader>xQ", "<cmd>Trouble qflist toggle<cr>", desc = "Quickfix List" },
 			{
@@ -59,7 +63,10 @@ return {
 						local col = diag.col + 1
 						local severity = severity_map[diag.severity] or "UNKNOWN"
 						local message = diag.message:gsub("\n", " ")
-						table.insert(formatted, string.format("%s:%d:%d [%s] %s", filename, line, col, severity, message))
+						table.insert(
+							formatted,
+							string.format("%s:%d:%d [%s] %s", filename, line, col, severity, message)
+						)
 					end
 
 					vim.fn.setreg("+", table.concat(formatted, "\n"))
@@ -83,10 +90,18 @@ return {
 				vim.diagnostic.jump({ count = count, severity = severity_map[severity] })
 			end
 
-			vim.keymap.set("n", "]e", function() diagnostic_goto(true, "ERROR") end, { desc = "Next Error" })
-			vim.keymap.set("n", "[e", function() diagnostic_goto(false, "ERROR") end, { desc = "Prev Error" })
-			vim.keymap.set("n", "]w", function() diagnostic_goto(true, "WARN") end, { desc = "Next Warning" })
-			vim.keymap.set("n", "[w", function() diagnostic_goto(false, "WARN") end, { desc = "Prev Warning" })
+			vim.keymap.set("n", "]e", function()
+				diagnostic_goto(true, "ERROR")
+			end, { desc = "Next Error" })
+			vim.keymap.set("n", "[e", function()
+				diagnostic_goto(false, "ERROR")
+			end, { desc = "Prev Error" })
+			vim.keymap.set("n", "]w", function()
+				diagnostic_goto(true, "WARN")
+			end, { desc = "Next Warning" })
+			vim.keymap.set("n", "[w", function()
+				diagnostic_goto(false, "WARN")
+			end, { desc = "Prev Warning" })
 
 			-- Enhanced diagnostic float
 			vim.keymap.set("n", "<leader>d", function()

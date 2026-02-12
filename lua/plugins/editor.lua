@@ -93,11 +93,46 @@ return {
 		dependencies = { "nvim-lua/plenary.nvim", "nvim-treesitter/nvim-treesitter" },
 		opts = {},
 		keys = {
-			{ "<leader>re", function() require("refactoring").refactor("Extract Function") end, mode = "v", desc = "Extract function" },
-			{ "<leader>rf", function() require("refactoring").refactor("Extract Function To File") end, mode = "v", desc = "Extract function to file" },
-			{ "<leader>rv", function() require("refactoring").refactor("Extract Variable") end, mode = "v", desc = "Extract variable" },
-			{ "<leader>ri", function() require("refactoring").refactor("Inline Variable") end, mode = { "n", "v" }, desc = "Inline variable" },
-			{ "<leader>rr", function() require("telescope").extensions.refactoring.refactors() end, mode = "v", desc = "Refactor menu" },
+			{
+				"<leader>re",
+				function()
+					require("refactoring").refactor("Extract Function")
+				end,
+				mode = "v",
+				desc = "Extract function",
+			},
+			{
+				"<leader>rf",
+				function()
+					require("refactoring").refactor("Extract Function To File")
+				end,
+				mode = "v",
+				desc = "Extract function to file",
+			},
+			{
+				"<leader>rv",
+				function()
+					require("refactoring").refactor("Extract Variable")
+				end,
+				mode = "v",
+				desc = "Extract variable",
+			},
+			{
+				"<leader>ri",
+				function()
+					require("refactoring").refactor("Inline Variable")
+				end,
+				mode = { "n", "v" },
+				desc = "Inline variable",
+			},
+			{
+				"<leader>rr",
+				function()
+					require("telescope").extensions.refactoring.refactors()
+				end,
+				mode = "v",
+				desc = "Refactor menu",
+			},
 		},
 	},
 

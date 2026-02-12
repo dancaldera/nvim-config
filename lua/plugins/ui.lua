@@ -42,23 +42,25 @@ return {
 					},
 					lualine_x = {
 						{ lazy_status.updates, cond = lazy_status.has_updates },
-					{
-						function()
-							local github = require("config.github")
-							local account = github.get_current_account()
-							return account and string.format(" @%s", account) or ""
-						end,
-						cond = function()
-							return vim.b.is_git_repo and package.loaded["config.github"]
-						end,
-						color = { fg = "#7C3AED", gui = "bold" },
-					},
+						{
+							function()
+								local github = require("config.github")
+								local account = github.get_current_account()
+								return account and string.format(" @%s", account) or ""
+							end,
+							cond = function()
+								return vim.b.is_git_repo and package.loaded["config.github"]
+							end,
+							color = { fg = "#7C3AED", gui = "bold" },
+						},
 						{
 							function()
 								local ok, swenv = pcall(require, "swenv.api")
 								if ok then
 									local venv = swenv.get_current_venv()
-									if venv then return venv.name end
+									if venv then
+										return venv.name
+									end
 								end
 								local venv_path = vim.fn.getenv("VIRTUAL_ENV")
 								if venv_path and venv_path ~= vim.NIL then
@@ -66,7 +68,9 @@ return {
 								end
 								return ""
 							end,
-							cond = function() return vim.bo.filetype == "python" end,
+							cond = function()
+								return vim.bo.filetype == "python"
+							end,
 						},
 						{ "encoding" },
 						{ "fileformat" },
@@ -101,23 +105,6 @@ return {
 		config = function()
 			require("bufferline").setup({
 				options = {
-					mode = "buffers",
-					separator_style = "slant",
-					themable = true,
-					close_command = function(bufnum)
-						require("mini.bufremove").delete(bufnum, false)
-					end,
-					right_mouse_command = function(bufnum)
-						require("mini.bufremove").delete(bufnum, false)
-					end,
-					indicator = { icon = "▎", style = "icon" },
-					buffer_close_icon = "󰅖",
-					modified_icon = "●",
-					diagnostics = "nvim_lsp",
-					diagnostics_indicator = function(count, level)
-						local icon = level:match("error") and " " or " "
-						return " " .. icon .. count
-					end,
 					offsets = {
 						{
 							filetype = "NvimTree",
@@ -126,15 +113,6 @@ return {
 							separator = true,
 						},
 					},
-					color_icons = true,
-					show_buffer_close_icons = true,
-					hover = { enabled = true, delay = 200, reveal = { "close" } },
-				always_show_bufferline = false,
-				},
-				highlights = {
-					modified_selected = { fg = "#fabd2f" },
-					modified = { fg = "#fabd2f" },
-					modified_visible = { fg = "#fabd2f" },
 				},
 			})
 		end,
@@ -154,17 +132,34 @@ return {
 				if #listed <= 1 then
 					vim.cmd(force and "qa!" or "qa")
 				elseif vim.bo.modified and not force then
-					local choice = vim.fn.confirm(("Save changes to %q?"):format(vim.fn.bufname()), "&Yes\n&No\n&Cancel")
-					if choice == 1 then vim.cmd.write(); bd(0)
-					elseif choice == 2 then bd(0, true) end
+					local choice =
+						vim.fn.confirm(("Save changes to %q?"):format(vim.fn.bufname()), "&Yes\n&No\n&Cancel")
+					if choice == 1 then
+						vim.cmd.write()
+						bd(0)
+					elseif choice == 2 then
+						bd(0, true)
+					end
 				else
 					bd(0, force or false)
 				end
 			end
 		end,
 		keys = {
-			{ "<leader>bd", function() _G._smart_buf_close(false) end, desc = "Delete Buffer" },
-			{ "<leader>bD", function() _G._smart_buf_close(true) end, desc = "Delete Buffer (Force)" },
+			{
+				"<leader>bd",
+				function()
+					_G._smart_buf_close(false)
+				end,
+				desc = "Delete Buffer",
+			},
+			{
+				"<leader>bD",
+				function()
+					_G._smart_buf_close(true)
+				end,
+				desc = "Delete Buffer (Force)",
+			},
 		},
 	},
 
@@ -176,12 +171,28 @@ return {
 		opts = {
 			symbol = "│",
 			options = { try_as_border = true },
-			draw = { animation = function() return 0 end },
+			draw = {
+				animation = function()
+					return 0
+				end,
+			},
 		},
 		init = function()
 			vim.api.nvim_create_autocmd("FileType", {
-				pattern = { "help", "dashboard", "nvim-tree", "Trouble", "trouble", "lazy", "mason", "notify", "toggleterm" },
-				callback = function() vim.b.miniindentscope_disable = true end,
+				pattern = {
+					"help",
+					"dashboard",
+					"nvim-tree",
+					"Trouble",
+					"trouble",
+					"lazy",
+					"mason",
+					"notify",
+					"toggleterm",
+				},
+				callback = function()
+					vim.b.miniindentscope_disable = true
+				end,
 			})
 		end,
 	},
