@@ -17,8 +17,8 @@ return {
 				replace_keycodes = false,
 				desc = "Accept Copilot suggestion",
 			})
-			vim.keymap.set("i", "<C-.>", "<Plug>(copilot-next)", { desc = "Next Copilot suggestion" })
-			vim.keymap.set("i", "<C-,>", "<Plug>(copilot-previous)", { desc = "Previous Copilot suggestion" })
+			vim.keymap.set("i", "<C-]>", "<Plug>(copilot-next)", { desc = "Next Copilot suggestion" })
+			vim.keymap.set("i", "<C-{>", "<Plug>(copilot-previous)", { desc = "Previous Copilot suggestion" })
 			vim.keymap.set("i", "<C-x>", "<Plug>(copilot-dismiss)", { desc = "Dismiss Copilot" })
 			vim.keymap.set("i", "<C-q>", "<Plug>(copilot-suggest)", { desc = "Request Copilot suggestion" })
 		end,
