@@ -124,3 +124,13 @@ keymap.set(
 	{ desc = "Check config consistency" }
 )
 keymap.set("n", "<leader>hN", "<cmd>checkhealth<CR>", { desc = "Run Neovim health check" })
+
+-- Markdown preview toggle
+keymap.set("n", "<leader>mp", function()
+	local ok, rm = pcall(require, "render-markdown")
+	if ok then
+		rm.toggle()
+	else
+		vim.cmd("RenderMarkdown toggle")
+	end
+end, { desc = "Toggle markdown preview" })
