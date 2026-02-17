@@ -4,65 +4,52 @@
 
 local M = {}
 
-local function make_reporter(opts)
-	opts = opts or {}
+local function check_neovim_version(report)
+	report.start("Neovim version")
 
-	local health_module
-	if opts.use_health then
-		health_module = vim.health
-		if type(health_module) ~= "table" then
-			local ok, mod = pcall(require, "vim.health")
-			if ok then
-				health_module = mod
-			else
-				health_module = nil
-			end
-		end
+	local version = vim.version()
+	local required_minor = 10
+	local recommended_minor = 11
+
+	if version.major == 0 and version.minor < required_minor then
+		report.error(
+			string.format(
+				"Detected Neovim v%d.%d.%d; require v0.%d.0 or newer.",
+				version.major,
+				version.minor,
+				version.patch,
+				required_minor
+			)
+		)
+		return false
 	end
 
-	local notify_threshold = opts.notify_level or vim.log.levels.INFO
-
-	local function notify(level, msg)
-		if opts.use_notify and level >= notify_threshold then
-			vim.notify(msg, level)
-		end
+	if version.major == 0 and version.minor >= required_minor and version.minor < recommended_minor then
+		report.ok(
+			string.format(
+				"Neovim v%d.%d.%d detected (meets minimum v0.%d.0)",
+				version.major,
+				version.minor,
+				version.patch,
+				required_minor
+			)
+		)
+		report.warn(
+			string.format("Recommend upgrading to v0.%d+ for native LSP features (vim.lsp.config)", recommended_minor)
+		)
+		return true
 	end
 
-	local function call_health(methods, msg)
-		if not health_module then
-			return
-		end
-		for _, name in ipairs(methods) do
-			local fn = health_module[name]
-			if type(fn) == "function" then
-				fn(msg)
-				return
-			end
-		end
-	end
-
-	return {
-		start = function(msg)
-			call_health({ "start", "report_start" }, msg)
-			notify(vim.log.levels.INFO, msg)
-		end,
-		ok = function(msg)
-			call_health({ "ok", "report_ok", "info", "report_info" }, msg)
-			notify(vim.log.levels.INFO, msg)
-		end,
-		info = function(msg)
-			call_health({ "info", "report_info" }, msg)
-			notify(vim.log.levels.INFO, msg)
-		end,
-		warn = function(msg)
-			call_health({ "warn", "report_warn" }, msg)
-			notify(vim.log.levels.WARN, msg)
-		end,
-		error = function(msg)
-			call_health({ "error", "report_error" }, msg)
-			notify(vim.log.levels.ERROR, msg)
-		end,
-	}
+	report.ok(
+		string.format(
+			"Neovim v%d.%d.%d detected (recommended v0.%d+)",
+			version.major,
+			version.minor,
+			version.patch,
+			recommended_minor
+		)
+	)
+	return true
 end
 
 local function check_external_tools(report)
@@ -110,54 +97,6 @@ local function check_external_tools(report)
 		return false
 	end
 
-	return true
-end
-
-local function check_neovim_version(report)
-	report.start("Neovim version")
-
-	local version = vim.version()
-	local required_minor = 10
-	local recommended_minor = 11
-
-	if version.major == 0 and version.minor < required_minor then
-		report.error(
-			string.format(
-				"Detected Neovim v%d.%d.%d; require v0.%d.0 or newer.",
-				version.major,
-				version.minor,
-				version.patch,
-				required_minor
-			)
-		)
-		return false
-	end
-
-	if version.major == 0 and version.minor >= required_minor and version.minor < recommended_minor then
-		report.ok(
-			string.format(
-				"Neovim v%d.%d.%d detected (meets minimum v0.%d.0)",
-				version.major,
-				version.minor,
-				version.patch,
-				required_minor
-			)
-		)
-		report.warn(
-			string.format("Recommend upgrading to v0.%d+ for native LSP features (vim.lsp.config)", recommended_minor)
-		)
-		return true
-	end
-
-	report.ok(
-		string.format(
-			"Neovim v%d.%d.%d detected (recommended v0.%d+)",
-			version.major,
-			version.minor,
-			version.patch,
-			recommended_minor
-		)
-	)
 	return true
 end
 
@@ -209,12 +148,10 @@ local function check_lsp_servers(report)
 	local missing_optional = {}
 
 	local function has_server(name)
-		-- Prefer checking for the new-style config shipped under runtime/lsp/<name>.lua.
 		local runtime_paths = vim.api.nvim_get_runtime_file("lsp/" .. name .. ".lua", false)
 		if runtime_paths and #runtime_paths > 0 then
 			return true
 		end
-		-- Otherwise fall back to the legacy loader, which supports older nvim-lspconfig versions.
 		return pcall(require, "lspconfig.server_configurations." .. name)
 	end
 
@@ -274,7 +211,6 @@ local function check_formatters(report)
 
 	report.ok(string.format("Formatters configured: %d across %d filetypes", formatter_count, filetype_count))
 
-	-- Check if formatters are available for current buffer's filetype
 	local current_ft = vim.bo.filetype
 	if current_ft and current_ft ~= "" then
 		local available_formatters = conform.list_formatters(0)
@@ -305,7 +241,6 @@ local function check_copilot(report)
 		return false
 	end
 
-	-- Check if copilot auth exists
 	local auth_file = vim.fn.expand("~/.config/github-copilot/hosts.json")
 	if vim.fn.filereadable(auth_file) == 1 then
 		report.ok("Copilot authentication file found")
@@ -336,7 +271,6 @@ local function check_treesitter(report)
 		report.warn("Unable to read Treesitter parser installation info.")
 	end
 
-	---@type boolean
 	local folding_enabled = false
 	if type(configs.is_enabled) == "function" then
 		local ok, enabled = pcall(configs.is_enabled, "folding")
@@ -422,31 +356,50 @@ local function run_all_checks(report)
 end
 
 function M.check_health()
-	local reporter = make_reporter({
-		use_notify = true,
-		use_health = false,
-		notify_level = vim.log.levels.WARN,
-	})
-	return run_all_checks(reporter)
+	local report = {
+		start = function(msg)
+			vim.notify(msg, vim.log.levels.INFO)
+		end,
+		ok = function(msg)
+			vim.notify(msg, vim.log.levels.INFO)
+		end,
+		info = function(msg)
+			vim.notify(msg, vim.log.levels.INFO)
+		end,
+		warn = function(msg)
+			vim.notify(msg, vim.log.levels.WARN)
+		end,
+		error = function(msg)
+			vim.notify(msg, vim.log.levels.ERROR)
+		end,
+	}
+	return run_all_checks(report)
 end
 
 function M.check()
-	local reporter = make_reporter({
-		use_notify = false,
-		use_health = true,
-	})
-	return run_all_checks(reporter)
+	vim.health.start("Configuration Health Check")
+	run_all_checks(vim.health)
 end
 
 function M.check_config_consistency()
-	local reporter = make_reporter({
-		use_notify = true,
-		use_health = false,
-		notify_level = vim.log.levels.INFO,
-	})
-	return check_config_consistency(reporter)
+	local report = {
+		start = function(msg)
+			vim.notify(msg, vim.log.levels.INFO)
+		end,
+		ok = function(msg)
+			vim.notify(msg, vim.log.levels.INFO)
+		end,
+		info = function(msg)
+			vim.notify(msg, vim.log.levels.INFO)
+		end,
+		warn = function(msg)
+			vim.notify(msg, vim.log.levels.WARN)
+		end,
+		error = function(msg)
+			vim.notify(msg, vim.log.levels.ERROR)
+		end,
+	}
+	return check_config_consistency(report)
 end
-
--- Auto-check disabled for performance - use :checkhealth or <leader>hc manually
 
 return M

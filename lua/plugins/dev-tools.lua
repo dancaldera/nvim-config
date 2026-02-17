@@ -285,11 +285,11 @@ return {
 				desc = "Select GitHub account",
 			},
 			{
-				"<leader>gS",
+				"<leader>gas",
 				function()
-					require("config.github").quick_status()
+					require("config.github").show_status()
 				end,
-				desc = "Quick GitHub status",
+				desc = "Show GitHub status",
 			},
 			{
 				"<leader>gt",
