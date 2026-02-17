@@ -28,9 +28,7 @@ require("lazy").setup({
 		enabled = true,
 		notify = false,
 	},
-	install = {
-		colorscheme = { "kanagawa", "habamax" },
-	},
+	install = {},
 	ui = {
 		border = "rounded",
 		backdrop = 60,

@@ -1,13 +1,12 @@
 # Neovim Configuration
 
-Modern Neovim setup optimized for full-stack development with AI-powered completion, LSP support, and science-based colorscheme.
+Modern Neovim setup optimized for full-stack development with AI-powered completion, LSP support.
 
 ## ✨ Key Features
 
 - **⚡ Lightning Fast**: ~76ms startup time, 150-200MB memory
 - **🤖 AI Completion**: GitHub Copilot with inline suggestions
 - **💻 Full LSP**: 13+ language servers with auto-installation
-- **🎨 Eye-Friendly**: Custom Gruvbox optimized to reduce eye strain
 - **🔍 Advanced Search**: Telescope fuzzy finder with live grep
 - **🔧 Git Integration**: Gitsigns for hunks, staging, and blame
 - **📦 55+ Plugins**: Lazy-loaded for performance

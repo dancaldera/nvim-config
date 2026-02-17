@@ -19,7 +19,6 @@ Complete reference for all 42 plugins used in this Neovim configuration, organiz
 - [Navigation & Search](#navigation--search)
 - [File Management](#file-management)
 - [Formatting & Linting](#formatting--linting)
-- [Colorscheme](#colorscheme)
 - [Language-Specific](#language-specific)
 - [Custom Modules](#custom-modules)
 - [Quick Reference Table](#quick-reference-table)
@@ -347,15 +346,6 @@ Asynchronous linter engine. Runs linters on file events and populates the diagno
 
 ---
 
-## Colorscheme
-
-**Config file**: `lua/plugins/colorscheme.lua`
-
-### rebelot/kanagawa.nvim
-Kanagawa colorscheme using the wave theme variant. A dark theme inspired by the famous painting by Katsushika Hokusai.
-
----
-
 ## Language-Specific
 
 **Config file**: `lua/plugins/python.lua`
@@ -436,8 +426,7 @@ Multi-account GitHub CLI management. Cycles through authenticated GitHub account
 | 44 | nvim-tree.lua | File Mgmt | nvim-tree.lua | `<leader>e` |
 | 45 | conform.nvim | Formatting | formatting.lua | `<leader>mp` |
 | 46 | nvim-lint | Linting | formatting.lua | (auto) |
-| 47 | kanagawa.nvim | Colorscheme | colorscheme.lua | (auto) |
-| 48 | swenv.nvim | Language | python.lua | `<leader>pe` |
+| 47 | swenv.nvim | Language | python.lua | `<leader>pe` |
 
 > **Note**: Some plugins (cmp-nvim-lsp, plenary, nvim-web-devicons) appear as dependencies in multiple files but are counted once. The table shows 48 rows to indicate per-file placement; unique plugin count is **42**.
 

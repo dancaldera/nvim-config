@@ -57,9 +57,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **refactoring.nvim**: Extract function, inline variable (`<leader>r`)
 - **GitHub Copilot**: AI-powered completions (replaced Codeium)
 
-### Colorscheme
-- **Custom Gruvbox Dark**: Science-based theme optimized for reduced eye strain
-- Located in `lua/colors/gruvbox-custom.lua`
+
 
 ## Development Commands
 
@@ -96,8 +94,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 │   │   ├── keymaps.lua        # General keybindings
 │   │   ├── autocmds.lua       # Auto commands
 │   │   └── compatibility.lua  # Version checks
-│   ├── colors/
-│   │   └── gruvbox-custom.lua # Custom colorscheme
 │   └── plugins/               # Plugin configurations
 │       ├── lsp-core.lua       # LSP setup & keymaps
 │       ├── lsp-servers.lua    # Server configurations

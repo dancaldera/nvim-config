@@ -304,9 +304,7 @@ local function check_config_consistency(report)
 		table.insert(issues, "guicursor is unset; cursor appearance may be degraded.")
 	end
 
-	if not vim.g.colors_name then
-		table.insert(issues, "No colorscheme set; consider loading one for consistent styling.")
-	end
+
 
 	if #issues == 0 then
 		report.ok("No configuration consistency issues detected")

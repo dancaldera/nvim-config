@@ -49,7 +49,6 @@ Deep dive into the consolidated Neovim configuration structure, loading strategy
 │       ├── telescope.lua             # Telescope + fzf-native (2 plugins)
 │       ├── nvim-tree.lua             # File explorer (1 plugin)
 │       ├── formatting.lua            # conform.nvim + nvim-lint (2 plugins)
-│       ├── colorscheme.lua           # kanagawa.nvim (1 plugin)
 │       └── python.lua                # swenv.nvim (1 plugin)
 │
 └── docs/                             # Documentation (UPPERCASE filenames)
@@ -102,8 +101,8 @@ Deep dive into the consolidated Neovim configuration structure, loading strategy
 
 | Event | When Triggered | Example Plugins |
 |-------|----------------|-----------------|
-| `lazy = false` | Immediately on startup | kanagawa (colorscheme), snacks.nvim, treesitter |
-| `priority = 1000` | High-priority startup | kanagawa, snacks.nvim |
+| `lazy = false` | Immediately on startup | snacks.nvim, treesitter |
+| `priority = 1000` | High-priority startup | snacks.nvim |
 | `VeryLazy` | After UI renders | which-key, nvim-surround, mini.ai, refactoring, project.nvim |
 | `BufReadPre` | Before opening any file | gitsigns, conform, nvim-lint, mini.indentscope |
 | `BufReadPost` | After file loaded | nvim-ufo (folding), vim-illuminate, todo-comments |
@@ -191,7 +190,7 @@ Treesitter parsers and extensions.
 
 Visual presentation layer.
 
-- **lualine:** Global statusline with Kanagawa theme, navic breadcrumbs, GitHub account display, Python venv indicator
+- **lualine:** Global statusline with auto theme, navic breadcrumbs, GitHub account display, Python venv indicator
 - **bufferline:** Tab-style buffer line with LSP diagnostics, slant separators, nvim-tree offset
 - **mini.bufremove:** Safe buffer closing with unsaved changes prompt
 - **mini.indentscope:** Animated scope indicator (`|`)
@@ -460,10 +459,9 @@ Time  | Event
  12ms | autocmds.lua: auto commands
  15ms | lazy.lua: bootstrap lazy.nvim, discover 13 plugin files
       |
- 20ms | Immediate plugins load (lazy = false, priority = 1000):
-      |   ├── kanagawa.nvim (colorscheme applied)
-      |   ├── snacks.nvim (dashboard, notifier, terminal)
-      |   └── nvim-treesitter (parser loading)
+  20ms | Immediate plugins load (lazy = false, priority = 1000):
+       |   ├── snacks.nvim (dashboard, notifier, terminal)
+       |   └── nvim-treesitter (parser loading)
       |
  30ms | health.lua: register health check commands
       | .nvim.lua: project-local config (if exists)
@@ -536,7 +534,7 @@ Also in `nvim-tree.lua`: `vim.g.loaded_netrw = 1`, `vim.g.loaded_netrwPlugin = 1
 
 | Strategy | Example | Benefit |
 |----------|---------|---------|
-| `lazy = false` + `priority = 1000` | kanagawa, snacks | Loads first, no delay |
+| `lazy = false` + `priority = 1000` | snacks | Loads first, no delay |
 | Event-based | `event = "VeryLazy"` | Loads after UI render |
 | Command-based | `cmd = "Mason"` | Loads only when invoked |
 | Filetype | `ft = "python"` | Loads only for Python files |
