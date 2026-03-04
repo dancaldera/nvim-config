@@ -9,7 +9,7 @@ Modern Neovim setup optimized for full-stack development with AI-powered complet
 - **💻 Full LSP**: 13+ language servers with auto-installation
 - **🔍 Advanced Search**: Telescope fuzzy finder with live grep
 - **🔧 Git Integration**: Gitsigns for hunks, staging, and blame
-- **📦 55+ Plugins**: Lazy-loaded for performance
+- **📦 50+ Plugins**: Lazy-loaded for performance
 
 ## 🛠️ Supported Languages
 
@@ -70,7 +70,7 @@ Follow browser prompt to authenticate with GitHub.
 ```
 <leader>ff   Find files
 <leader>fs   Search in files
-<leader>e    Toggle file tree
+<leader>ee   Toggle file explorer
 ```
 
 **Code:**
@@ -78,7 +78,7 @@ Follow browser prompt to authenticate with GitHub.
 gd           Go to definition
 K            Show documentation
 <leader>ca   Code actions
-<leader>a    Code outline
+<leader>xs   Symbols (Trouble)
 ```
 
 **Git:**
