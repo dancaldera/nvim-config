@@ -39,6 +39,28 @@ keymap.set("v", "<A-k>", ":m .-2<CR>==", { desc = "Move text up" })
 keymap.set("v", "<", "<gv", { desc = "Indent left and reselect" })
 keymap.set("v", ">", ">gv", { desc = "Indent right and reselect" })
 
+-- Copy file location context for AI agents (visual mode)
+keymap.set("v", "l", function()
+	local start_line = vim.fn.line("v")
+	local end_line = vim.fn.line(".")
+	local file_path = vim.fn.expand("%:p")
+	local relative_path = vim.fn.expand("%:~:.")
+
+	-- Ensure start_line is the smaller number
+	if start_line > end_line then
+		start_line, end_line = end_line, start_line
+	end
+
+	-- Format for AI context: "file:path/to/file.lua:lines:start-end"
+	local location_info = string.format("%s:lines:%d-%d", relative_path, start_line, end_line)
+
+	-- Copy to system clipboard
+	vim.fn.setreg("+", location_info)
+
+	-- Optional: Also show a notification
+	vim.notify("Copied: " .. location_info, vim.log.levels.INFO)
+end, { desc = "Copy file location for AI context" })
+
 -- Search and replace
 keymap.set("n", "n", "nzzzv", { desc = "Next search result and center" })
 keymap.set("n", "N", "Nzzzv", { desc = "Previous search result and center" })
