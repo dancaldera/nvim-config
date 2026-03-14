@@ -235,7 +235,7 @@ require("mason-tool-installer").setup({
 **Copilot**
 ```lua
 -- Async AI suggestions (doesn't block typing)
-copilot.lua runs in background
+github/copilot.vim runs in background
 ```
 
 **Gitsigns**
@@ -275,7 +275,7 @@ BufReadPost (after file loaded)
     ↓
 InsertEnter (when typing)
 ├── nvim-cmp
-├── copilot.lua
+├── completion.lua
 └── LuaSnip
     ↓
 LspAttach (LSP ready)
@@ -320,7 +320,7 @@ LspAttach (LSP ready)
 -- Load with parent plugin
 {
   "copilot-cmp",
-  dependencies = { "copilot.lua" },  -- Loads after copilot
+  dependencies = { "github/copilot.vim" },  -- Loads after copilot
 }
 ```
 

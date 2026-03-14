@@ -71,7 +71,7 @@ Type definitions for `vim.uv` (libuv bindings). Used by lazydev.nvim to provide 
 
 **Config file**: `lua/plugins/completion.lua`
 
-### zbirenbaum/copilot.lua
+### github/copilot.vim
 GitHub Copilot integration providing inline ghost text suggestions.
 
 | Keybinding | Action |
@@ -339,7 +339,8 @@ Code formatter supporting multiple formatters per filetype with fallback chains.
 
 | Keybinding | Action |
 |---|---|
-| `<leader>mp` | Format file/selection |
+| `<leader>cf` | Format file/selection |
+| `<leader>jf` | Format file/selection |
 
 ### mfussenegger/nvim-lint
 Asynchronous linter engine. Runs linters on file events and populates the diagnostics list.
@@ -364,7 +365,7 @@ Python virtual environment switcher. Detects and switches between venvs, updatin
 These are not plugins but custom Lua modules in `lua/config/`:
 
 ### openai.lua
-OpenAI API integration providing GPT-4o access for AI-generated commit messages. Handles API key loading from environment variables (checks `OPENAI_API_KEY` in env, `.zshrc`, `.bashrc`, `.zprofile`). Includes response caching.
+AI commit message integration. Tries OpenAI first, then OpenRouter, then falls back to a timestamped commit message. API keys are loaded from the environment, `~/.zshrc`, `~/.bashrc`, `~/.zprofile`, or `~/.env`.
 
 ### github.lua
 Multi-account GitHub CLI management. Cycles through authenticated GitHub accounts with caching (60s TTL) to minimize `gh` CLI calls.
@@ -388,7 +389,7 @@ Multi-account GitHub CLI management. Cycles through authenticated GitHub account
 | 6 | nvim-lsp-file-operations | LSP | lsp.lua | (auto) |
 | 7 | lazydev.nvim | LSP | lsp.lua | (auto) |
 | 8 | luvit-meta | LSP | lsp.lua | (auto) |
-| 9 | copilot.lua | Completion | completion.lua | `C-g` |
+| 9 | github/copilot.vim | Completion | completion.lua | `C-g` |
 | 10 | nvim-cmp | Completion | completion.lua | `Tab`, `CR` |
 | 11 | cmp-buffer | Completion | completion.lua | (auto) |
 | 12 | cmp-path | Completion | completion.lua | (auto) |
@@ -424,7 +425,8 @@ Multi-account GitHub CLI management. Cycles through authenticated GitHub account
 | 42 | telescope.nvim | Navigation | telescope.lua | `<leader>ff` |
 | 43 | telescope-fzf-native.nvim | Navigation | telescope.lua | (auto) |
 | 44 | nvim-tree.lua | File Mgmt | nvim-tree.lua | `<leader>e` |
-| 45 | conform.nvim | Formatting | formatting.lua | `<leader>mp` |
+| 45 | conform.nvim | Formatting | formatting.lua | `<leader>cf` |
+| 48 | render-markdown.nvim | Markdown | markdown.lua | `<leader>mp` |
 | 46 | nvim-lint | Linting | formatting.lua | (auto) |
 | 47 | swenv.nvim | Language | python.lua | `<leader>pe` |
 

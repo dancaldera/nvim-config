@@ -277,7 +277,12 @@ Leader key: `<Space>`
 |-----|------|-------------|
 | `<leader>jf` | Normal/Visual | Format buffer (conform.nvim) |
 | `<leader>jl` | Normal | Toggle auto-linting |
-| `<leader>mp` | Normal/Visual | Format buffer (alias) |
+| `<leader>cf` | Normal/Visual | Format buffer (conform.nvim) |
+
+### Markdown
+| Key | Mode | Description |
+|-----|------|-------------|
+| `<leader>mp` | Normal | Toggle markdown rendering |
 
 ### Health & Diagnostics
 | Key | Mode | Description |
@@ -310,7 +315,7 @@ This configuration uses logical namespaces for leader keybindings:
 - `<leader>x` - **Trouble** (diagnostics/quickfix)
 - `<leader>c` - **Code** (LSP actions)
 - `<leader>q` - **Quit/Sessions**
-- `<leader>m` - **Markdown/Format**
+- `<leader>m` - **Markdown**
 - `<leader>a` - **Aerial** (code outline)
 - `<leader>y/Y/P` - **Clipboard** operations
 

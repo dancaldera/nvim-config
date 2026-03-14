@@ -70,7 +70,8 @@ These keybindings work for any language with LSP support:
 | `<leader>cs` | Document Symbols | List symbols in current file (Telescope) |
 | `[d` / `]d` | Prev/Next Diagnostic | Navigate diagnostics |
 | `<leader>d` | Show Diagnostic | Show diagnostic under cursor |
-| `<leader>mp` | Format | Format current file/selection |
+| `<leader>cf` | Format | Format current file/selection |
+| `<leader>jf` | Format | Format current file/selection |
 
 ### LSP Commands
 
@@ -83,14 +84,9 @@ These keybindings work for any language with LSP support:
 | `:MasonUpdate` | Update Mason registry |
 | `:MasonInstall <tool>` | Manually install tool |
 
-### Auto-Format on Save
+### Formatting
 
-Format on save is **enabled by default** via conform.nvim. To disable temporarily:
-
-```vim
-:let b:disable_autoformat = 1  " Current buffer
-:let g:disable_autoformat = 1  " All buffers
-```
+Formatting is manual in this config via conform.nvim.
 
 ---
 
@@ -707,7 +703,7 @@ gd         → Go to definition
 K          → Hover documentation
 <leader>ca → Code actions
 <leader>rn → Rename
-<leader>mp → Format file
+<leader>cf / <leader>jf → Format file
 ]d / [d    → Next/prev diagnostic
 ```
 

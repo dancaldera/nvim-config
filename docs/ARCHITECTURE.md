@@ -43,7 +43,8 @@ Deep dive into the consolidated Neovim configuration structure, loading strategy
 │       ├── editor.lua                # autopairs, surround, Comment, which-key, refactoring, mini.ai (7 plugins)
 │       ├── ui.lua                    # lualine, navic, bufferline, mini.bufremove, mini.indentscope, vim-illuminate, nvim-ufo (9 plugins)
 │       ├── git.lua                   # gitsigns + fugitive + AI commit workflow (2 plugins)
-│       ├── dev-tools.lua             # snacks (dashboard/terminal/notifier), todo-comments, project.nvim, markdown-preview (5 plugins)
+│       ├── dev-tools.lua             # snacks, todo-comments, project.nvim
+│       ├── markdown.lua              # render-markdown.nvim
 │       ├── diagnostics.lua           # trouble.nvim (1 plugin)
 │       ├── treesitter.lua            # nvim-treesitter + autotag (2 plugins)
 │       ├── telescope.lua             # Telescope + fzf-native (2 plugins)
@@ -107,9 +108,9 @@ Deep dive into the consolidated Neovim configuration structure, loading strategy
 | `BufReadPre` | Before opening any file | gitsigns, conform, nvim-lint, mini.indentscope |
 | `BufReadPost` | After file loaded | nvim-ufo (folding), vim-illuminate, todo-comments |
 | `BufAdd` | When a buffer is added | bufferline |
-| `InsertEnter` | Entering insert mode | nvim-cmp, copilot.lua, nvim-autopairs |
+| `InsertEnter` | Entering insert mode | nvim-cmp, github/copilot.vim, nvim-autopairs |
 | `LspAttach` | LSP server attaches | nvim-navic |
-| `ft = {...}` | File type detection | python.lua (ft=python), markdown-preview (ft=markdown) |
+| `ft = {...}` | File type detection | python.lua (ft=python), render-markdown.nvim (ft=markdown) |
 | `cmd = "..."` | Command invocation | Mason (`:Mason`), Trouble (`:Trouble`), Fugitive (`:Git`) |
 | `keys = {...}` | First keypress | refactoring (`<leader>re`), mini.bufremove (`<leader>bd`) |
 
@@ -237,7 +238,7 @@ Terminal, dashboard, notifications, and project management.
   - **Lazygit:** `<leader>lg` to open
 - **todo-comments:** Highlight and search TODO/FIXME/HACK/NOTE comments
 - **project.nvim:** Auto-detect project root, Telescope project picker (`<leader>fp`)
-- **markdown-preview:** Live browser preview for markdown files
+- **render-markdown.nvim:** Inline markdown rendering inside Neovim
   - **GitHub accounts:** `<leader>ga` (switch), `<leader>gas` (status)
 
 ### Layer 10: Diagnostics (`diagnostics.lua`)
@@ -314,7 +315,7 @@ nvim-cmp (menu completion engine)
 └── Integration:
     └── nvim-autopairs (auto-close on confirm)
 
-copilot.lua (standalone inline ghost text)
+github/copilot.vim (standalone inline ghost text)
 └── Runs in parallel to nvim-cmp
 └── No cmp source — ghost text only
 ```
@@ -404,7 +405,7 @@ Comment.nvim registers a pre_hook:
 ### 5. Copilot Inline Mode (No cmp Integration)
 
 ```
-copilot.lua:
+github/copilot.vim:
   - suggestion.enabled = true (ghost text)
   - auto_trigger = true
   - <C-g> to accept, <C-;> for next, <C-x> to dismiss
@@ -496,7 +497,7 @@ Time  | Event
       | User types 'i' (insert mode):
       |   └── InsertEnter triggers:
       |       ├── nvim-cmp (completion engine)
-      |       ├── copilot.lua (AI ghost text)
+      |       ├── github/copilot.vim (AI ghost text)
       |       └── nvim-autopairs
 ------|----------------------------------------------
  ~1s  | Full environment ready
