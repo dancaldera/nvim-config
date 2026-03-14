@@ -52,6 +52,7 @@ local function commit_with_ai(mode)
 
 	local fallback = string.format("[%s] Auto-commit", os.date("%Y-%m-%d %H:%M"))
 	vim.notify("Generating commit message with AI...", vim.log.levels.INFO)
+	vim.cmd("redraw")
 	local ai_message = openai.generate_commit_message(diff, fallback)
 
 	vim.ui.input({ prompt = "Commit message: ", default = ai_message }, function(message)
