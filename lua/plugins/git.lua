@@ -5,7 +5,11 @@
 -- Shared AI commit function
 local function show_progress(message)
 	vim.api.nvim_echo({ { message, "ModeMsg" } }, false, {})
-	vim.notify(message, vim.log.levels.INFO)
+	vim.cmd("redraw")
+end
+
+local function clear_progress()
+	vim.api.nvim_echo({ { "", "None" } }, false, {})
 	vim.cmd("redraw")
 end
 
@@ -28,6 +32,7 @@ local function commit_with_ai(mode)
 		local auto_staged_file = nil
 
 		if git_root == "" then
+			clear_progress()
 			vim.notify("Not a git repository", vim.log.levels.ERROR)
 			return
 		end
@@ -43,12 +48,14 @@ local function commit_with_ai(mode)
 				if current_file ~= "" then
 					vim.fn.system(string.format("git add %s", vim.fn.shellescape(current_file)))
 					if vim.v.shell_error ~= 0 then
+						clear_progress()
 						vim.notify("Failed to stage current file", vim.log.levels.ERROR)
 						return
 					end
 					auto_staged_file = current_file
 					diff = vim.fn.system("git diff --cached -U5 --unified=5 | head -n 50")
 				else
+					clear_progress()
 					vim.notify("No file open and no staged changes", vim.log.levels.WARN)
 					return
 				end
@@ -58,12 +65,14 @@ local function commit_with_ai(mode)
 
 			local status = vim.fn.system("git status --porcelain")
 			if vim.trim(status) == "" then
+				clear_progress()
 				vim.notify("No changes to commit", vim.log.levels.INFO)
 				return
 			end
 
 			diff = vim.trim(vim.fn.system("git diff -U5 --unified=5 --cached | head -n 50"))
 			if diff == "" then
+				clear_progress()
 				vim.notify("No staged changes", vim.log.levels.WARN)
 				return
 			end
@@ -71,33 +80,36 @@ local function commit_with_ai(mode)
 
 		local fallback = string.format("[%s] Auto-commit", os.date("%Y-%m-%d %H:%M"))
 		openai.generate_commit_message_async(diff, fallback, function(ai_message)
-			vim.ui.input({ prompt = "Commit message: ", default = ai_message }, function(message)
-				if not message or message == "" then
-					if auto_staged_file then
-						vim.fn.system(string.format("git reset HEAD -- %s", vim.fn.shellescape(auto_staged_file)))
-					end
-					vim.notify("Commit cancelled", vim.log.levels.INFO)
-					return
-				end
-
-				run_system_async(string.format("git commit -m %s", vim.fn.shellescape(message)), function(result, code)
-					if code ~= 0 then
-						vim.notify("Commit failed: " .. result, vim.log.levels.ERROR)
+			vim.schedule(function()
+				clear_progress()
+				vim.ui.input({ prompt = "Commit message: ", default = ai_message }, function(message)
+					if not message or message == "" then
+						if auto_staged_file then
+							vim.fn.system(string.format("git reset HEAD -- %s", vim.fn.shellescape(auto_staged_file)))
+						end
+						vim.notify("Commit cancelled", vim.log.levels.INFO)
 						return
 					end
 
-					vim.notify("Committed: " .. message, vim.log.levels.INFO)
+					run_system_async(string.format("git commit -m %s", vim.fn.shellescape(message)), function(result, code)
+						if code ~= 0 then
+							vim.notify("Commit failed: " .. result, vim.log.levels.ERROR)
+							return
+						end
 
-					if mode == "all_and_push" then
-						show_progress("Pushing committed changes...")
-						run_system_async("git push 2>&1", function(push_result, push_code)
-							if push_code ~= 0 then
-								vim.notify("Committed but push failed: " .. push_result, vim.log.levels.WARN)
-							else
-								vim.notify("Committed and pushed: " .. message, vim.log.levels.INFO)
-							end
-						end)
-					end
+						vim.notify("Committed: " .. message, vim.log.levels.INFO)
+
+						if mode == "all_and_push" then
+							show_progress("Pushing committed changes...")
+							run_system_async("git push 2>&1", function(push_result, push_code)
+								if push_code ~= 0 then
+									vim.notify("Committed but push failed: " .. push_result, vim.log.levels.WARN)
+								else
+									vim.notify("Committed and pushed: " .. message, vim.log.levels.INFO)
+								end
+							end)
+						end
+					end)
 				end)
 			end)
 		end)
@@ -109,6 +121,7 @@ local function push_to_remote()
 	show_progress("Pushing changes...")
 	vim.defer_fn(function()
 		run_system_async("git push 2>&1", function(result, code)
+			clear_progress()
 			if code ~= 0 then
 				vim.notify("Push failed: " .. result, vim.log.levels.ERROR)
 			else
