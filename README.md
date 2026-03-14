@@ -1,15 +1,14 @@
 # Neovim Configuration
 
-Modern Neovim setup optimized for full-stack development with AI-powered completion, LSP support.
+Modern Neovim setup optimized for full-stack development with AI-powered completion, LSP support, and a git-focused workflow.
 
 ## ✨ Key Features
 
-- **⚡ Lightning Fast**: ~76ms startup time, 150-200MB memory
 - **🤖 AI Completion**: GitHub Copilot with inline suggestions
 - **💻 Full LSP**: 13+ language servers with auto-installation
 - **🔍 Advanced Search**: Telescope fuzzy finder with live grep
-- **🔧 Git Integration**: Gitsigns for hunks, staging, and blame
-- **📦 50+ Plugins**: Lazy-loaded for performance
+- **🔧 Git Integration**: Gitsigns, AI-assisted commits, GitHub account switching
+- **📦 Modular Plugin Layout**: Split by capability for easier maintenance
 
 ## 🛠️ Supported Languages
 
@@ -62,7 +61,6 @@ Follow browser prompt to authenticate with GitHub.
 **AI Completion:**
 ```
 <Ctrl-g>     Accept AI suggestion
-<Ctrl-;>     Next suggestion
 <Ctrl-x>     Dismiss
 ```
 
@@ -130,10 +128,7 @@ nvim  # Reinstalls everything
 
 ## 📊 Performance
 
-| Metric | This Config | VSCode |
-|--------|-------------|--------|
-| Startup | ~76ms | 1-3s |
-| Memory | 150-200MB | 400-800MB |
+Performance guidance lives in [`docs/PERFORMANCE.md`](/Users/danielcaldera/.config/nvim/docs/PERFORMANCE.md). The previous hard-coded startup and memory numbers were removed because this repository does not benchmark them automatically.
 
 ## 📚 Documentation
 

@@ -10,14 +10,23 @@ return {
 		event = "VeryLazy",
 		config = function()
 			local lazy_status = require("lazy.status")
+			local function in_git_repo(path)
+				local dir = path ~= "" and vim.fs.dirname(path) or vim.loop.cwd()
+				return vim.fs.find(".git", {
+					path = dir,
+					upward = true,
+					type = "directory",
+					limit = 1,
+				})[1] ~= nil
+			end
 
-			-- Cache git-repo detection per buffer (avoids synchronous shell on every statusline refresh)
+			-- Cache git-repo detection per buffer without spawning git on buffer switches.
 			local git_cache_group = vim.api.nvim_create_augroup("lualine_git_cache", { clear = true })
 			vim.api.nvim_create_autocmd({ "BufEnter", "DirChanged" }, {
 				group = git_cache_group,
-				callback = function()
-					local result = vim.fn.system("git rev-parse --show-toplevel 2>/dev/null")
-					vim.b.is_git_repo = (vim.v.shell_error == 0 and vim.trim(result) ~= "")
+				callback = function(args)
+					local name = args.buf and vim.api.nvim_buf_get_name(args.buf) or ""
+					vim.b[args.buf].is_git_repo = in_git_repo(name)
 				end,
 			})
 

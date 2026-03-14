@@ -169,9 +169,8 @@ Language intelligence and code formatting.
 
 Two independent completion systems running in parallel.
 
-- **Copilot** (inline ghost text only): auto-trigger, `<C-g>` to accept, `<C-;>` for next suggestion
+- **Copilot** (inline ghost text only): `<C-g>` to accept, `<C-x>` to dismiss
   - No cmp integration -- Copilot operates as standalone ghost text
-  - `ghost_text = false` in cmp to avoid visual conflict
 - **nvim-cmp** (menu completion): LSP, snippets, buffer, path sources
   - Priority: LSP (900) > LuaSnip (750) > buffer (500) > path (250)
   - lspkind.nvim for pictograms in the completion menu
@@ -232,15 +231,14 @@ Git integration with AI-powered workflow.
 
 Terminal, dashboard, notifications, and project management.
 
-- **snacks.nvim** (unified system):
-  - **Notifier:** Sole notification backend (`vim.notify` override), replaces noice/nvim-notify/dressing/fidget
+- **snacks.nvim** (dashboard + terminal + lazygit):
   - **Dashboard:** ASCII art header with quick-access keys (find files, recent, grep, lazy)
   - **Terminal:** Float/horizontal/vertical terminals, CLI tool management (Claude, Gemini, Codex, Copilot CLI, Opencode)
   - **Lazygit:** `<leader>lg` to open
 - **todo-comments:** Highlight and search TODO/FIXME/HACK/NOTE comments
 - **project.nvim:** Auto-detect project root, Telescope project picker (`<leader>fp`)
 - **markdown-preview:** Live browser preview for markdown files
-- **GitHub accounts:** `<leader>ga` (switch), `<leader>gS` (quick status)
+  - **GitHub accounts:** `<leader>ga` (switch), `<leader>gas` (status)
 
 ### Layer 10: Diagnostics (`diagnostics.lua`)
 

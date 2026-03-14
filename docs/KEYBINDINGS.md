@@ -198,10 +198,7 @@ Leader key: `<Space>`
 | Key | Mode | Description |
 |-----|------|-------------|
 | `<C-g>` | Insert | Accept AI suggestion |
-| `<C-;>` | Insert | Next AI suggestion |
-| `<C-,>` | Insert | Previous AI suggestion |
 | `<C-x>` | Insert | Dismiss AI suggestion |
-| `<M-CR>` | Insert | Open Copilot panel with alternatives |
 
 ### LSP Completion (nvim-cmp)
 | Key | Mode | Description |

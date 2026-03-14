@@ -6,6 +6,7 @@
 local function commit_with_ai(mode)
 	local openai = require("config.openai")
 	local git_root = vim.trim(vim.fn.system("git rev-parse --show-toplevel 2>/dev/null"))
+	local auto_staged_file = nil
 
 	if git_root == "" then
 		vim.notify("Not a git repository", vim.log.levels.ERROR)
@@ -22,6 +23,11 @@ local function commit_with_ai(mode)
 			local current_file = vim.fn.expand("%:p")
 			if current_file ~= "" then
 				vim.fn.system(string.format("git add %s", vim.fn.shellescape(current_file)))
+				if vim.v.shell_error ~= 0 then
+					vim.notify("Failed to stage current file", vim.log.levels.ERROR)
+					return
+				end
+				auto_staged_file = current_file
 				diff = vim.fn.system("git diff --cached -U5 --unified=5 | head -n 50")
 			else
 				vim.notify("No file open and no staged changes", vim.log.levels.WARN)
@@ -50,6 +56,9 @@ local function commit_with_ai(mode)
 
 	vim.ui.input({ prompt = "Commit message: ", default = ai_message }, function(message)
 		if not message or message == "" then
+			if auto_staged_file then
+				vim.fn.system(string.format("git reset HEAD -- %s", vim.fn.shellescape(auto_staged_file)))
+			end
 			vim.notify("Commit cancelled", vim.log.levels.INFO)
 			return
 		end

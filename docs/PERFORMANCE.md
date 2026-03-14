@@ -22,26 +22,19 @@ Comprehensive guide to Neovim startup optimization, profiling techniques, and pe
 
 ### Target Metrics
 
-| Metric | Target | Actual | Status |
-|--------|--------|--------|--------|
-| Startup Time | <100ms | ~76ms | ✅ Excellent |
-| Memory (Idle) | <200MB | 150-200MB | ✅ Good |
-| Memory (LSP Active) | <300MB | 200-300MB | ✅ Good |
-| LSP Attach Time | <500ms | 200-400ms | ✅ Good |
-| First Paint | <50ms | ~40ms | ✅ Excellent |
+The repository currently documents targets, not enforced benchmark results. Re-measure locally before treating any number as current.
+
+| Metric | Target |
+|--------|--------|
+| Startup Time | <100ms |
+| Memory (Idle) | <200MB |
+| Memory (LSP Active) | <300MB |
+| LSP Attach Time | <500ms |
+| First Paint | <50ms |
 
 ### Comparison
 
-| Editor | Startup | Memory (Idle) | Memory (Active) |
-|--------|---------|---------------|-----------------|
-| **This Config** | ~76ms | 150-200MB | 200-300MB |
-| VSCode | 1-3s | 400-800MB | 800MB-1.5GB |
-| Sublime Text | 50-100ms | 100-150MB | 200-400MB |
-| IntelliJ IDEA | 5-15s | 1-2GB | 2-4GB |
-| Vim (minimal) | 10-20ms | 10-20MB | 30-50MB |
-| Neovim (minimal) | 15-30ms | 15-30MB | 40-60MB |
-
-**Insight:** This config is ~40x faster than VSCode while providing similar features.
+Keep comparisons qualitative unless they are backed by a reproducible benchmark run from the current machine and plugin lockfile.
 
 ---
 

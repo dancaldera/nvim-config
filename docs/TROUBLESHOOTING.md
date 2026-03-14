@@ -127,8 +127,8 @@ Should show correct type (e.g., `filetype=python`).
 
 **Check 3: Server configured?**
 ```bash
-# Check if server is in lsp-servers.lua
-cat lua/plugins/lsp-servers.lua | grep "server_name"
+# Check if server is in lsp.lua
+cat lua/plugins/lsp.lua | grep "server_name"
 ```
 
 **Fix: Manual server start**
