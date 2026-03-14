@@ -1,141 +1,94 @@
 # Neovim Configuration
 
-Modern Neovim setup optimized for full-stack development with AI-powered completion, LSP support, and a git-focused workflow.
+Personal Neovim configuration for full-stack development with LSP, Telescope, Treesitter, Copilot, and git tooling.
 
-## ✨ Key Features
+## Requirements
 
-- **🤖 AI Completion**: GitHub Copilot with inline suggestions
-- **💻 Full LSP**: 13+ language servers with auto-installation
-- **🔍 Advanced Search**: Telescope fuzzy finder with live grep
-- **🔧 Git Integration**: Gitsigns, AI-assisted commits, GitHub account switching
-- **📦 Modular Plugin Layout**: Split by capability for easier maintenance
+- Neovim `>= 0.10` (`0.11+` recommended)
+- `git`
+- `rg`
 
-## 🛠️ Supported Languages
+Optional, depending on your languages and features:
 
-**Programming**: JavaScript/TypeScript, Python, Go, C/C++, Rust, Lua
-**Web**: HTML, CSS, JSON, YAML, Markdown
+- `node`
+- `python3`
+- `go`
+- `rust`
+- `gh`
+- `curl`
 
-All LSP servers auto-install via Mason.
+## Install
 
-## 📋 Prerequisites
-
-**Required:**
-- Neovim >= 0.10.0 (**0.11+ recommended** for native LSP features) (`nvim --version`)
-- Git
-- ripgrep (`brew install ripgrep`)
-
-**Optional** (install for languages you use):
-- Node.js, Python 3, Go, Rust
-
-> **Note:** Neovim 0.11+ provides native LSP configuration via `vim.lsp.config()`. On 0.10, some features may have reduced functionality.
-
-## 🚀 Quick Start
-
-### 1. Install
 ```bash
-# Backup existing config
 mv ~/.config/nvim ~/.config/nvim.backup
-
-# Clone this config
 git clone <repo-url> ~/.config/nvim
-
-# Launch Neovim (auto-installs plugins)
 nvim
 ```
 
-### 2. Setup AI Completion
+Plugins and Mason-managed tools install on first launch.
+
+## AI Setup
+
+Copilot:
+
 ```vim
 :Copilot auth
 ```
-Follow browser prompt to authenticate with GitHub.
 
-### 3. Verify
+AI commit messages:
+
+- `OPENAI_API_KEY`, or
+- `OPENROUTER_API_KEY`
+
+Keys can be set in the environment or in `~/.zshrc`, `~/.bashrc`, `~/.zprofile`, or `~/.env`.
+
+## Verify
+
 ```vim
-:checkhealth    # System health
-:Mason          # LSP servers
-:Lazy           # Plugins
-```
-
-## 🎯 Essential Keybindings
-
-**AI Completion:**
-```
-<Ctrl-g>     Accept AI suggestion
-<Ctrl-x>     Dismiss
-```
-
-**File Navigation:**
-```
-<leader>ff   Find files
-<leader>fs   Search in files
-<leader>ee   Toggle file explorer
-```
-
-**Code:**
-```
-gd           Go to definition
-K            Show documentation
-<leader>ca   Code actions
-<leader>xs   Symbols (Trouble)
-```
-
-**Git:**
-```
-]c / [c      Next/prev hunk
-<leader>hp   Preview hunk
-<leader>hs   Stage hunk
-<leader>gb   Toggle blame
-<leader>gd   Toggle deleted
-```
-
-**Pro Tip:** Press `<Space>` and wait - Which-Key shows all keybindings!
-
-📖 **Full reference:** `docs/KEYBINDINGS.md`
-
-## 🔧 Troubleshooting
-
-**AI issues:**
-```vim
-:Copilot status
-:Copilot auth
-```
-
-**LSP issues:**
-```vim
-:LspInfo
-:LspRestart
+:checkhealth
+:Lazy
 :Mason
 ```
 
-**Plugin issues:**
+## Common Keys
+
+```text
+<leader>ff   Find files
+<leader>fs   Live grep
+<leader>ee   Toggle file explorer
+gd           Go to definition
+K            Hover
+<leader>ca   Code actions
+<leader>xx   Diagnostics list
+<C-g>        Accept Copilot suggestion
+<C-x>        Dismiss Copilot suggestion
+<leader>gc   Commit with AI message
+<leader>gA   Commit all and push
+<leader>gP   Push
+```
+
+## AI Agent Terminals
+
+```text
+<leader>lc   Toggle Claude
+<leader>lx   Toggle Codex
+<leader>lG   Toggle Gemini
+<leader>lo   Toggle Opencode
+<leader>la   Toggle Copilot CLI
+<leader>ll   List active AI terminals
+<leader>lK   Close all AI terminals
+```
+
+## Maintenance
+
 ```vim
-:Lazy sync
+:Lazy update
+:MasonUpdate
+:TSUpdate
 ```
 
-**Nuclear option:**
-```bash
-rm -rf ~/.local/share/nvim ~/.cache/nvim
-nvim  # Reinstalls everything
-```
+## Docs
 
-## 🔄 Updates
-
-```vim
-:Lazy update      # Plugins
-:MasonUpdate      # LSP servers
-:TSUpdate         # Treesitter
-```
-
-## 📊 Performance
-
-Performance guidance lives in [`docs/PERFORMANCE.md`](/Users/danielcaldera/.config/nvim/docs/PERFORMANCE.md). The previous hard-coded startup and memory numbers were removed because this repository does not benchmark them automatically.
-
-## 📚 Documentation
-
-- `CLAUDE.md` - Developer/AI guide
-- `docs/KEYBINDINGS.md` - Complete keybinding reference
-- `docs/SETUP_FORMATTERS.md` - Formatter installation
-
----
-
-Happy coding! 🚀
+- [`docs/KEYBINDINGS.md`](/Users/danielcaldera/.config/nvim/docs/KEYBINDINGS.md)
+- [`docs/ARCHITECTURE.md`](/Users/danielcaldera/.config/nvim/docs/ARCHITECTURE.md)
+- [`docs/TROUBLESHOOTING.md`](/Users/danielcaldera/.config/nvim/docs/TROUBLESHOOTING.md)
