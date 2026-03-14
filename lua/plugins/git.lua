@@ -71,6 +71,8 @@ local function commit_with_ai(mode)
 		end
 
 		if mode == "all_and_push" then
+			vim.notify("Pushing committed changes...", vim.log.levels.INFO)
+			vim.cmd("redraw")
 			local push_result = vim.fn.system("git push 2>&1")
 			if vim.v.shell_error ~= 0 then
 				vim.notify("Committed but push failed: " .. push_result, vim.log.levels.WARN)
@@ -83,6 +85,8 @@ end
 
 -- Push function
 local function push_to_remote()
+	vim.notify("Pushing changes...", vim.log.levels.INFO)
+	vim.cmd("redraw")
 	local result = vim.fn.system("git push 2>&1")
 	if vim.v.shell_error ~= 0 then
 		vim.notify("Push failed: " .. result, vim.log.levels.ERROR)
