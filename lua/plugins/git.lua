@@ -3,96 +3,105 @@
 -- ============================================================================
 
 -- Shared AI commit function
+local function show_progress(message)
+	vim.api.nvim_echo({ { message, "ModeMsg" } }, false, {})
+	vim.notify(message, vim.log.levels.INFO)
+	vim.cmd("redraw")
+end
+
 local function commit_with_ai(mode)
-	local openai = require("config.openai")
-	local git_root = vim.trim(vim.fn.system("git rev-parse --show-toplevel 2>/dev/null"))
-	local auto_staged_file = nil
+	show_progress("Generating commit message with AI...")
+	vim.defer_fn(function()
+		local openai = require("config.openai")
+		local git_root = vim.trim(vim.fn.system("git rev-parse --show-toplevel 2>/dev/null"))
+		local auto_staged_file = nil
 
-	if git_root == "" then
-		vim.notify("Not a git repository", vim.log.levels.ERROR)
-		return
-	end
+		if git_root == "" then
+			vim.notify("Not a git repository", vim.log.levels.ERROR)
+			return
+		end
 
-	local diff = ""
-	local staged = vim.trim(vim.fn.system("git diff --cached --name-only"))
+		local diff = ""
+		local staged = vim.trim(vim.fn.system("git diff --cached --name-only"))
 
-	if mode == "current_file" then
-		if staged ~= "" then
-			diff = vim.fn.system("git diff --cached -U5 --unified=5 | head -n 50")
-		else
-			local current_file = vim.fn.expand("%:p")
-			if current_file ~= "" then
-				vim.fn.system(string.format("git add %s", vim.fn.shellescape(current_file)))
-				if vim.v.shell_error ~= 0 then
-					vim.notify("Failed to stage current file", vim.log.levels.ERROR)
-					return
-				end
-				auto_staged_file = current_file
+		if mode == "current_file" then
+			if staged ~= "" then
 				diff = vim.fn.system("git diff --cached -U5 --unified=5 | head -n 50")
 			else
-				vim.notify("No file open and no staged changes", vim.log.levels.WARN)
+				local current_file = vim.fn.expand("%:p")
+				if current_file ~= "" then
+					vim.fn.system(string.format("git add %s", vim.fn.shellescape(current_file)))
+					if vim.v.shell_error ~= 0 then
+						vim.notify("Failed to stage current file", vim.log.levels.ERROR)
+						return
+					end
+					auto_staged_file = current_file
+					diff = vim.fn.system("git diff --cached -U5 --unified=5 | head -n 50")
+				else
+					vim.notify("No file open and no staged changes", vim.log.levels.WARN)
+					return
+				end
+			end
+		else
+			vim.fn.system("git add -A")
+
+			local status = vim.fn.system("git status --porcelain")
+			if vim.trim(status) == "" then
+				vim.notify("No changes to commit", vim.log.levels.INFO)
+				return
+			end
+
+			diff = vim.trim(vim.fn.system("git diff -U5 --unified=5 --cached | head -n 50"))
+			if diff == "" then
+				vim.notify("No staged changes", vim.log.levels.WARN)
 				return
 			end
 		end
-	else
-		vim.fn.system("git add -A")
 
-		local status = vim.fn.system("git status --porcelain")
-		if vim.trim(status) == "" then
-			vim.notify("No changes to commit", vim.log.levels.INFO)
-			return
-		end
+		local fallback = string.format("[%s] Auto-commit", os.date("%Y-%m-%d %H:%M"))
+		local ai_message = openai.generate_commit_message(diff, fallback)
 
-		diff = vim.trim(vim.fn.system("git diff -U5 --unified=5 --cached | head -n 50"))
-		if diff == "" then
-			vim.notify("No staged changes", vim.log.levels.WARN)
-			return
-		end
-	end
-
-	local fallback = string.format("[%s] Auto-commit", os.date("%Y-%m-%d %H:%M"))
-	vim.notify("Generating commit message with AI...", vim.log.levels.INFO)
-	vim.cmd("redraw")
-	local ai_message = openai.generate_commit_message(diff, fallback)
-
-	vim.ui.input({ prompt = "Commit message: ", default = ai_message }, function(message)
-		if not message or message == "" then
-			if auto_staged_file then
-				vim.fn.system(string.format("git reset HEAD -- %s", vim.fn.shellescape(auto_staged_file)))
+		vim.ui.input({ prompt = "Commit message: ", default = ai_message }, function(message)
+			if not message or message == "" then
+				if auto_staged_file then
+					vim.fn.system(string.format("git reset HEAD -- %s", vim.fn.shellescape(auto_staged_file)))
+				end
+				vim.notify("Commit cancelled", vim.log.levels.INFO)
+				return
 			end
-			vim.notify("Commit cancelled", vim.log.levels.INFO)
-			return
-		end
-		local result = vim.fn.system(string.format("git commit -m %s", vim.fn.shellescape(message)))
-		if vim.v.shell_error ~= 0 then
-			vim.notify("Commit failed: " .. result, vim.log.levels.ERROR)
-		else
-			vim.notify("Committed: " .. message, vim.log.levels.INFO)
-		end
-
-		if mode == "all_and_push" then
-			vim.notify("Pushing committed changes...", vim.log.levels.INFO)
-			vim.cmd("redraw")
-			local push_result = vim.fn.system("git push 2>&1")
+			local result = vim.fn.system(string.format("git commit -m %s", vim.fn.shellescape(message)))
 			if vim.v.shell_error ~= 0 then
-				vim.notify("Committed but push failed: " .. push_result, vim.log.levels.WARN)
+				vim.notify("Commit failed: " .. result, vim.log.levels.ERROR)
 			else
-				vim.notify("Committed and pushed: " .. message, vim.log.levels.INFO)
+				vim.notify("Committed: " .. message, vim.log.levels.INFO)
 			end
-		end
-	end)
+
+			if mode == "all_and_push" then
+				show_progress("Pushing committed changes...")
+				vim.defer_fn(function()
+					local push_result = vim.fn.system("git push 2>&1")
+					if vim.v.shell_error ~= 0 then
+						vim.notify("Committed but push failed: " .. push_result, vim.log.levels.WARN)
+					else
+						vim.notify("Committed and pushed: " .. message, vim.log.levels.INFO)
+					end
+				end, 10)
+			end
+		end)
+	end, 10)
 end
 
 -- Push function
 local function push_to_remote()
-	vim.notify("Pushing changes...", vim.log.levels.INFO)
-	vim.cmd("redraw")
-	local result = vim.fn.system("git push 2>&1")
-	if vim.v.shell_error ~= 0 then
-		vim.notify("Push failed: " .. result, vim.log.levels.ERROR)
-	else
-		vim.notify("Pushed successfully", vim.log.levels.INFO)
-	end
+	show_progress("Pushing changes...")
+	vim.defer_fn(function()
+		local result = vim.fn.system("git push 2>&1")
+		if vim.v.shell_error ~= 0 then
+			vim.notify("Push failed: " .. result, vim.log.levels.ERROR)
+		else
+			vim.notify("Pushed successfully", vim.log.levels.INFO)
+		end
+	end, 10)
 end
 
 return {
