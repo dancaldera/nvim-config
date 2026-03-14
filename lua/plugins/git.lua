@@ -3,14 +3,30 @@
 -- ============================================================================
 
 -- Shared AI commit function
-local function show_progress(message)
-	vim.api.nvim_echo({ { message, "ModeMsg" } }, false, {})
+local progress_timer = nil
+
+local function clear_progress()
+	if progress_timer then
+		progress_timer:stop()
+		progress_timer:close()
+		progress_timer = nil
+	end
+	vim.api.nvim_echo({ { "", "None" } }, false, {})
 	vim.cmd("redraw")
 end
 
-local function clear_progress()
-	vim.api.nvim_echo({ { "", "None" } }, false, {})
+local function show_progress(message)
+	clear_progress()
+	vim.api.nvim_echo({ { message, "ModeMsg" } }, false, {})
 	vim.cmd("redraw")
+	local timer = vim.uv.new_timer()
+	progress_timer = timer
+	timer:start(250, 250, vim.schedule_wrap(function()
+		if progress_timer == timer then
+			vim.api.nvim_echo({ { message, "ModeMsg" } }, false, {})
+			vim.cmd("redraw")
+		end
+	end))
 end
 
 local function run_system_async(cmd, callback)
