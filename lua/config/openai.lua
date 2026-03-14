@@ -33,18 +33,18 @@ local function get_env_key(cache_name, env_name)
 		return api_key_cache[cache_name]
 	end
 
-	local key = vim.fn.getenv(env_name)
-	if key and key ~= vim.NIL and key ~= "" then
-		api_key_cache[cache_name] = key
-		return key
+	local env_key = vim.fn.getenv(env_name)
+	if env_key and env_key ~= vim.NIL and env_key ~= "" then
+		api_key_cache[cache_name] = env_key
+		return env_key
 	end
 
 	for _, config in ipairs(shell_configs) do
 		local expanded = vim.fn.expand(config)
-		key = parse_api_key_from_shell_config(expanded, env_name)
-		if key then
-			api_key_cache[cache_name] = key
-			return key
+		local file_key = parse_api_key_from_shell_config(expanded, env_name)
+		if file_key then
+			api_key_cache[cache_name] = file_key
+			return file_key
 		end
 	end
 
@@ -142,7 +142,7 @@ end
 
 M.generate_commit_message = function(diff, fallback_message)
 	local prompt = string.format(
-		"You are an expert at writing Git commits. Your job is to write a short clear commit message that summarizes the changes.\n\nIf you can accurately express the change in just the subject line, don't include anything in the message body. Only use the body when it is providing useful information.\n\nDon't repeat information from the subject line in the message body.\n\nOnly return the commit message in your response. Do not include any additional meta-commentary about the task. Do not include the raw diff output in the commit message.\n\nAlways start the subject line with a clear professional prefix such as feat:, fix:, chore:, refactor:, docs:, test:, build:, ci:, or perf:. Choose the prefix that best matches the change.\n\nFollow good Git style:\n- Separate the subject from the body with a blank line\n- Try to limit the subject line to 50 characters\n- Capitalize the subject line after the prefix\n- Do not end the subject line with any punctuation\n- Use the imperative mood in the subject line\n- Wrap the body at 72 characters\n- Keep the body short and concise (omit it entirely if not useful)\n\nChanges:\n%s",
+		"You are an expert at writing Git commits. Your job is to write a short clear commit message that summarizes the changes.\n\nIf you can accurately express the change in just the subject line, don't include anything in the message body. Only use the body when it is providing useful information.\n\nDon't repeat information from the subject line in the message body.\n\nOnly return the commit message in your response. Do not include any additional meta-commentary about the task. Do not include the raw diff output in the commit message.\n\nAlways start the subject line with one of these lowercase prefixes: feat:, fix:, chore:, refactor:, docs:, test:, build:, ci:, or perf:. Choose the prefix that best matches the change. Format the subject as `prefix: Subject`, with exactly one space after the colon. The prefix must always be lowercase.\n\nFollow good Git style:\n- Separate the subject from the body with a blank line\n- Try to limit the subject line to 50 characters\n- Capitalize the subject line after the prefix\n- Do not end the subject line with any punctuation\n- Use the imperative mood in the subject line\n- Wrap the body at 72 characters\n- Keep the body short and concise (omit it entirely if not useful)\n\nChanges:\n%s",
 		diff
 	)
 
@@ -198,7 +198,7 @@ end
 
 M.generate_commit_message_async = function(diff, fallback_message, callback)
 	local prompt = string.format(
-		"You are an expert at writing Git commits. Your job is to write a short clear commit message that summarizes the changes.\n\nIf you can accurately express the change in just the subject line, don't include anything in the message body. Only use the body when it is providing useful information.\n\nDon't repeat information from the subject line in the message body.\n\nOnly return the commit message in your response. Do not include any additional meta-commentary about the task. Do not include the raw diff output in the commit message.\n\nAlways start the subject line with a clear professional prefix such as feat:, fix:, chore:, refactor:, docs:, test:, build:, ci:, or perf:. Choose the prefix that best matches the change.\n\nFollow good Git style:\n- Separate the subject from the body with a blank line\n- Try to limit the subject line to 50 characters\n- Capitalize the subject line after the prefix\n- Do not end the subject line with any punctuation\n- Use the imperative mood in the subject line\n- Wrap the body at 72 characters\n- Keep the body short and concise (omit it entirely if not useful)\n\nChanges:\n%s",
+		"You are an expert at writing Git commits. Your job is to write a short clear commit message that summarizes the changes.\n\nIf you can accurately express the change in just the subject line, don't include anything in the message body. Only use the body when it is providing useful information.\n\nDon't repeat information from the subject line in the message body.\n\nOnly return the commit message in your response. Do not include any additional meta-commentary about the task. Do not include the raw diff output in the commit message.\n\nAlways start the subject line with one of these lowercase prefixes: feat:, fix:, chore:, refactor:, docs:, test:, build:, ci:, or perf:. Choose the prefix that best matches the change. Format the subject as `prefix: Subject`, with exactly one space after the colon. The prefix must always be lowercase.\n\nFollow good Git style:\n- Separate the subject from the body with a blank line\n- Try to limit the subject line to 50 characters\n- Capitalize the subject line after the prefix\n- Do not end the subject line with any punctuation\n- Use the imperative mood in the subject line\n- Wrap the body at 72 characters\n- Keep the body short and concise (omit it entirely if not useful)\n\nChanges:\n%s",
 		diff
 	)
 
