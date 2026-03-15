@@ -140,67 +140,15 @@ M.get_openrouter_api_key = function()
 	return get_env_key("openrouter", "OPENROUTER_API_KEY")
 end
 
-M.generate_commit_message = function(diff, fallback_message)
-	local prompt = string.format(
-		"You are an expert at writing Git commits. Your job is to write a short clear commit message that summarizes the changes.\n\nIf you can accurately express the change in just the subject line, don't include anything in the message body. Only use the body when it is providing useful information.\n\nDon't repeat information from the subject line in the message body.\n\nOnly return the commit message in your response. Do not include any additional meta-commentary about the task. Do not include the raw diff output in the commit message.\n\nAlways start the subject line with one of these lowercase prefixes: feat:, fix:, chore:, refactor:, docs:, test:, build:, ci:, or perf:. Choose the prefix that best matches the change. Format the subject as `prefix: Subject`, with exactly one space after the colon. The prefix must always be lowercase.\n\nFollow good Git style:\n- Separate the subject from the body with a blank line\n- Try to limit the subject line to 50 characters\n- Capitalize the subject line after the prefix\n- Do not end the subject line with any punctuation\n- Use the imperative mood in the subject line\n- Wrap the body at 72 characters\n- Keep the body short and concise (omit it entirely if not useful)\n\nChanges:\n%s",
+local function get_commit_prompt(diff)
+	return string.format(
+		"Write a concise git commit message for these changes. Start with lowercase prefix (feat:, fix:, chore:, refactor:, docs:, test:, build:, ci:, perf:). Use imperative mood. Subject only unless body adds real value.\n\nChanges:\n%s",
 		diff
 	)
-
-	local api_key = M.get_api_key()
-	local output, err, message
-	if api_key then
-		output, err = post_json("https://api.openai.com/v1/chat/completions", api_key, {
-			model = "gpt-4o",
-			messages = {
-				{ role = "user", content = prompt },
-			},
-			max_tokens = 150,
-			temperature = 0.7,
-		})
-		if output then
-			message, err = decode_json(output)
-		end
-
-		if not message then
-			vim.notify("OpenAI API request failed: " .. err .. ". Trying OpenRouter.", vim.log.levels.WARN)
-		end
-	end
-
-	if not message then
-		local openrouter_api_key = M.get_openrouter_api_key()
-		if openrouter_api_key then
-			output, err = post_json("https://openrouter.ai/api/v1/chat/completions", openrouter_api_key, {
-				model = "openrouter/free",
-				messages = {
-					{ role = "user", content = prompt },
-				},
-				reasoning = {
-					enabled = true,
-				},
-			})
-			if output then
-				message, err = decode_json(output)
-			end
-
-			if not message then
-				vim.notify("OpenRouter API request failed: " .. err .. ". Using fallback message.", vim.log.levels.WARN)
-				return fallback_message
-			end
-		else
-			vim.notify("No OPENAI_API_KEY or OPENROUTER_API_KEY found. Using fallback message.", vim.log.levels.WARN)
-			return fallback_message
-		end
-	end
-
-	message = message:gsub("[\r\n]+", ""):gsub("^%s*(.-)%s*$", "%1")
-	return message ~= "" and message or fallback_message
 end
 
 M.generate_commit_message_async = function(diff, fallback_message, callback)
-	local prompt = string.format(
-		"You are an expert at writing Git commits. Your job is to write a short clear commit message that summarizes the changes.\n\nIf you can accurately express the change in just the subject line, don't include anything in the message body. Only use the body when it is providing useful information.\n\nDon't repeat information from the subject line in the message body.\n\nOnly return the commit message in your response. Do not include any additional meta-commentary about the task. Do not include the raw diff output in the commit message.\n\nAlways start the subject line with one of these lowercase prefixes: feat:, fix:, chore:, refactor:, docs:, test:, build:, ci:, or perf:. Choose the prefix that best matches the change. Format the subject as `prefix: Subject`, with exactly one space after the colon. The prefix must always be lowercase.\n\nFollow good Git style:\n- Separate the subject from the body with a blank line\n- Try to limit the subject line to 50 characters\n- Capitalize the subject line after the prefix\n- Do not end the subject line with any punctuation\n- Use the imperative mood in the subject line\n- Wrap the body at 72 characters\n- Keep the body short and concise (omit it entirely if not useful)\n\nChanges:\n%s",
-		diff
-	)
+	local prompt = get_commit_prompt(diff)
 
 	local function use_openrouter()
 		local openrouter_api_key = M.get_openrouter_api_key()
@@ -319,6 +267,83 @@ M.test_api_key = function()
 		vim.notify("API error: " .. (data.error.message or "Unknown error"), vim.log.levels.ERROR)
 	else
 		vim.notify("API test successful!", vim.log.levels.INFO)
+	end
+end
+
+M.test_commit_message = function()
+	local test_diff = "diff --git a/test.lua b/test.lua\nindex 123..456 789\n--- a/test.lua\n+++ b/test.lua\n@@ -1,3 +1,4 @@\n function test()\n+  print('hello')\n   return true\n end"
+	local fallback = "[test] Auto-commit"
+
+	vim.notify("Testing OpenAI commit message generation...", vim.log.levels.INFO)
+
+	local openai_key = M.get_api_key()
+	local openrouter_key = M.get_openrouter_api_key()
+
+	if not openai_key and not openrouter_key then
+		vim.notify("No API keys found. Set OPENAI_API_KEY or OPENROUTER_API_KEY.", vim.log.levels.ERROR)
+		return
+	end
+
+	local completed = 0
+	local total = (openai_key and 1 or 0) + (openrouter_key and 1 or 0)
+
+	local function on_complete(provider, message)
+		completed = completed + 1
+		if message then
+			vim.notify(string.format("%s result: %s", provider, message), vim.log.levels.INFO)
+		end
+		if completed == total then
+			vim.notify("Test complete!", vim.log.levels.INFO)
+		end
+	end
+
+	if openai_key then
+		local prompt = get_commit_prompt(test_diff)
+		vim.notify("Sending request to OpenAI (gpt-4o)...", vim.log.levels.INFO)
+		post_json_async("https://api.openai.com/v1/chat/completions", openai_key, {
+			model = "gpt-4o",
+			messages = { { role = "user", content = prompt } },
+			max_tokens = 150,
+			temperature = 0.7,
+		}, vim.schedule_wrap(function(output, err)
+			if not output then
+				vim.notify("OpenAI failed: " .. err, vim.log.levels.ERROR)
+				on_complete("OpenAI", nil)
+				return
+			end
+			local message, decode_err = decode_json(output)
+			if not message then
+				vim.notify("OpenAI decode failed: " .. decode_err, vim.log.levels.ERROR)
+				on_complete("OpenAI", nil)
+				return
+			end
+			message = message:gsub("[\r\n]+", ""):gsub("^%s*(.-)%s*$", "%1")
+			on_complete("OpenAI", message ~= "" and message or fallback)
+		end))
+	end
+
+	if openrouter_key then
+		local prompt = get_commit_prompt(test_diff)
+		vim.notify("Sending request to OpenRouter (openrouter/free)...", vim.log.levels.INFO)
+		post_json_async("https://openrouter.ai/api/v1/chat/completions", openrouter_key, {
+			model = "openrouter/free",
+			messages = { { role = "user", content = prompt } },
+			reasoning = { enabled = true },
+		}, vim.schedule_wrap(function(output, err)
+			if not output then
+				vim.notify("OpenRouter failed: " .. err, vim.log.levels.ERROR)
+				on_complete("OpenRouter", nil)
+				return
+			end
+			local message, decode_err = decode_json(output)
+			if not message then
+				vim.notify("OpenRouter decode failed: " .. decode_err, vim.log.levels.ERROR)
+				on_complete("OpenRouter", nil)
+				return
+			end
+			message = message:gsub("[\r\n]+", ""):gsub("^%s*(.-)%s*$", "%1")
+			on_complete("OpenRouter", message ~= "" and message or fallback)
+		end))
 	end
 end
 
