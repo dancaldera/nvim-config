@@ -13,8 +13,8 @@ return {
 				commentStyle = { italic = true },
 				keywordStyle = { italic = true },
 				statementStyle = { bold = true },
-				transparent = false,
-				dimInactive = false,
+				transparent = true,
+        dimInactive = false,
 				terminalColors = true,
 				theme = "wave",
 			})
