@@ -47,7 +47,7 @@ return {
 			},
 			update_focused_file = {
 				enable = true,
-				update_root = true,
+				update_root = false,
 			},
 			on_attach = function(bufnr)
 				local function opts(desc)
@@ -55,7 +55,8 @@ return {
 				end
 
 				api.config.mappings.default_on_attach(bufnr)
-				vim.keymap.set("n", "-", api.tree.change_root_to_parent, opts("Up"))
+				-- Parent navigation disabled to enforce workspace boundary
+				-- vim.keymap.set("n", "-", api.tree.change_root_to_parent, opts("Up"))
 				vim.keymap.set("n", "<C-]>", api.tree.change_root_to_node, opts("CD"))
 				vim.keymap.set("n", "a", api.fs.create, opts("Create"))
 				vim.keymap.set("n", "d", api.fs.remove, opts("Delete"))
