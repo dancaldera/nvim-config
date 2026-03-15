@@ -7,12 +7,6 @@ local keymap = vim.keymap
 -- General keymaps
 keymap.set("i", "jk", "<ESC>", { desc = "Exit insert mode with jk" })
 
-keymap.set("n", "<leader>nh", ":nohl<CR>", { desc = "Clear search highlights" })
-
--- Increment/decrement numbers
-keymap.set("n", "<leader>+", "<C-a>", { desc = "Increment number" })
-keymap.set("n", "<leader>-", "<C-x>", { desc = "Decrement number" })
-
 -- Window management
 keymap.set("n", "<leader>sv", "<C-w>v", { desc = "Split window vertically" })
 keymap.set("n", "<leader>sh", "<C-w>s", { desc = "Split window horizontally" })
@@ -119,9 +113,6 @@ keymap.set("i", ";", ";<c-g>u")
 
 -- Better pasting
 keymap.set("x", "<leader>p", [["_dP]], { desc = "Paste without yanking" })
-
--- Delete without yanking
-keymap.set({ "n", "v" }, "<leader>dd", [["_d]], { desc = "Delete without yanking" })
 
 -- Select all
 keymap.set("n", "<C-a>", "ggVG", { desc = "Select all" })
