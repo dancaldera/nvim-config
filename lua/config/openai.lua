@@ -142,7 +142,7 @@ end
 
 local function get_commit_prompt(diff)
 	return string.format(
-		"Write a concise git commit message for these changes. Start with lowercase prefix (feat:, fix:, chore:, refactor:, docs:, test:, build:, ci:, perf:). Use imperative mood. Subject only unless body adds real value.\n\nChanges:\n%s",
+		"Write a concise git commit message for these changes. Start with lowercase prefix (feat:, fix:, chore:, refactor:, docs:, test:, build:, ci:, perf:). Use imperative mood. Subject only unless body adds real value. Output plain text only, no markdown formatting.\n\nChanges:\n%s",
 		diff
 	)
 end
