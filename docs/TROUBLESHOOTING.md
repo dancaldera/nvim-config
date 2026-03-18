@@ -17,8 +17,7 @@ Comprehensive troubleshooting guide for Neovim configuration issues beyond basic
 9. [Terminal Integration](#terminal-integration)
 10. [Copilot Problems](#copilot-problems)
 11. [Keybinding Conflicts](#keybinding-conflicts)
-12. [Session/Persistence Issues](#sessionpersistence-issues)
-13. [Nuclear Options](#nuclear-options)
+12. [Nuclear Options](#nuclear-options)
 
 ---
 
@@ -705,33 +704,6 @@ Shows where keybinding is defined. If multiple definitions, last one wins.
 ```
 
 **Fix:** Remove conflicting mapping or change keybinding in config.
-
----
-
-## Session/Persistence Issues
-
-### Session Not Restoring
-
-**Symptom:** `:lua require('persistence').load()` does nothing
-
-**Check:**
-```bash
-ls ~/.local/state/nvim/sessions/
-```
-
-Should show session files.
-
-**Fixes:**
-
-1. **Create new session:**
-```vim
-<leader>qs  " Save session
-```
-
-2. **Check if session saving disabled:**
-```vim
-<leader>qd  " This disables session saving - run again to re-enable
-```
 
 ---
 

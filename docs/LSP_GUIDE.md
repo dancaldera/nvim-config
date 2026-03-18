@@ -18,13 +18,11 @@ Language-specific LSP configuration, formatter installation, and troubleshooting
 
 ## Overview
 
-This configuration supports **13 LSP servers** with automatic installation via Mason.
+This configuration supports the servers configured in `lua/plugins/lsp.lua` and installs supporting tools through Mason.
 
 ### Automatic Installation
 
-**All LSP servers auto-install** when you open a file of that language for the first time.
-
-**No manual setup required** for most languages - just open a file and start coding!
+Most language tooling is installed through Mason on startup. Opening a matching filetype is usually enough to start working, assuming the underlying server is available in Mason and supported by the config.
 
 ### Supported Languages
 
@@ -60,18 +58,17 @@ These keybindings work for any language with LSP support:
 |------------|--------|-------------|
 | `gd` | Go to Definition | Jump to where symbol is defined (Telescope) |
 | `gD` | Go to Declaration | Jump to symbol declaration |
-| `gr` | Find References | Show all references (Telescope) |
+| `gR` | Find References | Show all references (Telescope) |
 | `gi` | Go to Implementation | Jump to implementation |
-| `gt` | Go to Type Definition | Jump to type definition |
+| `gy` | Go to Type Definition | Jump to type definition |
 | `K` | Hover Documentation | Show documentation for symbol under cursor |
-| `<C-k>` | Signature Help | Show function signature (insert mode) |
 | `<leader>ca` | Code Actions | Show available code actions |
 | `<leader>rn` | Rename Symbol | Rename symbol across project |
-| `<leader>cs` | Document Symbols | List symbols in current file (Telescope) |
-| `[d` / `]d` | Prev/Next Diagnostic | Navigate diagnostics |
 | `<leader>d` | Show Diagnostic | Show diagnostic under cursor |
 | `<leader>cf` | Format | Format current file/selection |
 | `<leader>jf` | Format | Format current file/selection |
+| `[e` / `]e` | Prev/Next Error | Navigate errors |
+| `[w` / `]w` | Prev/Next Warning | Navigate warnings |
 
 ### LSP Commands
 
@@ -129,9 +126,11 @@ npm install --save-dev eslint
 ```
 
 #### Inlay Hints
-TypeScript inlay hints are **disabled by default** for cleaner UI. To enable:
+TypeScript inlay hints start in the moderate preset for attached buffers. Use `<leader>ti` to cycle between none, minimal, moderate, and complete.
+
+If you want to change the default preset in code:
 ```lua
--- In lua/plugins/lsp-servers.lua, ts_ls settings
+-- In lua/plugins/lsp.lua
 includeInlayParameterNameHints = "all"  -- Change from "literals"
 ```
 

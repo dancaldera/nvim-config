@@ -291,6 +291,28 @@ local function check_config_consistency(report)
 	report.start("Configuration consistency")
 
 	local issues = {}
+	local cwd = vim.fn.stdpath("config")
+
+	local function read_file(path)
+		local full_path = cwd .. "/" .. path
+		if vim.fn.filereadable(full_path) ~= 1 then
+			table.insert(issues, string.format("Expected documentation file missing: %s", path))
+			return nil
+		end
+		return table.concat(vim.fn.readfile(full_path), "\n")
+	end
+
+	local function require_contains(path, content, pattern, label)
+		if content and not content:find(pattern, 1, true) then
+			table.insert(issues, string.format("%s is missing expected reference: %s", path, label))
+		end
+	end
+
+	local function forbid_contains(path, content, pattern, label)
+		if content and content:find(pattern, 1, true) then
+			table.insert(issues, string.format("%s still contains stale reference: %s", path, label))
+		end
+	end
 
 	local guicursor = vim.opt.guicursor:get()
 	local empty_guicursor = false
@@ -303,6 +325,37 @@ local function check_config_consistency(report)
 	if empty_guicursor then
 		table.insert(issues, "guicursor is unset; cursor appearance may be degraded.")
 	end
+
+	local keybindings_doc = read_file("docs/KEYBINDINGS.md")
+	local architecture_doc = read_file("docs/ARCHITECTURE.md")
+	local plugins_doc = read_file("docs/PLUGINS_REFERENCE.md")
+	local lsp_doc = read_file("docs/LSP_GUIDE.md")
+
+	require_contains("docs/KEYBINDINGS.md", keybindings_doc, "<leader>ee", "<leader>ee file explorer mapping")
+	require_contains("docs/KEYBINDINGS.md", keybindings_doc, "bufferline.nvim", "bufferline.nvim buffer manager")
+	require_contains("docs/KEYBINDINGS.md", keybindings_doc, "<leader>pv", "<leader>pv python venv mapping")
+	require_contains("docs/KEYBINDINGS.md", keybindings_doc, "<leader>hC", "<leader>hC consistency mapping")
+	forbid_contains("docs/KEYBINDINGS.md", keybindings_doc, "nvim-cokeline", "removed nvim-cokeline reference")
+	forbid_contains("docs/KEYBINDINGS.md", keybindings_doc, "Spectre", "removed Spectre reference")
+	forbid_contains("docs/KEYBINDINGS.md", keybindings_doc, "<leader>qs", "removed session mapping")
+	forbid_contains("docs/KEYBINDINGS.md", keybindings_doc, "<leader>snd", "removed Noice notification mapping")
+	forbid_contains("docs/KEYBINDINGS.md", keybindings_doc, "<leader>D", "removed stale diagnostics mapping")
+
+	require_contains("docs/ARCHITECTURE.md", architecture_doc, "bufferline", "bufferline architecture note")
+	require_contains("docs/ARCHITECTURE.md", architecture_doc, "nvim-tree", "nvim-tree architecture note")
+	forbid_contains("docs/ARCHITECTURE.md", architecture_doc, "AGENTS.md", "nonexistent AGENTS.md file")
+
+	require_contains("docs/PLUGINS_REFERENCE.md", plugins_doc, "<leader>ee", "<leader>ee explorer mapping")
+	require_contains("docs/PLUGINS_REFERENCE.md", plugins_doc, "<leader>pv", "<leader>pv python mapping")
+	require_contains("docs/PLUGINS_REFERENCE.md", plugins_doc, "gR", "current LSP references mapping")
+	forbid_contains("docs/PLUGINS_REFERENCE.md", plugins_doc, "| `<leader>e` |", "stale explorer key")
+	forbid_contains("docs/PLUGINS_REFERENCE.md", plugins_doc, "| `gr` |", "stale references key")
+	forbid_contains("docs/PLUGINS_REFERENCE.md", plugins_doc, "<leader>D", "stale type-definition key")
+
+	require_contains("docs/LSP_GUIDE.md", lsp_doc, "gR", "current references mapping")
+	require_contains("docs/LSP_GUIDE.md", lsp_doc, "gy", "current type definition mapping")
+	forbid_contains("docs/LSP_GUIDE.md", lsp_doc, "| `gr` |", "stale references key")
+	forbid_contains("docs/LSP_GUIDE.md", lsp_doc, "| `gt` |", "stale type definition key")
 
 
 
