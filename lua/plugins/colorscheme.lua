@@ -1,24 +1,18 @@
 -- ============================================================================
--- Colorscheme Configuration - Kanagawa
+-- Colorscheme Configuration - Tokyo Night
 -- ============================================================================
 
 return {
 	{
-		"rebelot/kanagawa.nvim",
+		"folke/tokyonight.nvim",
 		priority = 1000,
+		lazy = false,
 		config = function()
-			require("kanagawa").setup({
-				compile = false,
-				undercurl = true,
-				commentStyle = { italic = true },
-				keywordStyle = { italic = true },
-				statementStyle = { bold = true },
-				transparent = true,
-        dimInactive = false,
-				terminalColors = true,
-				theme = "wave",
+			require("tokyonight").setup({
+				style = "night",
+				transparent = false,
 			})
-			vim.cmd("colorscheme kanagawa")
+			vim.cmd("colorscheme tokyonight")
 		end,
 	},
 }
