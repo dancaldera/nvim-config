@@ -61,10 +61,26 @@ local function truncate_diff(diff, max_lines, max_chars)
 	return truncated
 end
 
-local function commit_with_ai(mode)
+local function generate_commit_message(mode, callback)
 	show_progress("Preparing commit...")
 	local openai = require("config.openai")
 	local auto_staged_file = nil
+
+	local function cleanup_auto_staged(done)
+		if not auto_staged_file then
+			if done then
+				done()
+			end
+			return
+		end
+
+		run_system_async(string.format("git reset HEAD -- %s", vim.fn.shellescape(auto_staged_file)), function(_, _)
+			auto_staged_file = nil
+			if done then
+				done()
+			end
+		end)
+	end
 
 	-- Get git root asynchronously
 	run_system_async("git rev-parse --show-toplevel 2>/dev/null", function(git_root, code)
@@ -88,42 +104,7 @@ local function commit_with_ai(mode)
 			local fallback = string.format("[%s] Auto-commit", os.date("%Y-%m-%d %H:%M"))
 			openai.generate_commit_message_async(lean_diff, fallback, function(ai_message)
 				clear_progress()
-				vim.ui.input({ prompt = "Commit message: ", default = ai_message }, function(message)
-					if not message or message == "" then
-						if auto_staged_file then
-							run_system_async(
-								string.format("git reset HEAD -- %s", vim.fn.shellescape(auto_staged_file)),
-								function() end
-							)
-						end
-						vim.notify("Commit cancelled", vim.log.levels.INFO)
-						return
-					end
-
-					show_progress("Committing...")
-					run_system_async(string.format("git commit -m %s", vim.fn.shellescape(message)), function(result, commit_code)
-						if commit_code ~= 0 then
-							clear_progress()
-							vim.notify("Commit failed: " .. result, vim.log.levels.ERROR)
-							return
-						end
-
-						if mode == "all_and_push" then
-							show_progress("Pushing...")
-							run_system_async("git push 2>&1", function(push_result, push_code)
-								clear_progress()
-								if push_code ~= 0 then
-									vim.notify("Committed but push failed: " .. push_result, vim.log.levels.WARN)
-								else
-									vim.notify("Committed and pushed: " .. message, vim.log.levels.INFO)
-								end
-							end)
-						else
-							clear_progress()
-							vim.notify("Committed: " .. message, vim.log.levels.INFO)
-						end
-					end)
-				end)
+				callback(ai_message, cleanup_auto_staged)
 			end)
 		end
 
@@ -176,6 +157,52 @@ local function commit_with_ai(mode)
 				end)
 			end)
 		end
+	end)
+end
+
+local function commit_with_ai(mode)
+	generate_commit_message(mode, function(ai_message, cleanup_auto_staged)
+		vim.ui.input({ prompt = "Commit message: ", default = ai_message }, function(message)
+			if not message or message == "" then
+				cleanup_auto_staged(function()
+					vim.notify("Commit cancelled", vim.log.levels.INFO)
+				end)
+				return
+			end
+
+			show_progress("Committing...")
+			run_system_async(string.format("git commit -m %s", vim.fn.shellescape(message)), function(result, commit_code)
+				if commit_code ~= 0 then
+					clear_progress()
+					vim.notify("Commit failed: " .. result, vim.log.levels.ERROR)
+					return
+				end
+
+				if mode == "all_and_push" then
+					show_progress("Pushing...")
+					run_system_async("git push 2>&1", function(push_result, push_code)
+						clear_progress()
+						if push_code ~= 0 then
+							vim.notify("Committed but push failed: " .. push_result, vim.log.levels.WARN)
+						else
+							vim.notify("Committed and pushed: " .. message, vim.log.levels.INFO)
+						end
+					end)
+				else
+					clear_progress()
+					vim.notify("Committed: " .. message, vim.log.levels.INFO)
+				end
+			end)
+		end)
+	end)
+end
+
+local function copy_commit_message_with_ai()
+	generate_commit_message("current_file", function(ai_message, cleanup_auto_staged)
+		cleanup_auto_staged(function()
+			vim.fn.setreg("+", ai_message)
+			vim.notify("Copied AI commit message to clipboard: " .. ai_message, vim.log.levels.INFO)
+		end)
 	end)
 end
 
@@ -299,6 +326,13 @@ return {
 					commit_with_ai("all")
 				end,
 				desc = "Git commit all with AI message",
+			},
+			{
+				"<leader>gy",
+				function()
+					copy_commit_message_with_ai()
+				end,
+				desc = "Copy AI commit message",
 			},
 			{
 				"<leader>gA",

@@ -197,7 +197,7 @@ return {
 
 			-- Lazygit
 			{
-				"<leader>lg",
+				"<leader>gl",
 				function()
 					require("snacks").lazygit()
 				end,
@@ -240,42 +240,6 @@ return {
 				end,
 				desc = "Toggle Copilot CLI",
 			},
-			{
-				"<leader>lK",
-				function()
-					local count = 0
-					for name, term in pairs(_G.cli_terminals) do
-						if term and term.buf and vim.api.nvim_buf_is_valid(term.buf) then
-							vim.api.nvim_buf_delete(term.buf, { force = true })
-							count = count + 1
-						end
-						_G.cli_terminals[name] = nil
-					end
-					vim.notify(
-						string.format("Closed %d CLI tool terminal%s", count, count ~= 1 and "s" or ""),
-						vim.log.levels.INFO
-					)
-				end,
-				desc = "Kill all CLI tools",
-			},
-			{
-				"<leader>ll",
-				function()
-					local active = {}
-					for name, term in pairs(_G.cli_terminals) do
-						if term and term.buf and vim.api.nvim_buf_is_valid(term.buf) then
-							table.insert(active, name:gsub("^cli_tool_", ""))
-						end
-					end
-					if #active > 0 then
-						vim.notify("Active CLI tools: " .. table.concat(active, ", "), vim.log.levels.INFO)
-					else
-						vim.notify("No active CLI tool terminals", vim.log.levels.INFO)
-					end
-				end,
-				desc = "List active CLI tools",
-			},
-
 			-- GitHub account management
 			{
 				"<leader>ga",

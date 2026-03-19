@@ -127,10 +127,11 @@ Primary mappings:
 |---|---|
 | `<leader>gc` | Commit with AI-generated message |
 | `<leader>gC` | Stage all and commit |
+| `<leader>gy` | Copy AI-generated commit message |
 | `<leader>gA` | Stage all, commit, and push |
 | `<leader>gP` | Push |
 | `<leader>tt` | Toggle terminal |
-| `<leader>lg` | Open lazygit |
+| `<leader>gl` | Open lazygit |
 | `<leader>ft` | Find TODO comments |
 | `<leader>fp` | Find projects |
 

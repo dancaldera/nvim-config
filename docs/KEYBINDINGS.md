@@ -136,6 +136,7 @@ These mappings are available after an LSP attaches to the current buffer.
 |-----|------|-------------|
 | `<leader>gc` | Normal | Commit current/staged changes with AI message |
 | `<leader>gC` | Normal | Stage all and commit with AI message |
+| `<leader>gy` | Normal | Generate AI commit message and copy to clipboard |
 | `<leader>gA` | Normal | Stage all, commit, and push |
 | `<leader>gP` | Normal | Push to remote |
 | `<leader>ga` | Normal | Switch GitHub account |
@@ -172,13 +173,12 @@ These mappings are available after an LSP attaches to the current buffer.
 | `<leader>tv` | Normal | Vertical terminal |
 | `<leader>tc` | Normal | Run custom terminal command |
 | `<leader>tk` | Normal/Terminal | Kill terminal |
-| `<leader>lg` | Normal | Open lazygit |
+| `<leader>gl` | Normal | Open lazygit |
 | `<leader>lc` | Normal | Toggle Claude terminal |
 | `<leader>lG` | Normal | Toggle Gemini terminal |
 | `<leader>lx` | Normal | Toggle Codex terminal |
 | `<leader>lo` | Normal | Toggle Opencode terminal |
 | `<leader>la` | Normal | Toggle Copilot CLI terminal |
-| `<leader>lK` | Normal | Close all CLI terminals |
 
 ## Formatting, Linting, Python, Markdown, Health
 

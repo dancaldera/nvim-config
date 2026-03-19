@@ -63,6 +63,7 @@ K            Hover
 <C-g>        Accept Copilot suggestion
 <C-x>        Dismiss Copilot suggestion
 <leader>gc   Commit with AI message
+<leader>gy   Copy AI commit message
 <leader>gA   Commit all and push
 <leader>gP   Push
 ```
@@ -75,8 +76,7 @@ K            Hover
 <leader>lG   Toggle Gemini
 <leader>lo   Toggle Opencode
 <leader>la   Toggle Copilot CLI
-<leader>ll   List active AI terminals
-<leader>lK   Close all AI terminals
+<leader>gl   Open lazygit
 ```
 
 ## Maintenance
