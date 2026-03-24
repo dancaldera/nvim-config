@@ -37,7 +37,7 @@ return {
 		priority = 1000,
 		lazy = false,
 		opts = {
-			notifier = { enabled = false },
+			notifier = { enabled = true },
 			indent = { enabled = false },
 			image = { enabled = false },
 			terminal = {
@@ -94,6 +94,63 @@ return {
 		-- Terminal instance tracking for CLI tools
 		init = function()
 			_G.cli_terminals = {}
+			_G.default_terminal_layout = {
+				win = { position = "bottom", height = 0.4 },
+			}
+
+			local function get_terminal_state(term)
+				if not (term and term.buf and vim.api.nvim_buf_is_valid(term.buf)) then
+					return {}
+				end
+
+				local ok, state = pcall(vim.api.nvim_buf_get_var, term.buf, "snacks_terminal")
+				return ok and state or {}
+			end
+
+			local function close_terminal(term)
+				if not term then
+					return
+				end
+
+				if term.close then
+					term:close()
+				end
+
+				if term.buf and vim.api.nvim_buf_is_valid(term.buf) then
+					vim.api.nvim_buf_delete(term.buf, { force = true })
+				end
+			end
+
+			_G.toggle_main_terminal = function(layout_opts)
+				local terminal = require("snacks").terminal
+				local resolved_opts = vim.tbl_deep_extend(
+					"force",
+					vim.deepcopy(_G.default_terminal_layout),
+					layout_opts or {}
+				)
+				local term, created = terminal.get(nil, vim.tbl_extend("keep", { create = false }, resolved_opts))
+
+				if created or not term then
+					return terminal.toggle(nil, resolved_opts)
+				end
+
+				local current_position = term.opts and term.opts.position
+				local requested_position = resolved_opts.win and resolved_opts.win.position
+
+				if current_position == requested_position then
+					return term:toggle()
+				end
+
+				local state = get_terminal_state(term)
+				close_terminal(term)
+
+				return terminal.toggle(state.cmd, {
+					cwd = state.cwd,
+					env = state.env,
+					count = state.id,
+					win = resolved_opts.win,
+				})
+			end
 
 			_G.toggle_cli_terminal = function(name, cmd, opts)
 				opts = opts or {}
@@ -131,7 +188,7 @@ return {
 			{
 				"<leader>tt",
 				function()
-					require("snacks").terminal.toggle()
+					toggle_main_terminal()
 				end,
 				desc = "Toggle Terminal",
 				mode = { "n", "t" },
@@ -139,7 +196,7 @@ return {
 			{
 				"<C-\\>",
 				function()
-					require("snacks").terminal.toggle()
+					toggle_main_terminal()
 				end,
 				desc = "Toggle Terminal",
 				mode = { "n", "t" },
@@ -147,21 +204,27 @@ return {
 			{
 				"<leader>tf",
 				function()
-					require("snacks").terminal.toggle(nil, { win = { position = "float" } })
+					toggle_main_terminal({
+						win = { position = "float" },
+					})
 				end,
 				desc = "Terminal (float)",
 			},
 			{
 				"<leader>th",
 				function()
-					require("snacks").terminal.toggle(nil, { win = { position = "bottom", height = 0.4 } })
+					toggle_main_terminal({
+						win = { position = "bottom", height = 0.4 },
+					})
 				end,
 				desc = "Terminal (horizontal)",
 			},
 			{
 				"<leader>tv",
 				function()
-					require("snacks").terminal.toggle(nil, { win = { position = "right", width = 0.4 } })
+					toggle_main_terminal({
+						win = { position = "right", width = 0.4 },
+					})
 				end,
 				desc = "Terminal (vertical)",
 			},

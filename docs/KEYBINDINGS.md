@@ -168,9 +168,9 @@ These mappings are available after an LSP attaches to the current buffer.
 |-----|------|-------------|
 | `<C-\\>` | Normal/Terminal | Toggle terminal |
 | `<leader>tt` | Normal/Terminal | Toggle terminal |
-| `<leader>tf` | Normal | Floating terminal |
-| `<leader>th` | Normal | Horizontal terminal |
-| `<leader>tv` | Normal | Vertical terminal |
+| `<leader>tf` | Normal | Force floating terminal |
+| `<leader>th` | Normal | Force horizontal terminal |
+| `<leader>tv` | Normal | Force vertical terminal |
 | `<leader>tc` | Normal | Run custom terminal command |
 | `<leader>tk` | Normal/Terminal | Kill terminal |
 | `<leader>gl` | Normal | Open lazygit |
@@ -180,7 +180,7 @@ These mappings are available after an LSP attaches to the current buffer.
 | `<leader>lo` | Normal | Toggle Opencode terminal |
 | `<leader>la` | Normal | Toggle Copilot CLI terminal |
 
-## Formatting, Linting, Python, Markdown, Health
+## Formatting, Linting, Python, Health
 
 | Key | Mode | Description |
 |-----|------|-------------|
@@ -189,7 +189,6 @@ These mappings are available after an LSP attaches to the current buffer.
 | `<leader>jl` | Normal | Toggle auto-linting |
 | `<leader>ml` | Normal | Lint current file |
 | `<leader>pv` | Normal | Pick Python virtualenv |
-| `<leader>mp` | Normal | Toggle markdown rendering |
 | `<leader>hc` | Normal | Run config health check |
 | `<leader>hC` | Normal | Check config consistency |
 | `<leader>hN` | Normal | Run `:checkhealth` |
@@ -218,7 +217,7 @@ These mappings are available after an LSP attaches to the current buffer.
 - `<leader>h`: Git hunks and health
 - `<leader>j`: Formatting and lint toggles
 - `<leader>l`: Dev tools and CLI terminals
-- `<leader>m`: Markdown and manual lint
+- `<leader>m`: Manual lint
 - `<leader>p`: Python tools
 - `<leader>r`: Refactor, rename, restart
 - `<leader>s`: Splits

@@ -28,7 +28,6 @@ Current architecture overview for this Neovim configuration.
 │       ├── formatting.lua
 │       ├── git.lua
 │       ├── lsp.lua
-│       ├── markdown.lua
 │       ├── nvim-tree.lua
 │       ├── python.lua
 │       ├── telescope.lua
@@ -78,7 +77,6 @@ The config keeps core editor behavior in `lua/config/` and groups plugin specs b
 | `dev-tools.lua` | Snacks dashboard/terminal/lazygit, TODO comments, project switching |
 | `diagnostics.lua` | Trouble views and severity-aware diagnostic navigation |
 | `python.lua` | Python virtualenv detection and switching |
-| `markdown.lua` | Inline markdown rendering |
 
 ## Cross-Module Integration
 

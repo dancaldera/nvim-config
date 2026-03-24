@@ -135,14 +135,13 @@ Primary mappings:
 | `<leader>ft` | Find TODO comments |
 | `<leader>fp` | Find projects |
 
-## Formatting, Python, and Markdown
+## Formatting and Python
 
-Configured in `lua/plugins/formatting.lua`, `lua/plugins/python.lua`, and `lua/plugins/markdown.lua`.
+Configured in `lua/plugins/formatting.lua` and `lua/plugins/python.lua`.
 
 - `stevearc/conform.nvim`
 - `mfussenegger/nvim-lint`
 - `AckslD/swenv.nvim`
-- `MeanderingProgrammer/render-markdown.nvim`
 
 Primary mappings:
 
@@ -152,7 +151,6 @@ Primary mappings:
 | `<leader>jl` | Toggle auto-linting |
 | `<leader>ml` | Lint current file |
 | `<leader>pv` | Pick Python virtualenv |
-| `<leader>mp` | Toggle markdown rendering |
 
 ## Custom Modules
 
