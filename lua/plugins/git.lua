@@ -342,21 +342,31 @@ local function create_pr()
 						return
 					end
 
-					show_progress("Creating PR...")
-					local cmd = string.format(
-						"gh pr create --title %s --base main --head %s --body '' 2>&1",
-						vim.fn.shellescape(title),
-						vim.fn.shellescape(branch)
-					)
-					run_system_async(cmd, function(pr_result)
+					show_progress("Pushing branch to origin...")
+					local push_cmd = string.format("git push -u origin %s 2>&1", vim.fn.shellescape(branch))
+					run_system_async(push_cmd, function(push_result)
 						clear_progress()
-						if pr_result.code ~= 0 then
-							notify_git_failure("Create PR", pr_result)
+						if push_result.code ~= 0 then
+							notify_git_failure("Push branch", push_result)
 							return
 						end
-						local url = vim.trim(pr_result.stdout):match("https://[^\n]+")
-						local msg = url and ("PR created: " .. url) or "PR created successfully"
-						vim.notify(msg, vim.log.levels.INFO)
+
+						show_progress("Creating PR...")
+						local cmd = string.format(
+							"gh pr create --title %s --base main --head %s --body '' 2>&1",
+							vim.fn.shellescape(title),
+							vim.fn.shellescape(branch)
+						)
+						run_system_async(cmd, function(pr_result)
+							clear_progress()
+							if pr_result.code ~= 0 then
+								notify_git_failure("Create PR", pr_result)
+								return
+							end
+							local url = vim.trim(pr_result.stdout):match("https://[^\n]+")
+							local msg = url and ("PR created: " .. url) or "PR created successfully"
+							vim.notify(msg, vim.log.levels.INFO)
+						end)
 					end)
 				end)
 			end)
