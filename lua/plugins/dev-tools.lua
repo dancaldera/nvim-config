@@ -31,7 +31,7 @@ return {
 		},
 	},
 
-	-- Snacks.nvim (dashboard, terminal, notifier)
+	-- Snacks.nvim (dashboard, notifier, lazygit only)
 	{
 		"folke/snacks.nvim",
 		priority = 1000,
@@ -40,16 +40,6 @@ return {
 			notifier = { enabled = true },
 			indent = { enabled = false },
 			image = { enabled = false },
-			terminal = {
-				win = {
-					style = "terminal",
-					position = "float",
-					backdrop = false,
-					border = "single",
-					width = 0.92,
-					height = 0.88,
-				},
-			},
 			dashboard = {
 				enabled = true,
 				preset = {
@@ -90,43 +80,59 @@ return {
 		end,
 
 		init = function()
-			-- Toggle the main general-purpose terminal (bottom/right/float)
-			_G.toggle_main_terminal = function(layout_opts)
-				local resolved = vim.tbl_deep_extend("force", {
-					win = { position = "bottom", height = 0.4 },
-				}, layout_opts or {})
-				return require("snacks").terminal.toggle(nil, resolved)
+			-- Find an existing live terminal buffer by name
+			local function find_term_buf(name)
+				for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+					if
+						vim.api.nvim_buf_is_valid(bufnr)
+						and vim.bo[bufnr].buftype == "terminal"
+						and vim.api.nvim_buf_get_name(bufnr):find(name, 1, true)
+					then
+						return bufnr
+					end
+				end
 			end
 
-			-- Toggle a named persistent CLI tool terminal (claude, codex, gemini, etc.)
-			_G.toggle_cli_terminal = function(name, cmd, opts)
-				local win_opts = vim.tbl_deep_extend("force", {
-					position = "float",
-					width = 0.92,
-					height = 0.88,
-					border = "single",
-					backdrop = false,
-					title = " " .. name .. " ",
-					title_pos = "center",
-				}, (opts and opts.win) or {})
-
-				require("snacks").terminal.toggle(cmd, {
-					interactive = false,
-					auto_insert = false,
-					start_insert = true,
-					win = win_opts,
-				})
+			-- Open or focus a named terminal buffer in the current window
+			local function open_term_buf(name, cmd)
+				local bufnr = find_term_buf(name)
+				if bufnr then
+					vim.cmd.buffer(bufnr)
+					vim.cmd.startinsert()
+					return
+				end
+				vim.cmd.enew()
+				if cmd then
+					vim.cmd.terminal(cmd)
+				else
+					vim.cmd.terminal()
+				end
+				bufnr = vim.api.nvim_get_current_buf()
+				pcall(vim.api.nvim_buf_set_name, bufnr, "terminal://" .. name)
+				vim.bo[bufnr].buflisted = true
+				vim.cmd.startinsert()
 			end
+
+			_G.toggle_main_terminal = function()
+				open_term_buf("terminal", nil)
+			end
+
+			_G.open_cli_terminal = function(name, cmd)
+				open_term_buf(name, cmd)
+			end
+
+			-- backward-compat alias
+			_G.toggle_cli_terminal = _G.open_cli_terminal
 		end,
 
 		keys = {
-			-- Terminal toggles
+			-- Main terminal
 			{
 				"<leader>tt",
 				function()
 					toggle_main_terminal()
 				end,
-				desc = "Toggle Terminal",
+				desc = "Open Terminal",
 				mode = { "n", "t" },
 			},
 			{
@@ -134,47 +140,22 @@ return {
 				function()
 					toggle_main_terminal()
 				end,
-				desc = "Toggle Terminal",
+				desc = "Open Terminal",
 				mode = { "n", "t" },
 			},
-			{
-				"<leader>tf",
-				function()
-					toggle_main_terminal({
-						win = { position = "float" },
-					})
-				end,
-				desc = "Terminal (float)",
-			},
-			{
-				"<leader>th",
-				function()
-					toggle_main_terminal({
-						win = { position = "bottom", height = 0.4 },
-					})
-				end,
-				desc = "Terminal (horizontal)",
-			},
-			{
-				"<leader>tv",
-				function()
-					toggle_main_terminal({
-						win = { position = "right", width = 0.4 },
-					})
-				end,
-				desc = "Terminal (vertical)",
-			},
+			-- Custom command terminal
 			{
 				"<leader>tc",
 				function()
 					vim.ui.input({ prompt = "Command: " }, function(cmd)
-						if cmd then
-							require("snacks").terminal(cmd, { win = { position = "float" } })
+						if cmd and cmd ~= "" then
+							open_cli_terminal(cmd, cmd)
 						end
 					end)
 				end,
 				desc = "Terminal (custom command)",
 			},
+			-- Kill current terminal buffer
 			{
 				"<leader>tk",
 				function()
@@ -184,10 +165,7 @@ return {
 						if job_id then
 							vim.fn.jobstop(job_id)
 						end
-						local win = vim.api.nvim_get_current_win()
-						if vim.api.nvim_win_is_valid(win) then
-							vim.api.nvim_win_close(win, true)
-						end
+						vim.api.nvim_buf_delete(buf, { force = true })
 					end
 				end,
 				desc = "Kill terminal",
@@ -207,37 +185,37 @@ return {
 			{
 				"<leader>lc",
 				function()
-					toggle_cli_terminal("claude", "claude")
+					open_cli_terminal("claude", "claude")
 				end,
-				desc = "Toggle Claude",
+				desc = "Open Claude",
 			},
 			{
 				"<leader>lG",
 				function()
-					toggle_cli_terminal("gemini", "gemini")
+					open_cli_terminal("gemini", "gemini")
 				end,
-				desc = "Toggle Gemini",
+				desc = "Open Gemini",
 			},
 			{
 				"<leader>lx",
 				function()
-					toggle_cli_terminal("codex", "codex")
+					open_cli_terminal("codex", "codex")
 				end,
-				desc = "Toggle Codex",
+				desc = "Open Codex",
 			},
 			{
 				"<leader>lo",
 				function()
-					toggle_cli_terminal("opencode", "opencode")
+					open_cli_terminal("opencode", "opencode")
 				end,
-				desc = "Toggle Opencode",
+				desc = "Open Opencode",
 			},
 			{
 				"<leader>la",
 				function()
-					toggle_cli_terminal("copilot", "copilot")
+					open_cli_terminal("copilot", "copilot")
 				end,
-				desc = "Toggle Copilot CLI",
+				desc = "Open Copilot CLI",
 			},
 			-- GitHub account management
 			{
