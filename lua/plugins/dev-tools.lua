@@ -123,11 +123,8 @@ return {
 
 			_G.toggle_main_terminal = function(layout_opts)
 				local terminal = require("snacks").terminal
-				local resolved_opts = vim.tbl_deep_extend(
-					"force",
-					vim.deepcopy(_G.default_terminal_layout),
-					layout_opts or {}
-				)
+				local resolved_opts =
+					vim.tbl_deep_extend("force", vim.deepcopy(_G.default_terminal_layout), layout_opts or {})
 				local term, created = terminal.get(nil, vim.tbl_extend("keep", { create = false }, resolved_opts))
 
 				if created or not term then

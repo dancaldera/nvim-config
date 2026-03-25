@@ -88,29 +88,33 @@ local function post_json_async(url, api_key, body, callback)
 	end
 
 	local encoded_body = vim.fn.json_encode(body)
-	vim.system({
-		"curl",
-		"-sS",
-		"-X",
-		"POST",
-		url,
-		"-H",
-		"Content-Type: application/json",
-		"-H",
-		"Authorization: Bearer " .. api_key,
-		"--data-binary",
-		"@-",
-	}, {
-		text = true,
-		stdin = encoded_body,
-	}, vim.schedule_wrap(function(result)
-		if result.code ~= 0 then
-			callback(nil, result.stderr ~= "" and result.stderr or "curl request failed")
-			return
-		end
+	vim.system(
+		{
+			"curl",
+			"-sS",
+			"-X",
+			"POST",
+			url,
+			"-H",
+			"Content-Type: application/json",
+			"-H",
+			"Authorization: Bearer " .. api_key,
+			"--data-binary",
+			"@-",
+		},
+		{
+			text = true,
+			stdin = encoded_body,
+		},
+		vim.schedule_wrap(function(result)
+			if result.code ~= 0 then
+				callback(nil, result.stderr ~= "" and result.stderr or "curl request failed")
+				return
+			end
 
-		callback(result.stdout, nil)
-	end))
+			callback(result.stdout, nil)
+		end)
+	)
 end
 
 local function decode_json(output)
@@ -175,7 +179,10 @@ M.generate_commit_message_async = function(diff, fallback_message, callback)
 
 			local message, decode_err = decode_json(output)
 			if not message then
-				vim.notify("OpenRouter API request failed: " .. decode_err .. ". Using fallback message.", vim.log.levels.WARN)
+				vim.notify(
+					"OpenRouter API request failed: " .. decode_err .. ". Using fallback message.",
+					vim.log.levels.WARN
+				)
 				callback(fallback_message)
 				return
 			end
@@ -271,7 +278,8 @@ M.test_api_key = function()
 end
 
 M.test_commit_message = function()
-	local test_diff = "diff --git a/test.lua b/test.lua\nindex 123..456 789\n--- a/test.lua\n+++ b/test.lua\n@@ -1,3 +1,4 @@\n function test()\n+  print('hello')\n   return true\n end"
+	local test_diff =
+		"diff --git a/test.lua b/test.lua\nindex 123..456 789\n--- a/test.lua\n+++ b/test.lua\n@@ -1,3 +1,4 @@\n function test()\n+  print('hello')\n   return true\n end"
 	local fallback = "[test] Auto-commit"
 
 	vim.notify("Testing OpenAI commit message generation...", vim.log.levels.INFO)
@@ -300,50 +308,60 @@ M.test_commit_message = function()
 	if openai_key then
 		local prompt = get_commit_prompt(test_diff)
 		vim.notify("Sending request to OpenAI (gpt-4o)...", vim.log.levels.INFO)
-		post_json_async("https://api.openai.com/v1/chat/completions", openai_key, {
-			model = "gpt-4o",
-			messages = { { role = "user", content = prompt } },
-			max_tokens = 150,
-			temperature = 0.7,
-		}, vim.schedule_wrap(function(output, err)
-			if not output then
-				vim.notify("OpenAI failed: " .. err, vim.log.levels.ERROR)
-				on_complete("OpenAI", nil)
-				return
-			end
-			local message, decode_err = decode_json(output)
-			if not message then
-				vim.notify("OpenAI decode failed: " .. decode_err, vim.log.levels.ERROR)
-				on_complete("OpenAI", nil)
-				return
-			end
-			message = message:gsub("[\r\n]+", ""):gsub("^%s*(.-)%s*$", "%1")
-			on_complete("OpenAI", message ~= "" and message or fallback)
-		end))
+		post_json_async(
+			"https://api.openai.com/v1/chat/completions",
+			openai_key,
+			{
+				model = "gpt-4o",
+				messages = { { role = "user", content = prompt } },
+				max_tokens = 150,
+				temperature = 0.7,
+			},
+			vim.schedule_wrap(function(output, err)
+				if not output then
+					vim.notify("OpenAI failed: " .. err, vim.log.levels.ERROR)
+					on_complete("OpenAI", nil)
+					return
+				end
+				local message, decode_err = decode_json(output)
+				if not message then
+					vim.notify("OpenAI decode failed: " .. decode_err, vim.log.levels.ERROR)
+					on_complete("OpenAI", nil)
+					return
+				end
+				message = message:gsub("[\r\n]+", ""):gsub("^%s*(.-)%s*$", "%1")
+				on_complete("OpenAI", message ~= "" and message or fallback)
+			end)
+		)
 	end
 
 	if openrouter_key then
 		local prompt = get_commit_prompt(test_diff)
 		vim.notify("Sending request to OpenRouter (openrouter/free)...", vim.log.levels.INFO)
-		post_json_async("https://openrouter.ai/api/v1/chat/completions", openrouter_key, {
-			model = "openrouter/free",
-			messages = { { role = "user", content = prompt } },
-			reasoning = { enabled = true },
-		}, vim.schedule_wrap(function(output, err)
-			if not output then
-				vim.notify("OpenRouter failed: " .. err, vim.log.levels.ERROR)
-				on_complete("OpenRouter", nil)
-				return
-			end
-			local message, decode_err = decode_json(output)
-			if not message then
-				vim.notify("OpenRouter decode failed: " .. decode_err, vim.log.levels.ERROR)
-				on_complete("OpenRouter", nil)
-				return
-			end
-			message = message:gsub("[\r\n]+", ""):gsub("^%s*(.-)%s*$", "%1")
-			on_complete("OpenRouter", message ~= "" and message or fallback)
-		end))
+		post_json_async(
+			"https://openrouter.ai/api/v1/chat/completions",
+			openrouter_key,
+			{
+				model = "openrouter/free",
+				messages = { { role = "user", content = prompt } },
+				reasoning = { enabled = true },
+			},
+			vim.schedule_wrap(function(output, err)
+				if not output then
+					vim.notify("OpenRouter failed: " .. err, vim.log.levels.ERROR)
+					on_complete("OpenRouter", nil)
+					return
+				end
+				local message, decode_err = decode_json(output)
+				if not message then
+					vim.notify("OpenRouter decode failed: " .. decode_err, vim.log.levels.ERROR)
+					on_complete("OpenRouter", nil)
+					return
+				end
+				message = message:gsub("[\r\n]+", ""):gsub("^%s*(.-)%s*$", "%1")
+				on_complete("OpenRouter", message ~= "" and message or fallback)
+			end)
+		)
 	end
 end
 

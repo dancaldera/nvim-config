@@ -357,8 +357,6 @@ local function check_config_consistency(report)
 	forbid_contains("docs/LSP_GUIDE.md", lsp_doc, "| `gr` |", "stale references key")
 	forbid_contains("docs/LSP_GUIDE.md", lsp_doc, "| `gt` |", "stale type definition key")
 
-
-
 	if #issues == 0 then
 		report.ok("No configuration consistency issues detected")
 		return true

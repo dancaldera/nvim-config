@@ -23,14 +23,18 @@ local function show_progress(message)
 	spinner_idx = 0
 	local timer = vim.uv.new_timer()
 	progress_timer = timer
-	timer:start(500, 500, vim.schedule_wrap(function()
-		if progress_timer == timer then
-			spinner_idx = (spinner_idx % #spinner_frames) + 1
-			local spinner = spinner_frames[spinner_idx]
-			vim.cmd("redraw")
-			vim.api.nvim_echo({ { spinner .. " " .. message, "ModeMsg" } }, false, {})
-		end
-	end))
+	timer:start(
+		500,
+		500,
+		vim.schedule_wrap(function()
+			if progress_timer == timer then
+				spinner_idx = (spinner_idx % #spinner_frames) + 1
+				local spinner = spinner_frames[spinner_idx]
+				vim.cmd("redraw")
+				vim.api.nvim_echo({ { spinner .. " " .. message, "ModeMsg" } }, false, {})
+			end
+		end)
+	)
 	-- Show initial message immediately
 	vim.api.nvim_echo({ { spinner_frames[1] .. " " .. message, "ModeMsg" } }, false, {})
 end
@@ -47,21 +51,25 @@ local function run_system_async(cmd, callback)
 		return
 	end
 
-	vim.system({ "sh", "-c", cmd }, { text = true }, vim.schedule_wrap(function(result)
-		local stdout = result.stdout or ""
-		local stderr = result.stderr or ""
-		local text = stdout
-		if vim.trim(stderr) ~= "" then
-			text = vim.trim(stdout) ~= "" and (stdout .. "\n" .. stderr) or stderr
-		end
+	vim.system(
+		{ "sh", "-c", cmd },
+		{ text = true },
+		vim.schedule_wrap(function(result)
+			local stdout = result.stdout or ""
+			local stderr = result.stderr or ""
+			local text = stdout
+			if vim.trim(stderr) ~= "" then
+				text = vim.trim(stdout) ~= "" and (stdout .. "\n" .. stderr) or stderr
+			end
 
-		callback({
-			code = result.code,
-			stdout = stdout,
-			stderr = stderr,
-			text = text,
-		})
-	end))
+			callback({
+				code = result.code,
+				stdout = stdout,
+				stderr = stderr,
+				text = text,
+			})
+		end)
+	)
 end
 
 local function notify_git_failure(action, result, level)
@@ -81,10 +89,7 @@ local function notify_git_failure(action, result, level)
 		summary = summary:sub(1, 217) .. "..."
 	end
 
-	vim.notify(
-		string.format("%s failed (exit %d): %s\nFull error copied to clipboard.", action, code, summary),
-		level
-	)
+	vim.notify(string.format("%s failed (exit %d): %s\nFull error copied to clipboard.", action, code, summary), level)
 end
 
 local function truncate_diff(diff, max_lines, max_chars)
