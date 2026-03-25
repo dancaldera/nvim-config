@@ -114,7 +114,12 @@ return {
 			end
 
 			_G.toggle_main_terminal = function()
-				open_term_buf("terminal", nil)
+				vim.cmd.enew()
+				vim.cmd.terminal()
+				local bufnr = vim.api.nvim_get_current_buf()
+				pcall(vim.api.nvim_buf_set_name, bufnr, "terminal://" .. os.time())
+				vim.bo[bufnr].buflisted = true
+				vim.cmd.startinsert()
 			end
 
 			_G.open_cli_terminal = function(name, cmd)
@@ -189,12 +194,12 @@ return {
 				end,
 				desc = "Open Claude",
 			},
-      {
-        "leader>lC",
-        function()
-          open_cli_terminal("claude bypass", "claude --allow-dangerously-skip-permissions")
-        end,
-      },
+			{
+				"leader>lC",
+				function()
+					open_cli_terminal("claude bypass", "claude --allow-dangerously-skip-permissions")
+				end,
+			},
 			{
 				"<leader>lG",
 				function()
