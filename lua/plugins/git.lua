@@ -260,6 +260,149 @@ local function copy_commit_message_with_ai()
 	end)
 end
 
+-- Create PR to main
+local function create_pr()
+	run_system_async("git rev-parse --abbrev-ref HEAD 2>/dev/null", function(branch_result)
+		if branch_result.code ~= 0 then
+			vim.notify("Not a git repository", vim.log.levels.ERROR)
+			return
+		end
+		local branch = vim.trim(branch_result.stdout)
+		if branch == "main" or branch == "master" then
+			vim.notify("Already on main — create a feature branch first", vim.log.levels.WARN)
+			return
+		end
+
+		show_progress("Preparing PR...")
+		run_system_async("git diff main...HEAD -U3 2>/dev/null", function(diff_result)
+			local diff = diff_result.stdout
+			if not diff or vim.trim(diff) == "" then
+				clear_progress()
+				vim.notify("No commits ahead of main", vim.log.levels.WARN)
+				return
+			end
+
+			local lean_diff = truncate_diff(diff, 30, 2000)
+			local fallback = branch:gsub("[-_/]", " ")
+
+			show_progress("Generating PR title...")
+			require("config.openai").generate_commit_message_async(lean_diff, fallback, function(ai_title)
+				clear_progress()
+				vim.ui.input({ prompt = "PR title: ", default = ai_title }, function(title)
+					if not title or title == "" then
+						vim.notify("PR cancelled", vim.log.levels.INFO)
+						return
+					end
+
+					show_progress("Creating PR...")
+					local cmd = string.format(
+						"gh pr create --title %s --base main --head %s --body '' 2>&1",
+						vim.fn.shellescape(title),
+						vim.fn.shellescape(branch)
+					)
+					run_system_async(cmd, function(pr_result)
+						clear_progress()
+						if pr_result.code ~= 0 then
+							notify_git_failure("Create PR", pr_result)
+							return
+						end
+						local url = vim.trim(pr_result.stdout):match("https://[^\n]+")
+						local msg = url and ("PR created: " .. url) or "PR created successfully"
+						vim.notify(msg, vim.log.levels.INFO)
+					end)
+				end)
+			end)
+		end)
+	end)
+end
+
+-- Checkout existing branch or create new one from main
+local function checkout_branch()
+	vim.ui.select(
+		{ "  Switch to existing branch", "  New branch from main" },
+		{ prompt = "Branch", snacks = { layout = "select" } },
+		function(choice, idx)
+			if not choice then
+				return
+			end
+
+			if idx == 1 then
+				run_system_async(
+					"git branch --sort=-committerdate --format='%(refname:short)' 2>/dev/null",
+					function(result)
+						if result.code ~= 0 or vim.trim(result.stdout) == "" then
+							vim.notify("No local branches found", vim.log.levels.WARN)
+							return
+						end
+						local branches = vim.tbl_filter(function(b)
+							return b ~= ""
+						end, vim.split(vim.trim(result.stdout), "\n"))
+
+						local current = vim.trim(vim.fn.system("git rev-parse --abbrev-ref HEAD"))
+						local max_len = 0
+						for _, b in ipairs(branches) do
+							if #b > max_len then
+								max_len = #b
+							end
+						end
+
+						local options = {}
+						for _, b in ipairs(branches) do
+							local icon = b == current and "✓" or " "
+							local padded = b .. string.rep(" ", max_len - #b)
+							local badge = b == current and "  (current)" or ""
+							table.insert(options, string.format("%s  %s%s", icon, padded, badge))
+						end
+
+						vim.ui.select(options, {
+							prompt = "Switch Branch",
+							snacks = { layout = "select" },
+						}, function(_, bidx)
+							if not bidx then
+								return
+							end
+							local target = branches[bidx]
+							if target == current then
+								vim.notify("Already on " .. target, vim.log.levels.INFO)
+								return
+							end
+							show_progress("Switching to " .. target .. "...")
+							run_system_async("git checkout " .. vim.fn.shellescape(target) .. " 2>&1", function(co)
+								clear_progress()
+								if co.code ~= 0 then
+									notify_git_failure("Checkout", co)
+								else
+									vim.notify("Switched to " .. target, vim.log.levels.INFO)
+								end
+							end)
+						end)
+					end
+				)
+			else
+				vim.ui.input({ prompt = "New branch name: " }, function(name)
+					if not name or name == "" then
+						return
+					end
+					name = name:gsub("%s+", "-"):lower()
+					show_progress("Creating branch from main...")
+					local cmd = string.format(
+						"git fetch origin main 2>&1 && git checkout -b %s origin/main 2>&1",
+						vim.fn.shellescape(name)
+					)
+					run_system_async(cmd, function(r)
+						clear_progress()
+						if r.code ~= 0 then
+							notify_git_failure("Create branch", r)
+						else
+							vim.notify("Created and switched to branch: " .. name, vim.log.levels.INFO)
+						end
+					end)
+				end)
+			end
+		end
+	)
+end
+
 -- Push function
 local function push_to_remote()
 	show_progress("Pushing changes...")
@@ -401,6 +544,20 @@ return {
 					require("config.openai").test_commit_message()
 				end,
 				desc = "Test AI commit message generation",
+			},
+			{
+				"<leader>gn",
+				function()
+					create_pr()
+				end,
+				desc = "Create PR to main",
+			},
+			{
+				"<leader>gB",
+				function()
+					checkout_branch()
+				end,
+				desc = "Checkout / new branch from main",
 			},
 		},
 	},
