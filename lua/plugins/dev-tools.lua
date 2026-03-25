@@ -80,50 +80,32 @@ return {
 		end,
 
 		init = function()
-			-- Find an existing live terminal buffer by name
-			local function find_term_buf(name)
-				for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
-					if
-						vim.api.nvim_buf_is_valid(bufnr)
-						and vim.bo[bufnr].buftype == "terminal"
-						and vim.api.nvim_buf_get_name(bufnr):find(name, 1, true)
-					then
-						return bufnr
-					end
-				end
-			end
-
-			-- Open or focus a named terminal buffer in the current window
-			local function open_term_buf(name, cmd)
-				local bufnr = find_term_buf(name)
-				if bufnr then
-					vim.cmd.buffer(bufnr)
-					vim.cmd.startinsert()
-					return
-				end
-				vim.cmd.enew()
-				if cmd then
-					vim.cmd.terminal(cmd)
-				else
-					vim.cmd.terminal()
-				end
-				bufnr = vim.api.nvim_get_current_buf()
-				pcall(vim.api.nvim_buf_set_name, bufnr, "terminal://" .. name)
-				vim.bo[bufnr].buflisted = true
-				vim.cmd.startinsert()
+			local term_counts = {}
+			local function next_term_name(name)
+				term_counts[name] = (term_counts[name] or 0) + 1
+				return name .. "-" .. term_counts[name]
 			end
 
 			_G.toggle_main_terminal = function()
 				vim.cmd.enew()
 				vim.cmd.terminal()
 				local bufnr = vim.api.nvim_get_current_buf()
-				pcall(vim.api.nvim_buf_set_name, bufnr, "terminal://" .. os.time())
+				pcall(vim.api.nvim_buf_set_name, bufnr, "terminal://" .. next_term_name("terminal"))
 				vim.bo[bufnr].buflisted = true
 				vim.cmd.startinsert()
 			end
 
 			_G.open_cli_terminal = function(name, cmd)
-				open_term_buf(name, cmd)
+				vim.cmd.enew()
+				if cmd then
+					vim.cmd.terminal(cmd)
+				else
+					vim.cmd.terminal()
+				end
+				local bufnr = vim.api.nvim_get_current_buf()
+				pcall(vim.api.nvim_buf_set_name, bufnr, "terminal://" .. next_term_name(name))
+				vim.bo[bufnr].buflisted = true
+				vim.cmd.startinsert()
 			end
 
 			-- backward-compat alias
