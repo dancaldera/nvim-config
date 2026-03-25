@@ -189,6 +189,12 @@ return {
 				end,
 				desc = "Open Claude",
 			},
+      {
+        "leader>lC",
+        function()
+          open_cli_terminal("claude bypass", "claude --allow-dangerously-skip-permissions")
+        end,
+      },
 			{
 				"<leader>lG",
 				function()
