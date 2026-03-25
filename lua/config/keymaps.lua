@@ -86,7 +86,9 @@ keymap.set("n", "<A-,>", "<cmd>BufferLineMovePrev<CR>", { desc = "Move buffer le
 keymap.set("n", "<A-.>", "<cmd>BufferLineMoveNext<CR>", { desc = "Move buffer right", silent = true })
 
 -- Buffer picking and management
-keymap.set("n", "<leader>1", "<cmd>BufferLinePick<CR>", { desc = "Pick buffer to focus", silent = true })
+keymap.set("n", "<leader>bb", "<cmd>Telescope buffers sort_mru=true sort_lastused=true<cr>", { desc = "Find open buffers", silent = true })
+keymap.set("n", "<leader>bv", "<cmd>BufferLinePick<CR>", { desc = "Visual pick buffer (letter overlay)", silent = true })
+keymap.set("n", "<leader>ba", "<cmd>b#<CR>", { desc = "Alternate (last) buffer", silent = true })
 keymap.set("n", "<leader>bp", "<cmd>BufferLineTogglePin<CR>", { desc = "Pin/unpin buffer", silent = true })
 keymap.set("n", "<leader>bo", "<cmd>BufferLineCloseOthers<CR>", { desc = "Close other buffers", silent = true })
 keymap.set("n", "<leader>bl", "<cmd>BufferLineCloseRight<CR>", { desc = "Close buffers to right", silent = true })
