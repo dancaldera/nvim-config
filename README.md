@@ -1,6 +1,6 @@
-# AI Neovim Configuration
+# Neovim Config
 
-Personal Neovim configuration for full-stack development with LSP, Telescope, Treesitter, Copilot, and git tooling.
+Modular, fast Neovim setup for full-stack development. 82 plugins, <50ms startup, AI-first workflow with Copilot, multi-agent terminal (Claude, Gemini, Codex, Opencode), AI-assisted git commits, LSP across 13 languages, and DAP debugging.
 
 ## Requirements
 
