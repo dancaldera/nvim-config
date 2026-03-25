@@ -91,32 +91,22 @@ M.show_status = function()
 		return
 	end
 
-	local lines = {}
-	table.insert(lines, "GitHub Accounts:")
-
+	local lines = { "GitHub Accounts" }
 	for _, username in ipairs(data.usernames) do
-		local account = data.accounts[username]
-		local status_icon = account.active and "✓" or "○"
-		local status_text = account.active and " (active)" or ""
-		table.insert(lines, string.format("  %s @%s%s", status_icon, username, status_text))
-
-		if account.protocol then
-			table.insert(lines, string.format("    Protocol: %s", account.protocol))
+		local acc = data.accounts[username]
+		local icon = acc.active and "✓" or "○"
+		local badge = acc.active and " (active)" or ""
+		local parts = { string.format("  %s  @%s%s", icon, username, badge) }
+		if acc.protocol then
+			table.insert(parts, "protocol: " .. acc.protocol)
 		end
-
-		if #account.scopes > 0 then
-			local scopes_str = table.concat(account.scopes, ", ")
-			table.insert(lines, string.format("    Scopes: %s", scopes_str))
+		if #acc.scopes > 0 then
+			table.insert(parts, "scopes: " .. table.concat(acc.scopes, ", "))
 		end
+		table.insert(lines, table.concat(parts, "  ·  "))
 	end
 
-	if data.current then
-		vim.notify("Current GitHub Account: @" .. data.current, vim.log.levels.INFO)
-	end
-
-	for i = 2, #lines do
-		vim.notify(lines[i], vim.log.levels.INFO)
-	end
+	vim.notify(table.concat(lines, "\n"), vim.log.levels.INFO)
 end
 
 M.switch_account = function()
@@ -131,19 +121,25 @@ M.switch_account = function()
 		return false
 	end
 
+	local max_len = 0
+	for _, username in ipairs(data.usernames) do
+		if #username > max_len then
+			max_len = #username
+		end
+	end
+
 	local options = {}
-	for i, username in ipairs(data.usernames) do
+	for _, username in ipairs(data.usernames) do
 		local account = data.accounts[username]
 		local icon = account.active and "✓" or "○"
-		local suffix = account.active and " (current)" or ""
-		table.insert(options, string.format("%s @%s%s", icon, username, suffix))
+		local badge = account.active and "  (current)" or ""
+		local padded = username .. string.rep(" ", max_len - #username)
+		table.insert(options, string.format("%s  %s%s", icon, padded, badge))
 	end
 
 	vim.ui.select(options, {
-		prompt = "Select GitHub account:",
-		format_item = function(item)
-			return item
-		end,
+		prompt = "Switch GitHub Account",
+		snacks = { layout = "select" },
 	}, function(choice, idx)
 		if not choice or not idx then
 			return
@@ -157,20 +153,17 @@ M.switch_account = function()
 
 		local cmd = string.format("gh auth switch --user %s", selected_username)
 		local output = vim.fn.system(cmd)
-
 		if vim.v.shell_error ~= 0 then
 			vim.notify("Failed to switch GitHub account: " .. output, vim.log.levels.ERROR)
-			return false
+			return
 		end
 
 		account_cache = nil
-
-		local msg = string.format("Switched GitHub account: @%s → @%s", data.current or "none", selected_username)
-		vim.notify(msg, vim.log.levels.INFO)
-
+		vim.notify(
+			string.format("Switched GitHub account: @%s → @%s", data.current or "none", selected_username),
+			vim.log.levels.INFO
+		)
 		pcall(vim.cmd, "LualineRefresh")
-
-		return true
 	end)
 end
 
