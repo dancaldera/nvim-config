@@ -20,11 +20,41 @@ return {
 			"leoluz/nvim-dap-go",
 		},
 		keys = {
-			{ "<F5>", function() require("dap").continue() end, desc = "Debug: Continue" },
-			{ "<F10>", function() require("dap").step_over() end, desc = "Debug: Step Over" },
-			{ "<F11>", function() require("dap").step_into() end, desc = "Debug: Step Into" },
-			{ "<F12>", function() require("dap").step_out() end, desc = "Debug: Step Out" },
-			{ "<leader>db", function() require("dap").toggle_breakpoint() end, desc = "Debug: Toggle Breakpoint" },
+			{
+				"<F5>",
+				function()
+					require("dap").continue()
+				end,
+				desc = "Debug: Continue",
+			},
+			{
+				"<F10>",
+				function()
+					require("dap").step_over()
+				end,
+				desc = "Debug: Step Over",
+			},
+			{
+				"<F11>",
+				function()
+					require("dap").step_into()
+				end,
+				desc = "Debug: Step Into",
+			},
+			{
+				"<F12>",
+				function()
+					require("dap").step_out()
+				end,
+				desc = "Debug: Step Out",
+			},
+			{
+				"<leader>db",
+				function()
+					require("dap").toggle_breakpoint()
+				end,
+				desc = "Debug: Toggle Breakpoint",
+			},
 			{
 				"<leader>dB",
 				function()
@@ -32,10 +62,34 @@ return {
 				end,
 				desc = "Debug: Conditional Breakpoint",
 			},
-			{ "<leader>dl", function() require("dap").run_last() end, desc = "Debug: Run Last" },
-			{ "<leader>dr", function() require("dap").repl.open() end, desc = "Debug: Open REPL" },
-			{ "<leader>dq", function() require("dap").terminate() end, desc = "Debug: Terminate" },
-			{ "<leader>du", function() require("dapui").toggle() end, desc = "Debug: Toggle UI" },
+			{
+				"<leader>dl",
+				function()
+					require("dap").run_last()
+				end,
+				desc = "Debug: Run Last",
+			},
+			{
+				"<leader>dr",
+				function()
+					require("dap").repl.open()
+				end,
+				desc = "Debug: Open REPL",
+			},
+			{
+				"<leader>dq",
+				function()
+					require("dap").terminate()
+				end,
+				desc = "Debug: Terminate",
+			},
+			{
+				"<leader>du",
+				function()
+					require("dapui").toggle()
+				end,
+				desc = "Debug: Toggle UI",
+			},
 		},
 		config = function()
 			local dap = require("dap")
@@ -88,8 +142,7 @@ return {
 				-- Use the debugpy installed by Mason
 				local mason_registry = require("mason-registry")
 				local debugpy_path = mason_registry.is_installed("debugpy")
-						and mason_registry.get_package("debugpy"):get_install_path()
-						.. "/venv/bin/python"
+						and mason_registry.get_package("debugpy"):get_install_path() .. "/venv/bin/python"
 					or vim.fn.exepath("python3")
 				dap_python.setup(debugpy_path)
 				dap_python.test_runner = "pytest"
