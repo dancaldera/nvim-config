@@ -122,6 +122,18 @@ return {
 							separator = true,
 						},
 					},
+					get_element_icon = function(element)
+						local path = element.path or ""
+						local ai_tools = { "claude", "codex", "opencode", "gemini", "copilot" }
+						for _, tool in ipairs(ai_tools) do
+							if path:match(tool) then
+								return "󱙺", "Special"
+							end
+						end
+						if path:match("terminal://terminal") then
+							return "󰿘", "Special"
+						end
+					end,
 				},
 			})
 		end,
