@@ -1,4 +1,4 @@
-# Neovim Configuration
+# AI Neovim Configuration
 
 Personal Neovim configuration for full-stack development with LSP, Telescope, Treesitter, Copilot, and git tooling.
 
