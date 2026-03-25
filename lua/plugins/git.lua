@@ -144,8 +144,10 @@ local function generate_commit_message(mode, callback)
 				return
 			end
 
-			-- Limit diff to ~30 lines, ~2000 chars (~500 tokens)
-			local lean_diff = truncate_diff(diff, 30, 2000)
+			-- Wider limits for all/all_and_push to give AI better context
+			local max_lines = mode == "current_file" and 30 or 80
+			local max_chars = mode == "current_file" and 2000 or 6000
+			local lean_diff = truncate_diff(diff, max_lines, max_chars)
 
 			show_progress("Generating commit message...")
 			local fallback = string.format("[%s] Auto-commit", os.date("%Y-%m-%d %H:%M"))
@@ -216,36 +218,82 @@ end
 
 local function commit_with_ai(mode)
 	generate_commit_message(mode, function(ai_message, cleanup_auto_staged)
-		vim.ui.input({ prompt = "Commit message: ", default = ai_message }, function(message)
-			if not message or message == "" then
-				cleanup_auto_staged(function()
-					vim.notify("Commit cancelled", vim.log.levels.INFO)
-				end)
-				return
+		-- Fetch staged file list to show in the prompt
+		run_system_async("git diff --cached --name-status", function(ns_result)
+			local summary = ""
+			if ns_result.code == 0 and vim.trim(ns_result.stdout) ~= "" then
+				local file_lines = vim.split(vim.trim(ns_result.stdout), "\n")
+				local shown = vim.list_slice(file_lines, 1, math.min(8, #file_lines))
+				if #file_lines > 8 then
+					table.insert(shown, string.format("  ...and %d more", #file_lines - 8))
+				end
+				summary = table.concat(shown, "\n") .. "\n\n"
 			end
 
-			show_progress("Committing...")
-			run_system_async(string.format("git commit -m %s", vim.fn.shellescape(message)), function(result)
-				if result.code ~= 0 then
-					clear_progress()
-					notify_git_failure("Commit", result)
+			vim.ui.input({ prompt = summary .. "Commit message: ", default = ai_message }, function(message)
+				if not message or message == "" then
+					cleanup_auto_staged(function()
+						vim.notify("Commit cancelled", vim.log.levels.INFO)
+					end)
 					return
 				end
 
-				if mode == "all_and_push" then
-					show_progress("Pushing...")
-					run_system_async("git push 2>&1", function(push_result)
+				show_progress("Committing...")
+				run_system_async(string.format("git commit -m %s", vim.fn.shellescape(message)), function(result)
+					if result.code ~= 0 then
 						clear_progress()
-						if push_result.code ~= 0 then
-							notify_git_failure("Push after commit", push_result, vim.log.levels.WARN)
-						else
-							vim.notify("Committed and pushed: " .. message, vim.log.levels.INFO)
-						end
-					end)
-				else
-					clear_progress()
-					vim.notify("Committed: " .. message, vim.log.levels.INFO)
-				end
+						notify_git_failure("Commit", result)
+						return
+					end
+
+					if mode == "all_and_push" then
+						-- Check if upstream is set; auto-set it if not
+						run_system_async(
+							"git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null",
+							function(upstream_result)
+								local has_upstream = upstream_result.code == 0
+									and vim.trim(upstream_result.stdout) ~= ""
+								local push_cmd
+								if has_upstream then
+									push_cmd = "git push 2>&1"
+								else
+									local branch = vim.trim(vim.fn.system("git rev-parse --abbrev-ref HEAD"))
+									push_cmd = string.format(
+										"git push --set-upstream origin %s 2>&1",
+										vim.fn.shellescape(branch)
+									)
+								end
+
+								show_progress("Pushing...")
+								run_system_async(push_cmd, function(push_result)
+									clear_progress()
+									if push_result.code ~= 0 then
+										local err = vim.trim(push_result.text or "")
+										local hint = ""
+										if
+											err:match("no upstream")
+											or err:match("no tracking")
+											or err:match("has no upstream")
+										then
+											local branch = vim.trim(vim.fn.system("git rev-parse --abbrev-ref HEAD"))
+											hint = "\nTip: git push --set-upstream origin " .. branch
+										end
+										vim.notify(
+											string.format("Push failed after commit.%s\n%s", hint, err:sub(1, 200)),
+											vim.log.levels.WARN
+										)
+									else
+										local suffix = not has_upstream and " (upstream set)" or ""
+										vim.notify("Committed and pushed: " .. message .. suffix, vim.log.levels.INFO)
+									end
+								end)
+							end
+						)
+					else
+						clear_progress()
+						vim.notify("Committed: " .. message, vim.log.levels.INFO)
+					end
+				end)
 			end)
 		end)
 	end)
