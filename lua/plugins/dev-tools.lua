@@ -41,7 +41,14 @@ return {
 			indent = { enabled = false },
 			image = { enabled = false },
 			terminal = {
-				win = { style = "terminal", position = "float" },
+				win = {
+					style = "terminal",
+					position = "float",
+					backdrop = false,
+					border = "single",
+					width = 0.92,
+					height = 0.88,
+				},
 			},
 			dashboard = {
 				enabled = true,
@@ -69,114 +76,46 @@ return {
 			},
 		},
 		config = function(_, opts)
-			local snacks = require("snacks")
-			snacks.setup(opts)
+			require("snacks").setup(opts)
 
-			-- Auto-close non-persistent terminals
-			vim.api.nvim_create_autocmd("TermClose", {
-				group = vim.api.nvim_create_augroup("snacks_terminal_autoclose", { clear = true }),
-				callback = function(event)
-					local buf = event.buf
-					if vim.b[buf].snacks_terminal_persist then
-						return
-					end
-					if vim.bo[buf].buftype == "terminal" then
-						vim.schedule(function()
-							if vim.api.nvim_buf_is_valid(buf) then
-								vim.api.nvim_buf_delete(buf, { force = true })
-							end
-						end)
+			-- Reload files changed by AI agents (claude-code, codex, etc.)
+			vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter" }, {
+				group = vim.api.nvim_create_augroup("auto_checktime", { clear = true }),
+				callback = function()
+					if vim.bo.buftype ~= "terminal" then
+						vim.cmd("silent! checktime")
 					end
 				end,
 			})
 		end,
 
-		-- Terminal instance tracking for CLI tools
 		init = function()
-			_G.cli_terminals = {}
-			_G.default_terminal_layout = {
-				win = { position = "bottom", height = 0.4 },
-			}
-
-			local function get_terminal_state(term)
-				if not (term and term.buf and vim.api.nvim_buf_is_valid(term.buf)) then
-					return {}
-				end
-
-				local ok, state = pcall(vim.api.nvim_buf_get_var, term.buf, "snacks_terminal")
-				return ok and state or {}
-			end
-
-			local function close_terminal(term)
-				if not term then
-					return
-				end
-
-				if term.close then
-					term:close()
-				end
-
-				if term.buf and vim.api.nvim_buf_is_valid(term.buf) then
-					vim.api.nvim_buf_delete(term.buf, { force = true })
-				end
-			end
-
+			-- Toggle the main general-purpose terminal (bottom/right/float)
 			_G.toggle_main_terminal = function(layout_opts)
-				local terminal = require("snacks").terminal
-				local resolved_opts =
-					vim.tbl_deep_extend("force", vim.deepcopy(_G.default_terminal_layout), layout_opts or {})
-				local term, created = terminal.get(nil, vim.tbl_extend("keep", { create = false }, resolved_opts))
-
-				if created or not term then
-					return terminal.toggle(nil, resolved_opts)
-				end
-
-				local current_position = term.opts and term.opts.position
-				local requested_position = resolved_opts.win and resolved_opts.win.position
-
-				if current_position == requested_position then
-					return term:toggle()
-				end
-
-				local state = get_terminal_state(term)
-				close_terminal(term)
-
-				return terminal.toggle(state.cmd, {
-					cwd = state.cwd,
-					env = state.env,
-					count = state.id,
-					win = resolved_opts.win,
-				})
+				local resolved = vim.tbl_deep_extend("force", {
+					win = { position = "bottom", height = 0.4 },
+				}, layout_opts or {})
+				return require("snacks").terminal.toggle(nil, resolved)
 			end
 
+			-- Toggle a named persistent CLI tool terminal (claude, codex, gemini, etc.)
 			_G.toggle_cli_terminal = function(name, cmd, opts)
-				opts = opts or {}
-				opts.win = opts.win
-					or {
-						position = "float",
-						width = 0.9,
-						height = 0.85,
-						border = "rounded",
-					}
+				local win_opts = vim.tbl_deep_extend("force", {
+					position = "float",
+					width = 0.92,
+					height = 0.88,
+					border = "single",
+					backdrop = false,
+					title = " " .. name .. " ",
+					title_pos = "center",
+				}, (opts and opts.win) or {})
 
-				local term_id = "cli_tool_" .. name
-
-				if _G.cli_terminals[term_id] then
-					local term = _G.cli_terminals[term_id]
-					if term.buf and vim.api.nvim_buf_is_valid(term.buf) then
-						term:toggle()
-						return term
-					else
-						_G.cli_terminals[term_id] = nil
-					end
-				end
-
-				local term = require("snacks").terminal(cmd, opts)
-				if term and term.buf then
-					vim.api.nvim_buf_set_var(term.buf, "snacks_terminal_persist", true)
-					_G.cli_terminals[term_id] = term
-				end
-				return term
+				require("snacks").terminal.toggle(cmd, {
+					interactive = false,
+					auto_insert = false,
+					start_insert = true,
+					win = win_opts,
+				})
 			end
 		end,
 
