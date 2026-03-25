@@ -185,38 +185,44 @@ return {
 	},
 
 	-- Indentation scope indicator
-	{
-		"echasnovski/mini.indentscope",
-		version = false,
-		event = { "BufReadPre", "BufNewFile" },
-		opts = {
-			symbol = "│",
-			options = { try_as_border = true },
-			draw = {
-				animation = function()
-					return 0
-				end,
+		{
+			"echasnovski/mini.indentscope",
+			version = false,
+			event = { "BufReadPre", "BufNewFile" },
+			opts = {
+				symbol = "│",
+				options = { try_as_border = true },
 			},
-		},
-		init = function()
-			vim.api.nvim_create_autocmd("FileType", {
-				pattern = {
-					"help",
-					"dashboard",
+			init = function()
+				local function disable_indentscope(args)
+					if vim.bo[args.buf].buftype == "terminal" then
+						vim.b[args.buf].miniindentscope_disable = true
+						return
+					end
+
+					vim.b[args.buf].miniindentscope_disable = true
+				end
+
+				vim.api.nvim_create_autocmd("FileType", {
+					pattern = {
+						"help",
+						"dashboard",
 					"nvim-tree",
 					"Trouble",
 					"trouble",
 					"lazy",
 					"mason",
-					"notify",
-					"toggleterm",
-				},
-				callback = function()
-					vim.b.miniindentscope_disable = true
-				end,
-			})
-		end,
-	},
+						"notify",
+						"toggleterm",
+					},
+					callback = disable_indentscope,
+				})
+
+				vim.api.nvim_create_autocmd("TermOpen", {
+					callback = disable_indentscope,
+				})
+			end,
+		},
 
 	-- Highlight word under cursor
 	{
