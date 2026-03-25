@@ -84,11 +84,11 @@ end
 local function post_json_async(url, api_key, body, callback)
 	if not vim.system then
 		callback(nil, "vim.system is unavailable")
-		return
+		return nil
 	end
 
 	local encoded_body = vim.fn.json_encode(body)
-	vim.system(
+	local handle = vim.system(
 		{
 			"curl",
 			"-sS",
@@ -115,6 +115,7 @@ local function post_json_async(url, api_key, body, callback)
 			callback(result.stdout, nil)
 		end)
 	)
+	return handle
 end
 
 local function decode_json(output)
@@ -151,7 +152,7 @@ local function get_commit_prompt(diff)
 	)
 end
 
-M.generate_commit_message_async = function(diff, fallback_message, callback)
+M.generate_commit_message_async = function(diff, fallback_message, callback, handle_cb)
 	local prompt = get_commit_prompt(diff)
 
 	local function use_openrouter()
@@ -162,7 +163,7 @@ M.generate_commit_message_async = function(diff, fallback_message, callback)
 			return
 		end
 
-		post_json_async("https://openrouter.ai/api/v1/chat/completions", openrouter_api_key, {
+		local h = post_json_async("https://openrouter.ai/api/v1/chat/completions", openrouter_api_key, {
 			model = "openrouter/free",
 			messages = {
 				{ role = "user", content = prompt },
@@ -190,6 +191,9 @@ M.generate_commit_message_async = function(diff, fallback_message, callback)
 			message = message:gsub("[\r\n]+", ""):gsub("^%s*(.-)%s*$", "%1")
 			callback(message ~= "" and message or fallback_message)
 		end)
+		if handle_cb and h then
+			handle_cb(h)
+		end
 	end
 
 	local api_key = M.get_api_key()
@@ -198,7 +202,7 @@ M.generate_commit_message_async = function(diff, fallback_message, callback)
 		return
 	end
 
-	post_json_async("https://api.openai.com/v1/chat/completions", api_key, {
+	local h = post_json_async("https://api.openai.com/v1/chat/completions", api_key, {
 		model = "gpt-4o",
 		messages = {
 			{ role = "user", content = prompt },
@@ -222,6 +226,9 @@ M.generate_commit_message_async = function(diff, fallback_message, callback)
 		message = message:gsub("[\r\n]+", ""):gsub("^%s*(.-)%s*$", "%1")
 		callback(message ~= "" and message or fallback_message)
 	end)
+	if handle_cb and h then
+		handle_cb(h)
+	end
 end
 
 M.test_api_key = function()

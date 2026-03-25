@@ -6,6 +6,7 @@
 local progress_timer = nil
 local spinner_frames = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" }
 local spinner_idx = 0
+local active_commit = nil -- nil when idle; table when in-flight
 
 local function clear_progress()
 	if progress_timer then
@@ -39,6 +40,34 @@ local function show_progress(message)
 	vim.api.nvim_echo({ { spinner_frames[1] .. " " .. message, "ModeMsg" } }, false, {})
 end
 
+local function cancel_active_commit(reason)
+	if not active_commit then
+		return
+	end
+	active_commit.cancelled = true
+	for _, proc in ipairs(active_commit.processes) do
+		pcall(function()
+			proc:kill(9)
+		end)
+	end
+	if active_commit.timeout then
+		active_commit.timeout:stop()
+		active_commit.timeout:close()
+		active_commit.timeout = nil
+	end
+	local cleanup = active_commit.cleanup_fn
+	active_commit = nil
+	clear_progress()
+	local msg = reason or "Commit cancelled"
+	if cleanup then
+		cleanup(function()
+			vim.notify(msg, vim.log.levels.INFO)
+		end)
+	else
+		vim.notify(msg, vim.log.levels.INFO)
+	end
+end
+
 local function run_system_async(cmd, callback)
 	if not vim.system then
 		local output = vim.fn.system(cmd)
@@ -51,10 +80,15 @@ local function run_system_async(cmd, callback)
 		return
 	end
 
-	vim.system(
+	local job_snapshot = active_commit
+	local handle = vim.system(
 		{ "sh", "-c", cmd },
 		{ text = true },
 		vim.schedule_wrap(function(result)
+			if job_snapshot and job_snapshot.cancelled then
+				return
+			end
+
 			local stdout = result.stdout or ""
 			local stderr = result.stderr or ""
 			local text = stdout
@@ -70,6 +104,10 @@ local function run_system_async(cmd, callback)
 			})
 		end)
 	)
+
+	if active_commit and not active_commit.cancelled then
+		table.insert(active_commit.processes, handle)
+	end
 end
 
 local function notify_git_failure(action, result, level)
@@ -108,6 +146,25 @@ local function truncate_diff(diff, max_lines, max_chars)
 end
 
 local function generate_commit_message(mode, callback)
+	-- Cancel any in-flight job before starting a new one
+	if active_commit then
+		cancel_active_commit("Replaced by new commit generation")
+	end
+
+	-- Initialize cancellation token
+	active_commit = { cancelled = false, processes = {}, cleanup_fn = nil, timeout = nil }
+
+	-- Auto-cancel after 30 seconds
+	local timeout_timer = vim.uv.new_timer()
+	active_commit.timeout = timeout_timer
+	timeout_timer:start(
+		30000,
+		0,
+		vim.schedule_wrap(function()
+			cancel_active_commit("Commit generation timed out (30s)")
+		end)
+	)
+
 	show_progress("Preparing commit...")
 	local openai = require("config.openai")
 	local auto_staged_file = nil
@@ -128,10 +185,16 @@ local function generate_commit_message(mode, callback)
 		end)
 	end
 
+	-- Register so cancel_active_commit can unstage if needed
+	if active_commit then
+		active_commit.cleanup_fn = cleanup_auto_staged
+	end
+
 	-- Get git root asynchronously
 	run_system_async("git rev-parse --show-toplevel 2>/dev/null", function(result)
 		local git_root = result.stdout
 		if result.code ~= 0 or not git_root or vim.trim(git_root) == "" then
+			active_commit = nil
 			clear_progress()
 			vim.notify("Not a git repository", vim.log.levels.ERROR)
 			return
@@ -139,6 +202,7 @@ local function generate_commit_message(mode, callback)
 
 		local function generate_and_commit(diff)
 			if not diff or vim.trim(diff) == "" then
+				active_commit = nil
 				clear_progress()
 				vim.notify("No changes to commit", vim.log.levels.WARN)
 				return
@@ -151,9 +215,25 @@ local function generate_commit_message(mode, callback)
 
 			show_progress("Generating commit message...")
 			local fallback = string.format("[%s] Auto-commit", os.date("%Y-%m-%d %H:%M"))
+			local job_at_dispatch = active_commit
 			openai.generate_commit_message_async(lean_diff, fallback, function(ai_message)
+				if job_at_dispatch and job_at_dispatch.cancelled then
+					return
+				end
+				-- Stop the timeout timer — we got a response in time
+				if job_at_dispatch and job_at_dispatch.timeout then
+					job_at_dispatch.timeout:stop()
+					job_at_dispatch.timeout:close()
+					job_at_dispatch.timeout = nil
+				end
+				active_commit = nil
 				clear_progress()
 				callback(ai_message, cleanup_auto_staged)
+			end, function(h)
+				-- Register the curl handle so it can be killed on cancel
+				if active_commit and not active_commit.cancelled then
+					table.insert(active_commit.processes, h)
+				end
 			end)
 		end
 
@@ -174,6 +254,7 @@ local function generate_commit_message(mode, callback)
 							string.format("git add %s", vim.fn.shellescape(current_file)),
 							function(add_result)
 								if add_result.code ~= 0 then
+									active_commit = nil
 									clear_progress()
 									notify_git_failure("Stage current file", add_result)
 									return
@@ -185,6 +266,7 @@ local function generate_commit_message(mode, callback)
 							end
 						)
 					else
+						active_commit = nil
 						clear_progress()
 						vim.notify("No file open and no staged changes", vim.log.levels.WARN)
 					end
@@ -194,6 +276,7 @@ local function generate_commit_message(mode, callback)
 			-- Stage all and commit
 			run_system_async("git add -A", function(add_result)
 				if add_result.code ~= 0 then
+					active_commit = nil
 					clear_progress()
 					notify_git_failure("Stage changes", add_result)
 					return
@@ -202,6 +285,7 @@ local function generate_commit_message(mode, callback)
 				-- Check if there's anything to commit
 				run_system_async("git diff --cached --quiet", function(quiet_result)
 					if quiet_result.code == 0 then
+						active_commit = nil
 						clear_progress()
 						vim.notify("No changes to commit", vim.log.levels.INFO)
 						return
@@ -606,6 +690,13 @@ return {
 					checkout_branch()
 				end,
 				desc = "Checkout / new branch from main",
+			},
+			{
+				"<leader>gx",
+				function()
+					cancel_active_commit("Commit cancelled")
+				end,
+				desc = "Cancel active AI commit generation",
 			},
 		},
 	},
