@@ -10,6 +10,27 @@ return {
 		event = "VeryLazy",
 		config = function()
 			local lazy_status = require("lazy.status")
+			local disabled_statusline_filetypes = {
+				NvimTree = true,
+				Trouble = true,
+				alpha = true,
+				dashboard = true,
+				help = true,
+				lazy = true,
+				mason = true,
+				neo_tree = true,
+				noice = true,
+				notify = true,
+				qf = true,
+				toggleterm = true,
+				trouble = true,
+			}
+
+			local function is_normal_file_buffer(buf)
+				buf = buf or 0
+				return vim.bo[buf].buftype == "" and not disabled_statusline_filetypes[vim.bo[buf].filetype]
+			end
+
 			local function in_git_repo(path)
 				local dir = path ~= "" and vim.fs.dirname(path) or vim.loop.cwd()
 				return vim.fs.find(".git", {
@@ -30,61 +51,87 @@ return {
 				end,
 			})
 
+			local function navic_location()
+				return require("nvim-navic").get_location()
+			end
+
+			local function navic_available()
+				return is_normal_file_buffer()
+					and package.loaded["nvim-navic"]
+					and require("nvim-navic").is_available()
+			end
+
+			local function github_account()
+				local github = require("config.github")
+				local account = github.get_current_account()
+				return account and string.format(" @%s", account) or ""
+			end
+
+			local function github_account_available()
+				return is_normal_file_buffer() and vim.b.is_git_repo and package.loaded["config.github"]
+			end
+
+			local function python_env()
+				local ok, swenv = pcall(require, "swenv.api")
+				if ok then
+					local venv = swenv.get_current_venv()
+					if venv then
+						return venv.name
+					end
+				end
+				local venv_path = vim.fn.getenv("VIRTUAL_ENV")
+				if venv_path and venv_path ~= vim.NIL then
+					return vim.fn.fnamemodify(venv_path, ":t")
+				end
+				return ""
+			end
+
 			require("lualine").setup({
 				options = {
 					theme = "auto",
 					component_separators = { left = "|", right = "|" },
 					section_separators = { left = "", right = "" },
 					globalstatus = true,
+					disabled_filetypes = {
+						statusline = vim.tbl_keys(disabled_statusline_filetypes),
+					},
+					ignore_focus = function()
+						return not is_normal_file_buffer()
+					end,
 				},
 				sections = {
 					lualine_c = {
 						{ "filename" },
 						{
-							function()
-								return require("nvim-navic").get_location()
-							end,
-							cond = function()
-								return package.loaded["nvim-navic"] and require("nvim-navic").is_available()
-							end,
+							navic_location,
+							cond = navic_available,
 						},
 					},
 					lualine_x = {
 						{ lazy_status.updates, cond = lazy_status.has_updates },
 						{
-							function()
-								local github = require("config.github")
-								local account = github.get_current_account()
-								return account and string.format(" @%s", account) or ""
-							end,
-							cond = function()
-								return vim.b.is_git_repo and package.loaded["config.github"]
-							end,
+							github_account,
+							cond = github_account_available,
 							color = { fg = "#7C3AED", gui = "bold" },
 						},
 						{
-							function()
-								local ok, swenv = pcall(require, "swenv.api")
-								if ok then
-									local venv = swenv.get_current_venv()
-									if venv then
-										return venv.name
-									end
-								end
-								local venv_path = vim.fn.getenv("VIRTUAL_ENV")
-								if venv_path and venv_path ~= vim.NIL then
-									return vim.fn.fnamemodify(venv_path, ":t")
-								end
-								return ""
-							end,
+							python_env,
 							cond = function()
-								return vim.bo.filetype == "python"
+								return is_normal_file_buffer() and vim.bo.filetype == "python"
 							end,
 						},
 						{ "encoding" },
 						{ "fileformat" },
 						{ "filetype" },
 					},
+				},
+				inactive_sections = {
+					lualine_a = {},
+					lualine_b = {},
+					lualine_c = { "filename" },
+					lualine_x = { "location" },
+					lualine_y = {},
+					lualine_z = {},
 				},
 			})
 		end,

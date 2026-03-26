@@ -136,15 +136,15 @@ return {
 		},
 	},
 
-	-- Command line UI (floating cmdline + styled completion popup)
+	-- Command line UI (keep a stable bottom cmdline and lightweight message routing)
 	{
 		"folke/noice.nvim",
 		event = "VeryLazy",
 		dependencies = { "MunifTanjim/nui.nvim" },
 		opts = {
-			cmdline = { enabled = true, view = "cmdline_popup" },
+			cmdline = { enabled = true, view = "cmdline" },
 			popupmenu = { enabled = true, backend = "nui" },
-			messages = { enabled = true, view = "mini" },
+			messages = { enabled = true, view = "mini", view_search = false },
 			notify = { enabled = false },
 			lsp = {
 				progress = { enabled = false },
@@ -153,7 +153,8 @@ return {
 				message = { enabled = false },
 			},
 			presets = {
-				command_palette = true,
+				bottom_search = true,
+				command_palette = false,
 				long_message_to_split = true,
 			},
 		},

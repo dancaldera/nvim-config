@@ -76,7 +76,7 @@ opt.pumblend = 0 -- No popup transparency (avoids compositing overhead)
 opt.fileencoding = "utf-8"
 
 -- Command line
-opt.cmdheight = 0
+opt.cmdheight = 1 -- Keep the bottom UI stable when cmdline/messages are active
 opt.showcmd = true
 opt.laststatus = 3 -- Global statusline
 opt.wildmode = "noselect,full" -- Don't auto-select first wildmenu match
