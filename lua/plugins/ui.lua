@@ -56,9 +56,7 @@ return {
 			end
 
 			local function navic_available()
-				return is_normal_file_buffer()
-					and package.loaded["nvim-navic"]
-					and require("nvim-navic").is_available()
+				return is_normal_file_buffer() and package.loaded["nvim-navic"] and require("nvim-navic").is_available()
 			end
 
 			local function github_account()
@@ -232,44 +230,44 @@ return {
 	},
 
 	-- Indentation scope indicator
-		{
-			"echasnovski/mini.indentscope",
-			version = false,
-			event = { "BufReadPre", "BufNewFile" },
-			opts = {
-				symbol = "│",
-				options = { try_as_border = true },
-			},
-			init = function()
-				local function disable_indentscope(args)
-					if vim.bo[args.buf].buftype == "terminal" then
-						vim.b[args.buf].miniindentscope_disable = true
-						return
-					end
-
+	{
+		"echasnovski/mini.indentscope",
+		version = false,
+		event = { "BufReadPre", "BufNewFile" },
+		opts = {
+			symbol = "│",
+			options = { try_as_border = true },
+		},
+		init = function()
+			local function disable_indentscope(args)
+				if vim.bo[args.buf].buftype == "terminal" then
 					vim.b[args.buf].miniindentscope_disable = true
+					return
 				end
 
-				vim.api.nvim_create_autocmd("FileType", {
-					pattern = {
-						"help",
-						"dashboard",
+				vim.b[args.buf].miniindentscope_disable = true
+			end
+
+			vim.api.nvim_create_autocmd("FileType", {
+				pattern = {
+					"help",
+					"dashboard",
 					"nvim-tree",
 					"Trouble",
 					"trouble",
 					"lazy",
 					"mason",
-						"notify",
-						"toggleterm",
-					},
-					callback = disable_indentscope,
-				})
+					"notify",
+					"toggleterm",
+				},
+				callback = disable_indentscope,
+			})
 
-				vim.api.nvim_create_autocmd("TermOpen", {
-					callback = disable_indentscope,
-				})
-			end,
-		},
+			vim.api.nvim_create_autocmd("TermOpen", {
+				callback = disable_indentscope,
+			})
+		end,
+	},
 
 	-- Highlight word under cursor
 	{
