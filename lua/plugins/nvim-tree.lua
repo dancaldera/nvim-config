@@ -4,13 +4,23 @@
 
 return {
 	"nvim-tree/nvim-tree.lua",
+	cmd = {
+		"NvimTreeToggle",
+		"NvimTreeFindFileToggle",
+		"NvimTreeCollapse",
+		"NvimTreeRefresh",
+		"NvimTreeFocus",
+	},
 	dependencies = { "nvim-tree/nvim-web-devicons" },
+	keys = {
+		{ "<leader>ee", "<cmd>NvimTreeToggle<CR>", desc = "Toggle file explorer" },
+		{ "<leader>ef", "<cmd>NvimTreeFindFileToggle<CR>", desc = "Toggle file explorer on current file" },
+		{ "<leader>ec", "<cmd>NvimTreeCollapse<CR>", desc = "Collapse file explorer" },
+		{ "<leader>er", "<cmd>NvimTreeRefresh<CR>", desc = "Refresh file explorer" },
+		{ "<leader>eo", "<cmd>NvimTreeFocus<CR>", desc = "Focus file explorer" },
+	},
 	config = function()
 		local nvimtree = require("nvim-tree")
-
-		-- Disable netrw
-		vim.g.loaded_netrw = 1
-		vim.g.loaded_netrwPlugin = 1
 
 		local api = require("nvim-tree.api")
 
@@ -67,22 +77,8 @@ return {
 			end,
 		})
 
-		-- Keymaps
-		local keymap = vim.keymap
-
-		keymap.set("n", "<leader>ee", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle file explorer" })
-		keymap.set(
-			"n",
-			"<leader>ef",
-			"<cmd>NvimTreeFindFileToggle<CR>",
-			{ desc = "Toggle file explorer on current file" }
-		)
-		keymap.set("n", "<leader>ec", "<cmd>NvimTreeCollapse<CR>", { desc = "Collapse file explorer" })
-		keymap.set("n", "<leader>er", "<cmd>NvimTreeRefresh<CR>", { desc = "Refresh file explorer" })
-		keymap.set("n", "<leader>eo", "<cmd>NvimTreeFocus<CR>", { desc = "Focus file explorer" })
-
 		-- Toggle between file explorer and current buffer
-		keymap.set("n", "<C-e>", function()
+		vim.keymap.set("n", "<C-e>", function()
 			if vim.bo.filetype == "NvimTree" then
 				vim.cmd("wincmd p") -- Go to previous window (your file buffer)
 			else

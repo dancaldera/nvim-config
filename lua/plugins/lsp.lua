@@ -6,6 +6,7 @@ return {
 	-- Mason - LSP/formatter/linter manager
 	{
 		"williamboman/mason.nvim",
+		cmd = { "Mason", "MasonInstall", "MasonUninstall", "MasonUpdate", "MasonLog" },
 		dependencies = {
 			"WhoIsSethDaniel/mason-tool-installer.nvim",
 		},
@@ -32,7 +33,7 @@ return {
 					"golangci-lint",
 				},
 				auto_update = false,
-				run_on_start = true,
+				run_on_start = false,
 			})
 		end,
 	},
@@ -40,6 +41,7 @@ return {
 	-- LSP Configuration + Keymaps
 	{
 		"neovim/nvim-lspconfig",
+		event = { "BufReadPre", "BufNewFile" },
 		dependencies = {
 			"hrsh7th/cmp-nvim-lsp",
 			"williamboman/mason.nvim",
@@ -167,6 +169,8 @@ return {
 	-- LSP Server Configurations (Neovim 0.11+ native API)
 	{
 		"williamboman/mason-lspconfig.nvim",
+		event = { "BufReadPre", "BufNewFile" },
+		cmd = { "LspInstall", "LspUninstall" },
 		dependencies = {
 			"williamboman/mason.nvim",
 			"hrsh7th/cmp-nvim-lsp",

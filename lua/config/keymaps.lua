@@ -89,7 +89,7 @@ keymap.set("n", "<A-.>", "<cmd>BufferLineMoveNext<CR>", { desc = "Move buffer ri
 keymap.set(
 	"n",
 	"<leader>bb",
-	"<cmd>Telescope buffers sort_mru=true sort_lastused=true<cr>",
+	"<cmd>Telescope buffers sort_mru=true sort_lastused=true<CR>",
 	{ desc = "Find open buffers", silent = true }
 )
 keymap.set(

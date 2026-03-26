@@ -20,7 +20,7 @@ require("lazy").setup({
 	{ import = "plugins" },
 }, {
 	checker = {
-		enabled = true,
+		enabled = false,
 		notify = false,
 		frequency = 86400, -- Check daily for better performance
 	},
@@ -45,6 +45,7 @@ require("lazy").setup({
 			disabled_plugins = {
 				"gzip",
 				"matchit",
+				"matchparen",
 				"netrwPlugin",
 				"tarPlugin",
 				"tohtml",

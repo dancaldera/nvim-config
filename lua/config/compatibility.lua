@@ -22,14 +22,25 @@ end
 -- Backwards compatibility shims for deprecated Neovim APIs
 -- ============================================================================
 
--- Avoid vim.lsp.get_active_clients() deprecation noise while keeping behavior identical.
-if vim.lsp and vim.lsp.get_clients and vim.lsp.get_active_clients then
-	local get_clients = vim.lsp.get_clients
-	---@diagnostic disable-next-line: duplicate-set-field
-	vim.lsp.get_active_clients = function(opts)
-		return get_clients(opts)
+local function patch_lsp_compat()
+	if not rawget(vim, "lsp") then
+		return
+	end
+
+	if vim.lsp.get_clients and vim.lsp.get_active_clients then
+		local get_clients = vim.lsp.get_clients
+		---@diagnostic disable-next-line: duplicate-set-field
+		vim.lsp.get_active_clients = function(opts)
+			return get_clients(opts)
+		end
 	end
 end
+
+vim.api.nvim_create_autocmd("LspAttach", {
+	group = vim.api.nvim_create_augroup("ConfigCompatibilityLsp", { clear = true }),
+	once = true,
+	callback = patch_lsp_compat,
+})
 
 -- Allow plugins still using the table-form vim.validate() signature without spamming warnings.
 if vim.validate then

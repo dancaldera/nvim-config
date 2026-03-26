@@ -6,6 +6,8 @@ return {
 	-- GitHub Copilot (official plugin)
 	{
 		"github/copilot.vim",
+		event = "InsertEnter",
+		cmd = "Copilot",
 		config = function()
 			-- Disable default Tab map, let nvim-cmp handle it
 			vim.g.copilot_no_tab_map = true

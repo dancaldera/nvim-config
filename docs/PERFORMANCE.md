@@ -112,7 +112,7 @@ ps aux | grep nvim
 
 ### 1. Disabled Builtins (~20ms savings)
 
-**Location:** `lua/config/options.lua`
+**Location:** `init.lua`
 
 ```lua
 -- Disable unused Neovim builtins
@@ -138,6 +138,8 @@ vim.g.loaded_vimballPlugin = 1
 - `netrw`: Replaced by nvim-tree (faster, better UI)
 - `matchparen`: Replaced by vim-illuminate (LSP-aware)
 - Others: Rarely used, bloat startup
+
+The current config now applies these disables during early init, before runtime plugins load.
 
 ### 2. Lazy Loading (~400ms savings)
 
@@ -231,6 +233,8 @@ require("mason-tool-installer").setup({
   run_on_start = false,  -- Don't block startup
 })
 ```
+
+For lean startup, keep Mason as an on-demand maintenance tool (`:Mason`, `:MasonInstall`, `:MasonUpdate`) instead of a startup dependency.
 
 **Copilot**
 ```lua
