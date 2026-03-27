@@ -34,10 +34,9 @@ keymap.set("v", "<", "<gv", { desc = "Indent left and reselect" })
 keymap.set("v", ">", ">gv", { desc = "Indent right and reselect" })
 
 -- Copy file location context for AI agents (visual mode)
-keymap.set("v", "l", function()
+keymap.set("v", "<leader>cl", function()
 	local start_line = vim.fn.line("v")
 	local end_line = vim.fn.line(".")
-	local file_path = vim.fn.expand("%:p")
 	local relative_path = vim.fn.expand("%:~:.")
 
 	-- Ensure start_line is the smaller number
