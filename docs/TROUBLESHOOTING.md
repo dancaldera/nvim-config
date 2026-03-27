@@ -645,7 +645,8 @@ Should be `expr` (Treesitter folding).
 **Fix:**
 ```vim
 " In terminal mode
-<C-\><C-n>  " Exit to normal mode
+<C-[>       " Preferred exit key
+<C-\><C-n>  " Built-in fallback
 ```
 
 Then close with `:q` or `<leader>bd`.

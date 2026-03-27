@@ -104,7 +104,8 @@ keymap.set("n", "<leader>bl", "<cmd>BufferLineCloseRight<CR>", { desc = "Close b
 keymap.set("n", "<leader>bh", "<cmd>BufferLineCloseLeft<CR>", { desc = "Close buffers to left", silent = true })
 
 -- Terminal mode keybindings
-keymap.set("t", "<C-n>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
+keymap.set("t", "<C-[>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
+keymap.set("t", "<C-n>", "<C-\\><C-n>", { desc = "Exit terminal mode (legacy alias)" })
 keymap.set("t", "<C-h>", "<C-\\><C-n><C-w>h", { desc = "Navigate to left window from terminal" })
 keymap.set("t", "<C-j>", "<C-\\><C-n><C-w>j", { desc = "Navigate to bottom window from terminal" })
 keymap.set("t", "<C-k>", "<C-\\><C-n><C-w>k", { desc = "Navigate to top window from terminal" })

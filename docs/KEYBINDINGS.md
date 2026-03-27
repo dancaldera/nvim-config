@@ -168,6 +168,9 @@ These mappings are available after an LSP attaches to the current buffer.
 |-----|------|-------------|
 | `<C-\\>` | Normal/Terminal | Toggle terminal |
 | `<leader>tt` | Normal/Terminal | Toggle terminal |
+| `<C-[>` | Terminal | Exit terminal mode |
+| `<C-n>` | Terminal | Exit terminal mode (legacy alias) |
+| `<C-h/j/k/l>` | Terminal | Exit terminal mode and move to a window |
 | `<leader>tf` | Normal | Force floating terminal |
 | `<leader>th` | Normal | Force horizontal terminal |
 | `<leader>tv` | Normal | Force vertical terminal |
