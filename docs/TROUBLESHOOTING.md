@@ -231,6 +231,34 @@ Shows duplicate servers.
 
 **Prevention:** Check for duplicate configs in `lsp-servers.lua`.
 
+### Mason Fails To Install `gopls`
+
+**Symptom:** `[mason-lspconfig.nvim] failed to install gopls`
+
+**Diagnosis:**
+```vim
+:MasonLog
+```
+
+If the log contains `Could not find executable "go" in PATH`, Mason cannot build `gopls` because the Go toolchain is not installed or not visible to Neovim.
+
+**Fixes:**
+
+1. **Install Go and confirm PATH:**
+```bash
+go version
+which go
+```
+
+2. **Restart Neovim after fixing PATH** so Mason inherits the updated environment.
+
+3. **Retry installation:**
+```vim
+:MasonInstall gopls
+```
+
+This config now skips `gopls` auto-install when `go` is missing, so startup will no longer repeatedly fail on systems without Go.
+
 ---
 
 ## Formatter Not Working

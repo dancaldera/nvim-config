@@ -11,6 +11,21 @@ return {
 			"WhoIsSethDaniel/mason-tool-installer.nvim",
 		},
 		config = function()
+			local has_go = vim.fn.executable("go") == 1
+			local mason_tools = {
+				"prettier",
+				"stylua",
+				"eslint_d",
+				"shfmt",
+				"ruff",
+				"isort",
+				"black",
+			}
+
+			if has_go then
+				table.insert(mason_tools, "golangci-lint")
+			end
+
 			require("mason").setup({
 				ui = {
 					icons = {
@@ -22,16 +37,7 @@ return {
 			})
 
 			require("mason-tool-installer").setup({
-				ensure_installed = {
-					"prettier",
-					"stylua",
-					"eslint_d",
-					"shfmt",
-					"ruff",
-					"isort",
-					"black",
-					"golangci-lint",
-				},
+				ensure_installed = mason_tools,
 				auto_update = false,
 				run_on_start = false,
 			})
@@ -185,6 +191,7 @@ return {
 			end
 
 			local capabilities = require("cmp_nvim_lsp").default_capabilities()
+			local has_go = vim.fn.executable("go") == 1
 			capabilities.textDocument.foldingRange = {
 				dynamicRegistration = false,
 				lineFoldingOnly = true,
@@ -196,13 +203,16 @@ return {
 				"cssls",
 				"jsonls",
 				"yamlls",
-				"gopls",
 				"clangd",
 				"rust_analyzer",
 				"tailwindcss",
 				"bashls",
 				"emmet_ls",
 			}
+
+			if has_go then
+				table.insert(simple_servers, 5, "gopls")
+			end
 
 			for _, server in ipairs(simple_servers) do
 				vim.lsp.config(server, { capabilities = capabilities })
@@ -297,22 +307,27 @@ return {
 			})
 
 			-- Setup mason-lspconfig (auto-enable configured servers)
+			local ensure_servers = {
+				"lua_ls",
+				"ts_ls",
+				"html",
+				"cssls",
+				"jsonls",
+				"yamlls",
+				"pyright",
+				"clangd",
+				"rust_analyzer",
+				"tailwindcss",
+				"bashls",
+				"emmet_ls",
+			}
+
+			if has_go then
+				table.insert(ensure_servers, 8, "gopls")
+			end
+
 			require("mason-lspconfig").setup({
-				ensure_installed = {
-					"lua_ls",
-					"ts_ls",
-					"html",
-					"cssls",
-					"jsonls",
-					"yamlls",
-					"pyright",
-					"gopls",
-					"clangd",
-					"rust_analyzer",
-					"tailwindcss",
-					"bashls",
-					"emmet_ls",
-				},
+				ensure_installed = ensure_servers,
 				automatic_installation = true,
 			})
 		end,

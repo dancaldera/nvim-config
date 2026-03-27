@@ -59,6 +59,7 @@ local function check_external_tools(report)
 		{ name = "git", required = true, cmd = "git --version" },
 		{ name = "rg", required = true, cmd = "rg --version" },
 		{ name = "fd", required = false, cmd = "fd --version" },
+		{ name = "go", required = false, cmd = "go version" },
 		{ name = "node", required = false, cmd = "node --version" },
 		{ name = "npm", required = false, cmd = "npm --version" },
 		{ name = "python", required = false, cmd = "python --version" },
@@ -95,6 +96,10 @@ local function check_external_tools(report)
 	if #missing_required > 0 then
 		report.error("Missing required tools: " .. table.concat(missing_required, ", "))
 		return false
+	end
+
+	if vim.fn.executable("go") ~= 1 then
+		report.info("Go toolchain missing: Mason will skip auto-install for gopls and other Go-built tools.")
 	end
 
 	return true
