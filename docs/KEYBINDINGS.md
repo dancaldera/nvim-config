@@ -140,7 +140,6 @@ These mappings are available after an LSP attaches to the current buffer.
 | `<leader>gA` | Normal | Stage all, commit, and push |
 | `<leader>gP` | Normal | Push to remote |
 | `<leader>ga` | Normal | Switch GitHub account |
-| `<leader>gas` | Normal | Show GitHub auth status |
 
 ## Completion & AI
 

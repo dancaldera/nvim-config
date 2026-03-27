@@ -3,56 +3,98 @@ local M = {}
 local account_cache = nil
 local cache_timestamp = 0
 local CACHE_TTL = 60
+local DEFAULT_HOST = "github.com"
 
-local function parse_scopes(line)
-	local scopes_str = line:match("Token scopes: '(.+)'")
-	if not scopes_str then
-		return {}
+local function normalize_accounts(decoded)
+	local hosts = decoded and decoded.hosts or {}
+	local host_accounts = hosts[DEFAULT_HOST]
+	if type(host_accounts) ~= "table" then
+		return {
+			accounts = {},
+			current = nil,
+		}
 	end
-	return vim.split(scopes_str, "', '")
-end
 
-M.parse_auth_status = function(output)
 	local accounts = {}
-	local current_account = nil
-	local lines = vim.split(output, "\n")
-	local last_username = nil
+	for _, account in ipairs(host_accounts) do
+		accounts[#accounts + 1] = {
+			login = account.login,
+			host = account.host or DEFAULT_HOST,
+			active = account.active == true,
+			state = account.state or "unknown",
+			error = account.error,
+			git_protocol = account.gitProtocol,
+			token_source = account.tokenSource,
+		}
+	end
 
-	for _, line in ipairs(lines) do
-		local username = line:match("Logged in to github%.com account (%S+)")
-		if username then
-			last_username = username
-			if not accounts[username] then
-				accounts[username] = {
-					username = username,
-					active = false,
-					scopes = {},
-					protocol = nil,
-				}
-			end
-		elseif last_username then
-			if line:match("Active account: true") then
-				accounts[last_username].active = true
-				current_account = last_username
-			end
+	table.sort(accounts, function(a, b)
+		if a.active ~= b.active then
+			return a.active
+		end
+		return a.login < b.login
+	end)
 
-			local protocol = line:match("Git operations protocol: (%S+)")
-			if protocol then
-				accounts[last_username].protocol = protocol
-			end
-
-			local scopes = parse_scopes(line)
-			if #scopes > 0 then
-				accounts[last_username].scopes = scopes
-			end
+	local current = nil
+	for _, account in ipairs(accounts) do
+		if account.active then
+			current = account.login
+			break
 		end
 	end
 
 	return {
 		accounts = accounts,
-		current = current_account,
-		usernames = vim.tbl_keys(accounts),
+		current = current,
 	}
+end
+
+local function get_status_suffix(account)
+	local labels = {}
+	if account.active then
+		table.insert(labels, "current")
+	end
+	if account.state ~= "logged_in" then
+		table.insert(labels, "needs login")
+	end
+	if #labels == 0 then
+		return ""
+	end
+	return " " .. table.concat(labels, " · ")
+end
+
+local function parse_auth_status(output)
+	local ok, decoded = pcall(vim.json.decode, output)
+	if not ok or type(decoded) ~= "table" then
+		return nil
+	end
+	return normalize_accounts(decoded)
+end
+
+local function clear_cache()
+	account_cache = nil
+	cache_timestamp = 0
+end
+
+local function read_accounts()
+	local output = vim.fn.system("gh auth status --json hosts 2>&1")
+	if vim.v.shell_error ~= 0 and output:match("unknown flag") then
+		vim.notify("Installed GitHub CLI is too old for JSON auth status", vim.log.levels.WARN)
+		return nil
+	end
+
+	local data = parse_auth_status(output)
+	if data then
+		return data
+	end
+
+	if output:match("command not found") or output:match("not installed") then
+		vim.notify("GitHub CLI not configured or not installed", vim.log.levels.WARN)
+		return nil
+	end
+
+	vim.notify("Failed to read GitHub account status", vim.log.levels.WARN)
+	return nil
 end
 
 M.get_accounts = function(force_refresh)
@@ -62,13 +104,12 @@ M.get_accounts = function(force_refresh)
 		return account_cache
 	end
 
-	local output = vim.fn.system("gh auth status 2>&1")
-	if vim.v.shell_error ~= 0 then
-		vim.notify("GitHub CLI not configured or not installed", vim.log.levels.WARN)
+	local data = read_accounts()
+	if not data then
 		return nil
 	end
 
-	account_cache = M.parse_auth_status(output)
+	account_cache = data
 	cache_timestamp = current_time
 	return account_cache
 end
@@ -80,28 +121,29 @@ end
 
 M.get_all_accounts = function()
 	local data = M.get_accounts()
-	return data and data.usernames or {}
+	if not data then
+		return {}
+	end
+	return vim.tbl_map(function(account)
+		return account.login
+	end, data.accounts)
 end
 
--- Show status via notification
 M.show_status = function()
 	local data = M.get_accounts()
-	if not data or #data.usernames == 0 then
+	if not data or #data.accounts == 0 then
 		vim.notify("No GitHub accounts configured", vim.log.levels.WARN)
 		return
 	end
 
 	local lines = { "GitHub Accounts" }
-	for _, username in ipairs(data.usernames) do
-		local acc = data.accounts[username]
-		local icon = acc.active and "✓" or "○"
-		local badge = acc.active and " (active)" or ""
-		local parts = { string.format("  %s  @%s%s", icon, username, badge) }
-		if acc.protocol then
-			table.insert(parts, "protocol: " .. acc.protocol)
+	for _, account in ipairs(data.accounts) do
+		local parts = { string.format("  @%s%s", account.login, get_status_suffix(account)) }
+		if account.state ~= "logged_in" and account.error then
+			table.insert(parts, account.error)
 		end
-		if #acc.scopes > 0 then
-			table.insert(parts, "scopes: " .. table.concat(acc.scopes, ", "))
+		if account.git_protocol then
+			table.insert(parts, "protocol: " .. account.git_protocol)
 		end
 		table.insert(lines, table.concat(parts, "  ·  "))
 	end
@@ -111,56 +153,45 @@ end
 
 M.switch_account = function()
 	local data = M.get_accounts(true)
-	if not data or #data.usernames == 0 then
+	if not data or #data.accounts == 0 then
 		vim.notify("No GitHub accounts configured", vim.log.levels.WARN)
 		return false
 	end
 
-	if #data.usernames < 2 then
+	if #data.accounts < 2 then
 		vim.notify("Need at least 2 GitHub accounts to switch", vim.log.levels.WARN)
 		return false
 	end
 
-	local max_len = 0
-	for _, username in ipairs(data.usernames) do
-		if #username > max_len then
-			max_len = #username
-		end
-	end
-
-	local options = {}
-	for _, username in ipairs(data.usernames) do
-		local account = data.accounts[username]
-		local icon = account.active and "✓" or "○"
-		local badge = account.active and "  (current)" or ""
-		local padded = username .. string.rep(" ", max_len - #username)
-		table.insert(options, string.format("%s  %s%s", icon, padded, badge))
-	end
-
-	vim.ui.select(options, {
-		prompt = "Switch GitHub Account",
+	vim.ui.select(data.accounts, {
+		prompt = "GitHub account",
 		snacks = { layout = "select" },
-	}, function(choice, idx)
-		if not choice or not idx then
+		format_item = function(account)
+			return string.format("@%s%s", account.login, get_status_suffix(account))
+		end,
+	}, function(selected_account)
+		if not selected_account then
 			return
 		end
 
-		local selected_username = data.usernames[idx]
-		if selected_username == data.current then
-			vim.notify(string.format("Already using @%s", selected_username), vim.log.levels.INFO)
+		if selected_account.active then
+			vim.notify(string.format("Already using @%s", selected_account.login), vim.log.levels.INFO)
 			return
 		end
 
-		local cmd = string.format("gh auth switch --user %s", selected_username)
+		local cmd = string.format("gh auth switch --user %s", vim.fn.shellescape(selected_account.login))
 		local output = vim.fn.system(cmd)
 		if vim.v.shell_error ~= 0 then
-			vim.notify("Failed to switch GitHub account: " .. output, vim.log.levels.ERROR)
+			vim.notify("Failed to switch GitHub account: " .. vim.trim(output), vim.log.levels.ERROR)
 			return
 		end
 
-		account_cache = nil
+		clear_cache()
+		local refreshed = M.get_accounts(true)
+		local current = refreshed and refreshed.current or selected_account.login
+
 		vim.notify(
-			string.format("Switched GitHub account: @%s → @%s", data.current or "none", selected_username),
+			string.format("Switched GitHub account: @%s → @%s", data.current or "none", current),
 			vim.log.levels.INFO
 		)
 		pcall(vim.cmd, "LualineRefresh")

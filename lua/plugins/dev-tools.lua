@@ -220,13 +220,6 @@ return {
 				desc = "Select GitHub account",
 			},
 			{
-				"<leader>gas",
-				function()
-					require("config.github").show_status()
-				end,
-				desc = "Show GitHub status",
-			},
-			{
 				"<leader>gt",
 				function()
 					require("config.openai").test_api_key()
