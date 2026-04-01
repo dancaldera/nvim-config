@@ -77,6 +77,7 @@ return {
 				{ "<leader>j", group = "Format/Lint" },
 				{ "<leader>l", group = "Dev Tools" },
 				{ "<leader>m", group = "Markdown" },
+				{ "<leader>o", group = "Office" },
 				{ "<leader>p", group = "Python" },
 				{ "<leader>r", group = "Rename/Refactor/Restart" },
 				{ "<leader>s", group = "Split/Search" },

@@ -149,3 +149,8 @@ keymap.set(
 	{ desc = "Check config consistency" }
 )
 keymap.set("n", "<leader>hN", "<cmd>checkhealth<CR>", { desc = "Run Neovim health check" })
+
+-- Office/browser helpers
+keymap.set("n", "<leader>ob", function()
+	require("config.office").open_current_in_browser()
+end, { desc = "Open Office file in browser" })
