@@ -47,14 +47,38 @@ return {
 	{
 		"numToStr/Comment.nvim",
 		event = { "BufReadPre", "BufNewFile" },
-		dependencies = { "JoosepAlviste/nvim-ts-context-commentstring" },
+		dependencies = {
+			{
+				"JoosepAlviste/nvim-ts-context-commentstring",
+				config = function()
+					require("ts_context_commentstring").setup({
+						enable_autocmd = false,
+					})
+				end,
+			},
+		},
 		config = function()
-			require("Comment").setup({
-				padding = true,
-				sticky = true,
-				ignore = "^$",
-				pre_hook = require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook(),
-			})
+			local ok, ts_integration = pcall(require, "ts_context_commentstring.integrations.comment_nvim")
+			---@type fun(ctx: CommentCtx): string|nil
+			local ts_pre_hook = ok and ts_integration.create_pre_hook() or function()
+				return nil
+			end
+
+			---@type CommentConfig
+			local comment_opts = vim.deepcopy(require("Comment.config"):get())
+			comment_opts.padding = true
+			comment_opts.sticky = true
+			comment_opts.ignore = "^$"
+			comment_opts.pre_hook = function(ctx)
+				local hook_ok, commentstring = pcall(ts_pre_hook, ctx)
+				if not hook_ok or not commentstring then
+					return vim.bo.commentstring
+				end
+
+				return commentstring
+			end
+
+			require("Comment").setup(comment_opts)
 		end,
 	},
 
