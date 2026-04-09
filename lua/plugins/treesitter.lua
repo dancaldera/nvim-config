@@ -19,7 +19,8 @@ return {
 				end,
 			})
 
-			require("nvim-treesitter.configs").setup({
+			---@type TSConfig
+			local opts = {
 				-- List of parsers to install
 				ensure_installed = {
 					"json",
@@ -55,6 +56,10 @@ return {
 				-- Automatically install missing parsers when entering buffer
 				auto_install = true,
 
+				-- Keep explicit defaults for LuaLS TSConfig compatibility.
+				ignore_install = {},
+				modules = {},
+
 				-- Enable syntax highlighting
 				highlight = {
 					enable = true,
@@ -78,7 +83,9 @@ return {
 						node_decremental = "<bs>",
 					},
 				},
-			})
+			}
+
+			require("nvim-treesitter.configs").setup(opts)
 
 			-- Configure nvim-ts-autotag
 			require("nvim-ts-autotag").setup({
