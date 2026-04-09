@@ -12,6 +12,13 @@ return {
 			"windwp/nvim-ts-autotag",
 		},
 		config = function()
+			vim.api.nvim_create_autocmd("FileType", {
+				pattern = "markdown",
+				callback = function(args)
+					pcall(vim.treesitter.stop, args.buf)
+				end,
+			})
+
 			require("nvim-treesitter.configs").setup({
 				-- List of parsers to install
 				ensure_installed = {
@@ -40,8 +47,6 @@ return {
 					"scss",
 					"typst",
 					"vue",
-					"markdown",
-					"markdown_inline",
 				},
 
 				-- Install parsers synchronously (only applied to `ensure_installed`)
@@ -53,12 +58,14 @@ return {
 				-- Enable syntax highlighting
 				highlight = {
 					enable = true,
+					disable = { "markdown", "markdown_inline" },
 					additional_vim_regex_highlighting = false,
 				},
 
 				-- Enable indentation
 				indent = {
 					enable = true,
+					disable = { "markdown" },
 				},
 
 				-- Enable incremental selection
