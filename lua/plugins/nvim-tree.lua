@@ -4,6 +4,52 @@
 
 return {
 	"nvim-tree/nvim-tree.lua",
+	init = function()
+		local startup_group = vim.api.nvim_create_augroup("nvim_tree_startup", { clear = true })
+
+		vim.api.nvim_create_autocmd("VimEnter", {
+			group = startup_group,
+			once = true,
+			callback = function(data)
+				if #vim.api.nvim_list_uis() == 0 then
+					return
+				end
+
+				local ok_lazy, lazy = pcall(require, "lazy")
+				if not ok_lazy then
+					return
+				end
+
+				lazy.load({ plugins = { "nvim-tree.lua" } })
+
+				local ok_api, api = pcall(require, "nvim-tree.api")
+				if not ok_api then
+					return
+				end
+
+				if vim.fn.argc() == 0 then
+					vim.schedule(function()
+						api.tree.open()
+					end)
+					return
+				end
+
+				local first_arg = vim.fn.argv(0)
+				if first_arg ~= "" and vim.fn.isdirectory(first_arg) == 1 then
+					vim.schedule(function()
+						api.tree.open()
+					end)
+					return
+				end
+
+				if vim.fn.argc() == 1 and data.file ~= "" and vim.fn.filereadable(data.file) == 1 then
+					vim.schedule(function()
+						api.tree.find_file({ open = true, focus = false })
+					end)
+				end
+			end,
+		})
+	end,
 	cmd = {
 		"NvimTreeToggle",
 		"NvimTreeFindFileToggle",
@@ -54,6 +100,10 @@ return {
 			},
 			git = {
 				ignore = false,
+			},
+			hijack_directories = {
+				enable = true,
+				auto_open = true,
 			},
 			update_focused_file = {
 				enable = true,

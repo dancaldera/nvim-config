@@ -20,7 +20,6 @@ Current architecture overview for this Neovim configuration.
 │   │   ├── openai.lua
 │   │   └── options.lua
 │   └── plugins/
-│       ├── colorscheme.lua
 │       ├── completion.lua
 │       ├── dev-tools.lua
 │       ├── diagnostics.lua
