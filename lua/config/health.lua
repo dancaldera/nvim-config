@@ -240,18 +240,39 @@ end
 local function check_copilot(report)
 	report.start("GitHub Copilot")
 
-	local ok, copilot = pcall(require, "copilot")
-	if not ok then
+	if vim.fn.exists(":Copilot") ~= 2 then
 		report.warn("Copilot not loaded; AI completions unavailable.")
 		return false
 	end
 
-	local auth_file = vim.fn.expand("~/.config/github-copilot/hosts.json")
-	if vim.fn.filereadable(auth_file) == 1 then
-		report.ok("Copilot authentication file found")
-	else
+	local config_dir = vim.fn.expand("~/.config/github-copilot")
+	local auth_files = {
+		config_dir .. "/apps.json",
+		config_dir .. "/hosts.json",
+	}
+
+	local auth_file
+	for _, path in ipairs(auth_files) do
+		if vim.fn.filereadable(path) == 1 then
+			auth_file = path
+			break
+		end
+	end
+
+	if not auth_file then
 		report.warn("Copilot not authenticated; run :Copilot auth")
 		return false
+	end
+
+	report.ok("Copilot authentication file found: " .. vim.fn.fnamemodify(auth_file, ":~"))
+
+	local node = vim.g.copilot_node_command or vim.fn.exepath("node")
+	if node ~= "" then
+		report.info("Copilot node runtime: " .. node)
+	end
+
+	if vim.g.copilot_version == false then
+		report.info("Copilot using bundled language server")
 	end
 
 	report.info("Copilot configured for inline suggestions (ghost text mode)")

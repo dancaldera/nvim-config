@@ -6,12 +6,20 @@ return {
 	-- GitHub Copilot (official plugin)
 	{
 		"github/copilot.vim",
-		event = "InsertEnter",
+		event = { "BufReadPre", "BufNewFile" },
 		cmd = "Copilot",
-		config = function()
-			-- Disable default Tab map, let nvim-cmp handle it
-			vim.g.copilot_no_tab_map = true
+		init = function()
+			local node = vim.fn.exepath("node")
+			if node ~= "" then
+				vim.g.copilot_node_command = node
+			end
 
+			-- Prefer the bundled language server so auth/session behavior
+			-- does not depend on npx resolving a different runtime per launch.
+			vim.g.copilot_version = false
+			vim.g.copilot_no_tab_map = true
+		end,
+		config = function()
 			-- Simplified Copilot keybindings: only accept and dismiss
 			vim.keymap.set("i", "<C-g>", 'copilot#Accept("\\<CR>")', {
 				expr = true,
