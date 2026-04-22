@@ -217,7 +217,7 @@ return {
 				function()
 					require("config.github").switch_account()
 				end,
-				desc = "Select GitHub account",
+				desc = "Switch GitHub account",
 			},
 			{
 				"<leader>gt",
