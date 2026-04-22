@@ -189,25 +189,60 @@ return {
 		"echasnovski/mini.bufremove",
 		version = false,
 		init = function()
+			local function is_file_buffer(bufnr)
+				return vim.api.nvim_buf_is_valid(bufnr)
+					and vim.bo[bufnr].buflisted
+					and vim.bo[bufnr].buftype == ""
+					and vim.bo[bufnr].filetype ~= "NvimTree"
+			end
+
+			local function replacement_buffer(current)
+				local alt = vim.fn.bufnr("#")
+				if alt ~= current and is_file_buffer(alt) then
+					return alt
+				end
+
+				for _, info in ipairs(vim.fn.getbufinfo({ buflisted = 1 })) do
+					if info.bufnr ~= current and is_file_buffer(info.bufnr) then
+						return info.bufnr
+					end
+				end
+
+				return vim.api.nvim_create_buf(true, false)
+			end
+
+			local function delete_without_tree_fallback(bufnr, force)
+				for _, win in ipairs(vim.fn.win_findbuf(bufnr)) do
+					if vim.api.nvim_win_is_valid(win) then
+						local target = replacement_buffer(bufnr)
+						if target ~= bufnr then
+							vim.api.nvim_win_set_buf(win, target)
+						end
+					end
+				end
+
+				vim.api.nvim_buf_delete(bufnr, { force = force or false })
+			end
+
 			-- Shared helper: close buffer or quit if last
 			_G._smart_buf_close = function(force)
-				local bd = require("mini.bufremove").delete
+				local bufnr = vim.api.nvim_get_current_buf()
 				local listed = vim.tbl_filter(function(b)
 					return vim.bo[b].buflisted
 				end, vim.api.nvim_list_bufs())
 				if #listed <= 1 then
 					vim.cmd(force and "qa!" or "qa")
-				elseif vim.bo.modified and not force then
+				elseif vim.bo[bufnr].modified and not force then
 					local choice =
-						vim.fn.confirm(("Save changes to %q?"):format(vim.fn.bufname()), "&Yes\n&No\n&Cancel")
+						vim.fn.confirm(("Save changes to %q?"):format(vim.fn.bufname(bufnr)), "&Yes\n&No\n&Cancel")
 					if choice == 1 then
 						vim.cmd.write()
-						bd(0)
+						delete_without_tree_fallback(bufnr, false)
 					elseif choice == 2 then
-						bd(0, true)
+						delete_without_tree_fallback(bufnr, true)
 					end
 				else
-					bd(0, force or false)
+					delete_without_tree_fallback(bufnr, force or false)
 				end
 			end
 		end,
@@ -274,6 +309,10 @@ return {
 		"RRethy/vim-illuminate",
 		event = { "BufReadPost", "BufNewFile" },
 		opts = {
+			-- vim-illuminate's treesitter provider currently crashes against the
+			-- installed nvim-treesitter locals implementation in this setup.
+			-- Prefer LSP, then regex, until that upstream path is stable again.
+			providers = { "lsp", "regex" },
 			delay = 300,
 			large_file_cutoff = 2000,
 			large_file_overrides = { providers = { "lsp" } },
