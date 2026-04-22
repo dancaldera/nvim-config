@@ -12,12 +12,41 @@ return {
 			"windwp/nvim-ts-autotag",
 		},
 		config = function()
-			vim.api.nvim_create_autocmd("FileType", {
-				pattern = "markdown",
-				callback = function(args)
-					pcall(vim.treesitter.stop, args.buf)
-				end,
-			})
+			-- Neovim 0.12's runtime markdown injections query is safer than the
+			-- older nvim-treesitter variant that uses #set-lang-from-info-string!.
+			-- Force the runtime-style query to avoid bad injected-node metadata
+			-- reaching vim.treesitter.get_node_text()/get_range().
+			vim.treesitter.query.set(
+				"markdown",
+				"injections",
+				[[
+(fenced_code_block
+  (info_string
+    (language) @injection.language)
+  (code_fence_content) @injection.content)
+
+((html_block) @injection.content
+  (#set! injection.language "html")
+  (#set! injection.combined)
+  (#set! injection.include-children))
+
+((minus_metadata) @injection.content
+  (#set! injection.language "yaml")
+  (#offset! @injection.content 1 0 -1 0)
+  (#set! injection.include-children))
+
+((plus_metadata) @injection.content
+  (#set! injection.language "toml")
+  (#offset! @injection.content 1 0 -1 0)
+  (#set! injection.include-children))
+
+([
+  (inline)
+  (pipe_table_cell)
+] @injection.content
+  (#set! injection.language "markdown_inline"))
+]]
+			)
 
 			---@type TSConfig
 			local opts = {
@@ -39,6 +68,8 @@ return {
 					"dockerfile",
 					"gitignore",
 					"query",
+					"markdown",
+					"markdown_inline",
 					"python",
 					"go",
 					"c",
@@ -63,14 +94,12 @@ return {
 				-- Enable syntax highlighting
 				highlight = {
 					enable = true,
-					disable = { "markdown", "markdown_inline" },
 					additional_vim_regex_highlighting = false,
 				},
 
 				-- Enable indentation
 				indent = {
 					enable = true,
-					disable = { "markdown" },
 				},
 
 				-- Enable incremental selection
@@ -93,6 +122,17 @@ return {
 					enable_close = true,
 					enable_rename = true,
 					enable_close_on_slash = false,
+				},
+				per_filetype = {
+					-- nvim-ts-autotag aliases markdown to html by default, which
+					-- causes InsertLeave to re-enter markdown injection parsing.
+					-- Keep autotag disabled there while leaving markdown
+					-- Treesitter highlighting enabled.
+					markdown = {
+						enable_close = false,
+						enable_rename = false,
+						enable_close_on_slash = false,
+					},
 				},
 			})
 		end,
