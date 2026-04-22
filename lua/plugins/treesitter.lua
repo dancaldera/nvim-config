@@ -48,6 +48,12 @@ return {
 ]]
 			)
 
+			-- Neovim 0.12.1 can crash in the decoration provider when the bash
+			-- parser hands invalid range data back to the highlighter. Keep shell
+			-- syntax on the built-in regex highlighter until the runtime/parser
+			-- combination is fixed upstream.
+			local bash_ts_workaround = vim.fn.has("nvim-0.12") == 1 and { "bash" } or {}
+
 			---@type TSConfig
 			local opts = {
 				-- List of parsers to install
@@ -94,12 +100,14 @@ return {
 				-- Enable syntax highlighting
 				highlight = {
 					enable = true,
-					additional_vim_regex_highlighting = false,
+					disable = bash_ts_workaround,
+					additional_vim_regex_highlighting = bash_ts_workaround,
 				},
 
 				-- Enable indentation
 				indent = {
 					enable = true,
+					disable = bash_ts_workaround,
 				},
 
 				-- Enable incremental selection
