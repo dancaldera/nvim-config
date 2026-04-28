@@ -70,6 +70,45 @@ return {
 
 		local api = require("nvim-tree.api")
 
+		local function defer_nvim_tree_bufenter_reload()
+			local ok_core, core = pcall(require, "nvim-tree.core")
+			local ok_utils, utils = pcall(require, "nvim-tree.utils")
+			if not (ok_core and ok_utils) then
+				return
+			end
+
+			for _, autocmd in ipairs(vim.api.nvim_get_autocmds({ event = "BufEnter", pattern = "NvimTree_*" })) do
+				if autocmd.group_name and autocmd.group_name:match("^NvimTree_Explorer_") then
+					pcall(vim.api.nvim_del_autocmd, autocmd.id)
+				end
+			end
+
+			local group = vim.api.nvim_create_augroup("NvimTreeDeferredBufEnter", { clear = true })
+			vim.api.nvim_create_autocmd("BufEnter", {
+				group = group,
+				pattern = "NvimTree_*",
+				callback = function(args)
+					vim.schedule(function()
+						if not vim.api.nvim_buf_is_valid(args.buf) or not utils.is_nvim_tree_buf(args.buf) then
+							return
+						end
+
+						local explorer = core.get_explorer()
+						if not explorer then
+							return
+						end
+
+						local should_reload = vim.fn.getcwd() ~= explorer.absolute_path
+							or (explorer.opts.reload_on_bufenter and not explorer.opts.filesystem_watchers.enable)
+
+						if should_reload then
+							explorer:reload_explorer()
+						end
+					end)
+				end,
+			})
+		end
+
 		nvimtree.setup({
 			view = {
 				width = 35,
@@ -126,6 +165,10 @@ return {
 				vim.keymap.set("n", "p", api.fs.paste, opts("Paste"))
 			end,
 		})
+
+		api.events.subscribe(api.events.Event.TreeOpen, function()
+			vim.schedule(defer_nvim_tree_bufenter_reload)
+		end)
 
 		-- Toggle between file explorer and current buffer
 		vim.keymap.set("n", "<C-e>", function()
