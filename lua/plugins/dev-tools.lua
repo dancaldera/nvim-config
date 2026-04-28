@@ -240,6 +240,15 @@ return {
 			scope_chdir = "global",
 		},
 		config = function(_, opts)
+			local path = require("project_nvim.utils.path")
+			local uv = vim.uv or vim.loop
+
+			-- project.nvim checks paths with glob(), which treats directory names
+			-- containing [] as patterns and can raise E944 on BufEnter.
+			path.exists = function(pathname)
+				return uv.fs_stat(pathname) ~= nil
+			end
+
 			require("project_nvim").setup(opts)
 			require("telescope").load_extension("projects")
 		end,
