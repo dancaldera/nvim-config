@@ -1,85 +1,47 @@
 -- ============================================================================
--- Editor Plugins (autopairs, surround, comments, which-key, refactoring, text objects)
+-- Editor Plugins (mini.pairs, mini.surround, mini.comment, which-key, refactoring)
 -- ============================================================================
 
 return {
-	-- Autopairs (Treesitter-aware with cmp integration)
+	-- Autopairs ( Treesitter-aware )
 	{
-		"windwp/nvim-autopairs",
+		"echasnovski/mini.pairs",
+		version = false,
 		event = "InsertEnter",
-		dependencies = { "nvim-treesitter/nvim-treesitter" },
-		config = function()
-			require("nvim-autopairs").setup({
-				check_ts = true,
-				ts_config = {
-					lua = { "string", "source" },
-					javascript = { "string", "template_string" },
-					typescript = { "string", "template_string" },
-				},
-				disable_filetype = { "TelescopePrompt" },
-				enable_check_bracket_line = true,
-				fast_wrap = {
-					map = "<M-e>",
-					chars = { "{", "[", "(", '"', "'" },
-					pattern = [=[[%'%"%>%]%)%}%,]]=],
-					end_key = "$",
-					before_key = "h",
-					after_key = "l",
-					cursor_pos_before = true,
-					keys = "qwertyuiopzxcvbnmasdfghjkl",
-					manual_position = true,
-					highlight = "PmenuSel",
-					highlight_grey = "LineNr",
-				},
-			})
-		end,
+		opts = {
+			modes = { insert = true, command = false, terminal = false },
+		},
 	},
 
 	-- Surround
 	{
-		"kylechui/nvim-surround",
-		version = "*",
+		"echasnovski/mini.surround",
+		version = false,
 		event = "VeryLazy",
-		opts = {},
+		opts = {
+			silent = true,
+		},
 	},
 
-	-- Comment (Treesitter-aware)
+	-- Comment ( Treesitter-aware via built-in hooks )
 	{
-		"numToStr/Comment.nvim",
+		"echasnovski/mini.comment",
+		version = false,
 		event = { "BufReadPre", "BufNewFile" },
 		dependencies = {
-			{
-				"JoosepAlviste/nvim-ts-context-commentstring",
-				config = function()
-					require("ts_context_commentstring").setup({
-						enable_autocmd = false,
-					})
+			"JoosepAlviste/nvim-ts-context-commentstring",
+		},
+		opts = {
+			hooks = {
+				pre = function()
+					local ok, ts_comment = pcall(require, "ts_context_commentstring.internal")
+					if ok then
+						return ts_comment.calculate_commentstring() or vim.bo.commentstring
+					end
+					return vim.bo.commentstring
 				end,
 			},
 		},
-		config = function()
-			local ok, ts_integration = pcall(require, "ts_context_commentstring.integrations.comment_nvim")
-			---@type fun(ctx: CommentCtx): string|nil
-			local ts_pre_hook = ok and ts_integration.create_pre_hook() or function()
-				return nil
-			end
-
-			---@type CommentConfig
-			local comment_opts = vim.deepcopy(require("Comment.config"):get())
-			comment_opts.padding = true
-			comment_opts.sticky = true
-			comment_opts.ignore = "^$"
-			comment_opts.pre_hook = function(ctx)
-				local hook_ok, commentstring = pcall(ts_pre_hook, ctx)
-				if not hook_ok or not commentstring then
-					return vim.bo.commentstring
-				end
-
-				return commentstring
-			end
-
-			require("Comment").setup(comment_opts)
-		end,
 	},
 
 	-- Which-key
@@ -101,7 +63,6 @@ return {
 				{ "<leader>j", group = "Format/Lint" },
 				{ "<leader>l", group = "Dev Tools" },
 				{ "<leader>m", group = "Markdown" },
-				{ "<leader>o", group = "Office" },
 				{ "<leader>p", group = "Python" },
 				{ "<leader>r", group = "Rename/Refactor/Restart" },
 				{ "<leader>s", group = "Split/Search" },
@@ -153,34 +114,10 @@ return {
 			{
 				"<leader>rr",
 				function()
-					require("telescope").extensions.refactoring.refactors()
+					require("refactoring").select_refactor()
 				end,
 				mode = "v",
 				desc = "Refactor menu",
-			},
-		},
-	},
-
-	-- Command line UI (keep a stable bottom cmdline and lightweight message routing)
-	{
-		"folke/noice.nvim",
-		event = "VeryLazy",
-		dependencies = { "MunifTanjim/nui.nvim" },
-		opts = {
-			cmdline = { enabled = true, view = "cmdline" },
-			popupmenu = { enabled = true, backend = "nui" },
-			messages = { enabled = true, view = "mini", view_search = false },
-			notify = { enabled = false },
-			lsp = {
-				progress = { enabled = false },
-				hover = { enabled = false },
-				signature = { enabled = false },
-				message = { enabled = false },
-			},
-			presets = {
-				bottom_search = true,
-				command_palette = false,
-				long_message_to_split = true,
 			},
 		},
 	},

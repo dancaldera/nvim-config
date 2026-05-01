@@ -49,9 +49,6 @@ require("config.compatibility")
 require("config.options")
 require("config.keymaps")
 require("config.autocmds")
-require("config.office").setup()
-require("config.audio").setup()
-
 -- Plugin management
 require("config.lazy")
 

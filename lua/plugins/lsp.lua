@@ -49,10 +49,9 @@ return {
 		"neovim/nvim-lspconfig",
 		event = { "BufReadPre", "BufNewFile" },
 		dependencies = {
-			"hrsh7th/cmp-nvim-lsp",
+			"saghen/blink.cmp",
 			"williamboman/mason.nvim",
 			"williamboman/mason-lspconfig.nvim",
-			{ "antosha417/nvim-lsp-file-operations", config = true },
 			{
 				"folke/lazydev.nvim",
 				ft = "lua",
@@ -81,19 +80,27 @@ return {
 
 					-- LSP Navigation
 					opts.desc = "Show LSP references"
-					keymap.set("n", "gR", "<cmd>Telescope lsp_references<CR>", opts)
+					keymap.set("n", "gR", function()
+						Snacks.picker.lsp_references()
+					end, opts)
 
 					opts.desc = "Go to declaration"
 					keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
 
 					opts.desc = "Show LSP definitions"
-					keymap.set("n", "gd", "<cmd>Telescope lsp_definitions<CR>", opts)
+					keymap.set("n", "gd", function()
+						Snacks.picker.lsp_definitions()
+					end, opts)
 
 					opts.desc = "Show LSP implementations"
-					keymap.set("n", "gi", "<cmd>Telescope lsp_implementations<CR>", opts)
+					keymap.set("n", "gi", function()
+						Snacks.picker.lsp_implementations()
+					end, opts)
 
 					opts.desc = "Show LSP type definitions"
-					keymap.set("n", "gy", "<cmd>Telescope lsp_type_definitions<CR>", opts)
+					keymap.set("n", "gy", function()
+						Snacks.picker.lsp_type_definitions()
+					end, opts)
 
 					-- LSP Actions
 					opts.desc = "See available code actions"
@@ -179,7 +186,7 @@ return {
 		cmd = { "LspInstall", "LspUninstall" },
 		dependencies = {
 			"williamboman/mason.nvim",
-			"hrsh7th/cmp-nvim-lsp",
+			"saghen/blink.cmp",
 		},
 		config = function()
 			if not (vim.lsp and vim.lsp.config) then
@@ -190,7 +197,7 @@ return {
 				return
 			end
 
-			local capabilities = require("cmp_nvim_lsp").default_capabilities()
+			local capabilities = require("blink.cmp").get_lsp_capabilities()
 			local has_go = vim.fn.executable("go") == 1
 			capabilities.textDocument.foldingRange = {
 				dynamicRegistration = false,

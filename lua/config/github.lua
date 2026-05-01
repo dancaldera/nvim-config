@@ -64,21 +64,6 @@ local function normalize_accounts(decoded)
 	}
 end
 
-local function get_status_suffix(account)
-	local labels = {}
-	if account.active then
-		table.insert(labels, "current")
-	end
-	if account.state ~= "logged_in" then
-		local state = select(1, account_state_label(account))
-		table.insert(labels, state:lower())
-	end
-	if #labels == 0 then
-		return ""
-	end
-	return " " .. table.concat(labels, " · ")
-end
-
 local function normalize_label(value)
 	if not value or value == "" then
 		return "Unknown"
@@ -111,6 +96,53 @@ local function account_state_label(account)
 	return "Needs Login", "DiagnosticWarn"
 end
 
+local function get_status_suffix(account)
+	local labels = {}
+	if account.active then
+		table.insert(labels, "current")
+	end
+	if account.state ~= "logged_in" then
+		local state = select(1, account_state_label(account))
+		if state then
+			table.insert(labels, state:lower())
+		end
+	end
+	if #labels == 0 then
+		return ""
+	end
+	return " " .. table.concat(labels, " · ")
+end
+
+---@param account table
+---@return string
+local function format_account_item_str(account)
+	local status = select(1, account_state_label(account))
+	local host = account.host or DEFAULT_HOST
+	local protocol = normalize_label(account.git_protocol)
+	local current = account.active and "●" or "○"
+	return string.format("%s @%s  %s  %s  %s", current, account.login, status, host, protocol)
+end
+
+---@param account table
+---@return table
+local function format_account_item_chunks(account)
+	local status, status_hl = account_state_label(account)
+	local host = account.host or DEFAULT_HOST
+	local protocol = normalize_label(account.git_protocol)
+	local current = account.active and "●" or "○"
+
+	return {
+		{ current .. " ", account.active and "DiagnosticOk" or "Comment" },
+		{ "@" .. account.login, account.active and "Identifier" or "Function" },
+		{ "  " },
+		{ status, status_hl },
+		{ "  " },
+		{ host, "Comment" },
+		{ "  " },
+		{ protocol, "Special" },
+	}
+end
+
 local function build_account_preview(account)
 	local status = select(1, account_state_label(account))
 	local lines = {
@@ -140,28 +172,6 @@ local function build_account_preview(account)
 	end
 
 	return table.concat(lines, "\n")
-end
-
-local function format_account_item(account, supports_chunks)
-	local status, status_hl = account_state_label(account)
-	local host = account.host or DEFAULT_HOST
-	local protocol = normalize_label(account.git_protocol)
-	local current = account.active and "●" or "○"
-
-	if not supports_chunks then
-		return string.format("%s @%s  %s  %s  %s", current, account.login, status, host, protocol)
-	end
-
-	return {
-		{ current .. " ", account.active and "DiagnosticOk" or "Comment" },
-		{ "@" .. account.login, account.active and "Identifier" or "Function" },
-		{ "  " },
-		{ status, status_hl },
-		{ "  " },
-		{ host, "Comment" },
-		{ "  " },
-		{ protocol, "Special" },
-	}
 end
 
 local function build_picker_items(accounts)
@@ -259,7 +269,7 @@ local function open_account_picker(data, on_choice)
 			title = "GitHub Accounts",
 			items = build_picker_items(data.accounts),
 			format = function(item)
-				return format_account_item(item.account, true)
+				return format_account_item_chunks(item.account)
 			end,
 			preview = "preview",
 			focus = "list",
@@ -287,7 +297,7 @@ local function open_account_picker(data, on_choice)
 	vim.ui.select(data.accounts, {
 		prompt = "GitHub account",
 		format_item = function(account)
-			return format_account_item(account, false)
+			return format_account_item_str(account)
 		end,
 	}, function(selected_account)
 		on_choice(selected_account)
@@ -405,7 +415,9 @@ M.switch_account = function()
 				vim.log.levels.INFO,
 				{ title = "GitHub" }
 			)
-			pcall(vim.cmd, "LualineRefresh")
+			pcall(function()
+				vim.cmd("LualineRefresh")
+			end)
 		end)
 	end)
 end

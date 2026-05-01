@@ -85,12 +85,14 @@ keymap.set("n", "<A-,>", "<cmd>BufferLineMovePrev<CR>", { desc = "Move buffer le
 keymap.set("n", "<A-.>", "<cmd>BufferLineMoveNext<CR>", { desc = "Move buffer right", silent = true })
 
 -- Buffer picking and management
-keymap.set(
-	"n",
-	"<leader>bb",
-	"<cmd>Telescope buffers sort_mru=true sort_lastused=true<CR>",
-	{ desc = "Find open buffers", silent = true }
-)
+keymap.set("n", "<leader>bb", function()
+	local ok, snacks = pcall(require, "snacks")
+	if ok and snacks.picker then
+		snacks.picker.buffers()
+	else
+		vim.cmd("Telescope buffers")
+	end
+end, { desc = "Find open buffers", silent = true })
 keymap.set(
 	"n",
 	"<leader>bv",
@@ -149,8 +151,3 @@ keymap.set(
 	{ desc = "Check config consistency" }
 )
 keymap.set("n", "<leader>hN", "<cmd>checkhealth<CR>", { desc = "Run Neovim health check" })
-
--- Office/browser helpers
-keymap.set("n", "<leader>ob", function()
-	require("config.office").open_current_in_browser()
-end, { desc = "Open Office file in browser" })

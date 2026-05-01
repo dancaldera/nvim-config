@@ -27,7 +27,13 @@ return {
 				end,
 				desc = "Previous todo comment",
 			},
-			{ "<leader>ft", "<cmd>TodoTelescope<cr>", desc = "Find todos" },
+			{
+				"<leader>ft",
+				function()
+					Snacks.picker.todo_comments()
+				end,
+				desc = "Find todos",
+			},
 		},
 	},
 
@@ -51,10 +57,10 @@ return {
 ██║ ╚████║███████╗╚██████╔╝ ╚████╔╝ ██║██║ ╚═╝ ██║
 ╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═══╝  ╚═╝╚═╝     ╚═╝]],
 					keys = {
-						{ icon = " ", key = "f", desc = "Find File", action = ":Telescope find_files" },
+						{ icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.picker.files()" },
 						{ icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
-						{ icon = " ", key = "r", desc = "Recent Files", action = ":Telescope oldfiles" },
-						{ icon = " ", key = "g", desc = "Find Text", action = ":Telescope live_grep" },
+						{ icon = " ", key = "r", desc = "Recent Files", action = ":lua Snacks.picker.recent()" },
+						{ icon = " ", key = "g", desc = "Find Text", action = ":lua Snacks.picker.grep()" },
 						{ icon = "󰒲 ", key = "l", desc = "Lazy", action = ":Lazy" },
 						{ icon = " ", key = "q", desc = "Quit", action = ":qa" },
 					},
@@ -229,7 +235,7 @@ return {
 		},
 	},
 
-	-- Project management
+	-- Project management (auto-cd on open; picker moved to snacks)
 	{
 		"ahmedkhalf/project.nvim",
 		event = "VeryLazy",
@@ -250,10 +256,6 @@ return {
 			end
 
 			require("project_nvim").setup(opts)
-			require("telescope").load_extension("projects")
 		end,
-		keys = {
-			{ "<leader>fp", "<cmd>Telescope projects<cr>", desc = "Find projects" },
-		},
 	},
 }

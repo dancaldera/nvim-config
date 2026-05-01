@@ -628,12 +628,6 @@ return {
 				end,
 			})
 		end,
-	},
-
-	-- Fugitive + AI-powered commit workflow
-	{
-		"tpope/vim-fugitive",
-		cmd = "Git",
 		keys = {
 			{
 				"<leader>gc",
