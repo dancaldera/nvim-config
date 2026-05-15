@@ -11,7 +11,7 @@ return {
 		config = function()
 			local lazy_status = require("lazy.status")
 			local disabled_statusline_filetypes = {
-				neo_tree = true,
+				NvimTree = true,
 				Trouble = true,
 				alpha = true,
 				dashboard = true,
@@ -156,26 +156,21 @@ return {
 		event = { "BufAdd", "BufNewFile" },
 		dependencies = { "nvim-tree/nvim-web-devicons" },
 		config = function()
-			local function is_file_buffer(bufnr)
-				return vim.api.nvim_buf_is_valid(bufnr)
-					and vim.bo[bufnr].buflisted
-					and vim.bo[bufnr].buftype == ""
-					and vim.bo[bufnr].filetype ~= "neo-tree"
-			end
+			local buffers = require("config.buffers")
 
 			local function replacement_buffer(current)
 				local alt = vim.fn.bufnr("#")
-				if alt ~= current and is_file_buffer(alt) then
+				if alt ~= current and buffers.is_real_file_buffer(alt) then
 					return alt
 				end
 
 				for _, info in ipairs(vim.fn.getbufinfo({ buflisted = 1 })) do
-					if info.bufnr ~= current and is_file_buffer(info.bufnr) then
+					if info.bufnr ~= current and buffers.is_real_file_buffer(info.bufnr) then
 						return info.bufnr
 					end
 				end
 
-				return vim.api.nvim_create_buf(true, false)
+				return buffers.create_unlisted_empty_buffer()
 			end
 
 			local function smart_buf_delete(bufnr)
@@ -189,6 +184,7 @@ return {
 				end
 
 				vim.api.nvim_buf_delete(bufnr, { force = false })
+				vim.schedule(buffers.focus_file_explorer_if_no_file_buffers)
 			end
 
 			require("bufferline").setup({
@@ -197,7 +193,7 @@ return {
 					right_mouse_command = smart_buf_delete,
 					offsets = {
 						{
-							filetype = "neo-tree",
+							filetype = "NvimTree",
 							text = "File Explorer",
 							text_align = "center",
 							separator = true,
@@ -225,26 +221,21 @@ return {
 		"echasnovski/mini.bufremove",
 		version = false,
 		init = function()
-			local function is_file_buffer(bufnr)
-				return vim.api.nvim_buf_is_valid(bufnr)
-					and vim.bo[bufnr].buflisted
-					and vim.bo[bufnr].buftype == ""
-					and vim.bo[bufnr].filetype ~= "neo-tree"
-			end
+			local buffers = require("config.buffers")
 
 			local function replacement_buffer(current)
 				local alt = vim.fn.bufnr("#")
-				if alt ~= current and is_file_buffer(alt) then
+				if alt ~= current and buffers.is_real_file_buffer(alt) then
 					return alt
 				end
 
 				for _, info in ipairs(vim.fn.getbufinfo({ buflisted = 1 })) do
-					if info.bufnr ~= current and is_file_buffer(info.bufnr) then
+					if info.bufnr ~= current and buffers.is_real_file_buffer(info.bufnr) then
 						return info.bufnr
 					end
 				end
 
-				return vim.api.nvim_create_buf(true, false)
+				return buffers.create_unlisted_empty_buffer()
 			end
 
 			local function delete_without_tree_fallback(bufnr, force)
@@ -258,6 +249,7 @@ return {
 				end
 
 				vim.api.nvim_buf_delete(bufnr, { force = force or false })
+				vim.schedule(buffers.focus_file_explorer_if_no_file_buffers)
 			end
 
 			-- Shared helper: close buffer without ever quitting Neovim
@@ -318,7 +310,7 @@ return {
 				pattern = {
 					"help",
 					"dashboard",
-					"neo-tree",
+					"NvimTree",
 					"Trouble",
 					"trouble",
 					"lazy",

@@ -123,7 +123,7 @@ vim.g.loaded_tarPlugin = 1
 vim.g.loaded_zip = 1
 vim.g.loaded_zipPlugin = 1
 vim.g.loaded_2html_plugin = 1
-vim.g.loaded_netrw = 1           -- Using neo-tree instead
+vim.g.loaded_netrw = 1           -- Using nvim-tree instead
 vim.g.loaded_netrwPlugin = 1
 vim.g.loaded_matchit = 1         -- Using Treesitter instead
 vim.g.loaded_matchparen = 1      -- Using vim-illuminate instead
@@ -136,7 +136,7 @@ vim.g.loaded_vimballPlugin = 1
 ```
 
 **Why:**
-- `netrw`: Replaced by neo-tree (faster, better UI)
+- `netrw`: Replaced by nvim-tree (cleaner startup and file explorer UX)
 - `matchparen`: Replaced by vim-illuminate (LSP-aware)
 - Others: Rarely used, bloat startup
 

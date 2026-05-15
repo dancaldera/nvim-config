@@ -87,9 +87,8 @@ Configured in `lua/plugins/picker.lua`, `lua/plugins/diagnostics.lua`, and `lua/
 
 - `folke/snacks.nvim`: picker, dashboard, notifier, terminals, lazygit, `vim.ui.select`
 - `folke/trouble.nvim`: diagnostics and symbol views
-- `nvim-neo-tree/neo-tree.nvim`: file explorer
-- `MunifTanjim/nui.nvim`: UI dependency for Neo-tree
-- `nvim-lua/plenary.nvim`: utility dependency
+- `nvim-tree/nvim-tree.lua`: clean file explorer
+- `nvim-tree/nvim-web-devicons`: file icons
 
 Primary mappings:
 

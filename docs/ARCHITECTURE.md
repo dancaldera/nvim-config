@@ -73,7 +73,7 @@ The config keeps core editor behavior in `lua/config/` and groups plugin specs b
 | `formatting.lua` | `conform.nvim` and `nvim-lint` |
 | `treesitter.lua` | Treesitter parsers and autotagging |
 | `ui.lua` | Statusline, bufferline, breadcrumbs, folds, reference highlighting |
-| `explorer.lua` | `neo-tree.nvim` file explorer and explorer mappings |
+| `explorer.lua` | `nvim-tree.lua` file explorer and explorer mappings |
 | `picker.lua` | `Snacks.picker` search, file, project, help, and keymap pickers |
 | `editor.lua` | Mini editing plugins, which-key, refactoring, text objects |
 | `git.lua` | Gitsigns, fugitive, and AI-assisted git workflows |
@@ -84,7 +84,7 @@ The config keeps core editor behavior in `lua/config/` and groups plugin specs b
 ## Cross-Module Integration
 
 - `nvim-lspconfig` uses `Snacks.picker` in LSP attach mappings like `gd`, `gR`, `gi`, and `gy`.
-- `neo-tree.nvim` provides the file explorer while `nvim-web-devicons` supplies file icons.
+- `nvim-tree.lua` provides the file explorer while `nvim-web-devicons` supplies file icons.
 - `conform.nvim` and `nvim-lint` choose tools based on project files in the working tree.
 - `lualine` reads from `config.github`, `lazy.status`, `nvim-navic`, and `swenv` to enrich the statusline.
 - `snacks.nvim` provides the dashboard, picker, terminal UX, notifications, `vim.ui.select`, and lazygit entrypoint.
