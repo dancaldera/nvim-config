@@ -30,7 +30,8 @@ return {
 			end
 
 			local function in_git_repo(path)
-				local dir = path ~= "" and vim.fs.dirname(path) or vim.loop.cwd()
+				local uv = vim.uv or vim.loop
+				local dir = path ~= "" and vim.fs.dirname(path) or uv.cwd()
 				return vim.fs.find(".git", {
 					path = dir,
 					upward = true,

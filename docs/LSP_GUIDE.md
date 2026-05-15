@@ -56,9 +56,9 @@ These keybindings work for any language with LSP support:
 
 | Keybinding | Action | Description |
 |------------|--------|-------------|
-| `gd` | Go to Definition | Jump to where symbol is defined (Telescope) |
+| `gd` | Go to Definition | Show definitions with `Snacks.picker` |
 | `gD` | Go to Declaration | Jump to symbol declaration |
-| `gR` | Find References | Show all references (Telescope) |
+| `gR` | Find References | Show references with `Snacks.picker` |
 | `gi` | Go to Implementation | Jump to implementation |
 | `gy` | Go to Type Definition | Jump to type definition |
 | `K` | Hover Documentation | Show documentation for symbol under cursor |
@@ -510,7 +510,7 @@ Look for error messages.
 
 ### Completion Not Working
 
-**Check 1: Is nvim-cmp loaded?**
+**Check 1: Is blink.cmp loaded?**
 Try typing in insert mode - completion menu should appear.
 
 **Check 2: Is Copilot blocking?**

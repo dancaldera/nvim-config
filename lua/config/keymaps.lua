@@ -67,7 +67,7 @@ keymap.set("n", "<S-l>", "<cmd>BufferLineCycleNext<CR>", { desc = "Next buffer",
 keymap.set("n", "<S-h>", "<cmd>BufferLineCyclePrev<CR>", { desc = "Previous buffer", silent = true })
 keymap.set("n", "<S-x>", function()
 	_G._smart_buf_close(false)
-end, { desc = "Close current buffer (quit if last)" })
+end, { desc = "Close current buffer" })
 
 -- Quick buffer access with Command+Control+number
 for i = 1, 9 do
@@ -90,7 +90,7 @@ keymap.set("n", "<leader>bb", function()
 	if ok and snacks.picker then
 		snacks.picker.buffers()
 	else
-		vim.cmd("Telescope buffers")
+		vim.cmd("ls")
 	end
 end, { desc = "Find open buffers", silent = true })
 keymap.set(

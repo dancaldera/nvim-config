@@ -1,6 +1,6 @@
 # Neovim Config
 
-Modular, fast Neovim setup for full-stack development. 82 plugins, <50ms startup, AI-first workflow with Copilot, multi-agent terminal (Claude, Gemini, Codex, Opencode), AI-assisted git commits, LSP across 13 languages, and DAP debugging.
+Modular, fast Neovim setup for full-stack development. 39 locked plugins, <50ms measured headless startup, AI-first workflow with Copilot, multi-agent terminal (Claude, Gemini, Codex, Opencode), AI-assisted git commits, and LSP across common full-stack languages.
 
 ## Requirements
 
@@ -169,6 +169,10 @@ Auto-installed via Mason: `lua_ls`, `ts_ls`, `html`, `cssls`, `jsonls`, `yamlls`
 Auto-installed formatters/linters: `prettier`, `stylua`, `eslint_d`, `ruff`, `black`, `isort`, `shfmt`, `golangci-lint`
 
 ## Maintenance
+
+```bash
+./scripts/validate.sh
+```
 
 ```vim
 :Lazy update

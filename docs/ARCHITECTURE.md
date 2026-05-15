@@ -9,6 +9,10 @@ Current architecture overview for this Neovim configuration.
 ├── init.lua
 ├── README.md
 ├── lazy-lock.json
+├── .luarc.json
+├── stylua.toml
+├── scripts/
+│   └── validate.sh
 ├── lua/
 │   ├── config/
 │   │   ├── autocmds.lua
@@ -24,12 +28,12 @@ Current architecture overview for this Neovim configuration.
 │       ├── dev-tools.lua
 │       ├── diagnostics.lua
 │       ├── editor.lua
+│       ├── explorer.lua
 │       ├── formatting.lua
 │       ├── git.lua
 │       ├── lsp.lua
-│       ├── nvim-tree.lua
+│       ├── picker.lua
 │       ├── python.lua
-│       ├── telescope.lua
 │       ├── treesitter.lua
 │       └── ui.lua
 └── docs/
@@ -39,7 +43,7 @@ Current architecture overview for this Neovim configuration.
 
 `init.lua` performs a small amount of eager setup, then hands plugin discovery to `lazy.nvim`.
 
-1. Set leader keys and provider toggles.
+1. Set leader keys and provider/runtime toggles.
 2. Load core config from `lua/config/`.
 3. Bootstrap and configure `lazy.nvim`.
 4. Register health helpers.
@@ -65,28 +69,29 @@ The config keeps core editor behavior in `lua/config/` and groups plugin specs b
 | File | Responsibility |
 |------|----------------|
 | `lsp.lua` | Mason, LSP servers, attach-time LSP mappings, inlay hints |
-| `completion.lua` | Copilot and `nvim-cmp` |
+| `completion.lua` | Copilot and `blink.cmp` completion |
 | `formatting.lua` | `conform.nvim` and `nvim-lint` |
 | `treesitter.lua` | Treesitter parsers and autotagging |
 | `ui.lua` | Statusline, bufferline, breadcrumbs, folds, reference highlighting |
-| `nvim-tree.lua` | File explorer and explorer-specific mappings |
-| `telescope.lua` | Search pickers and Telescope mappings |
-| `editor.lua` | Autopairs, surround, commenting, which-key, refactoring, Noice, text objects |
+| `explorer.lua` | `neo-tree.nvim` file explorer and explorer mappings |
+| `picker.lua` | `Snacks.picker` search, file, project, help, and keymap pickers |
+| `editor.lua` | Mini editing plugins, which-key, refactoring, text objects |
 | `git.lua` | Gitsigns, fugitive, and AI-assisted git workflows |
-| `dev-tools.lua` | Snacks dashboard/terminal/lazygit, TODO comments, project switching |
+| `dev-tools.lua` | Snacks dashboard/notifier/terminal/lazygit, TODO comments, project switching |
 | `diagnostics.lua` | Trouble views and severity-aware diagnostic navigation |
 | `python.lua` | Python virtualenv detection and switching |
 
 ## Cross-Module Integration
 
-- `nvim-lspconfig` and Telescope are connected through LSP attach mappings like `gd`, `gR`, `gi`, and `gy`.
-- `nvim-tree` works with `nvim-lsp-file-operations` so file moves can notify language servers.
+- `nvim-lspconfig` uses `Snacks.picker` in LSP attach mappings like `gd`, `gR`, `gi`, and `gy`.
+- `neo-tree.nvim` provides the file explorer while `nvim-web-devicons` supplies file icons.
 - `conform.nvim` and `nvim-lint` choose tools based on project files in the working tree.
 - `lualine` reads from `config.github`, `lazy.status`, `nvim-navic`, and `swenv` to enrich the statusline.
-- `snacks.nvim` provides the dashboard, terminal UX, and lazygit entrypoint.
+- `snacks.nvim` provides the dashboard, picker, terminal UX, notifications, `vim.ui.select`, and lazygit entrypoint.
 
 ## Maintenance Notes
 
-- `lazy-lock.json` is the plugin source of truth; avoid hard-coding plugin counts in docs.
+- `lazy-lock.json` is tracked as the plugin source of truth for reproducible installs.
 - Keybinding docs should track `vim.keymap.set(...)` calls and plugin `keys = {}` tables.
 - `health.lua` includes a documentation consistency check for high-signal drift in the main docs.
+- `scripts/validate.sh` runs a lightweight headless validation pass after config changes.

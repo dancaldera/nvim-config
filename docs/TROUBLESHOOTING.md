@@ -345,24 +345,19 @@ export PATH=$PATH:/usr/local/bin:~/.local/bin
 # Try in insert mode - type a few characters
 # Menu should appear automatically
 
-# Check if nvim-cmp loaded
-:lua print(require('cmp'))
+# Check if blink.cmp loaded
+:lua print(require('blink.cmp'))
 ```
 
 **Fixes:**
 
-1. **Restart in insert mode:**
+1. **Check sources:**
 ```vim
-:CmpEnable
+:lua print(vim.inspect(require('blink.cmp').config.sources.default))
 ```
+Should show LSP, buffer, path, snippets, etc.
 
-2. **Check sources:**
-```vim
-:lua print(vim.inspect(require('cmp').get_config().sources))
-```
-Should show LSP, buffer, path, etc.
-
-3. **Manually trigger completion:**
+2. **Manually trigger completion:**
 ```vim
 " In insert mode
 <C-Space>
@@ -412,19 +407,19 @@ Ensure subscription is active.
 
 1. **Increase debounce:**
 ```lua
--- In lua/plugins/autocompletion.lua
+-- In lua/plugins/completion.lua
 completion = {
-  keyword_length = 2,  -- Require more characters
-},
-performance = {
-  debounce = 150,  -- Increase from 100ms
+  menu = { auto_show = true },
+  documentation = { auto_show = true },
 }
 ```
 
-2. **Disable buffer source for large files:**
+2. **Disable or tune expensive sources for large files:**
 ```lua
--- In autocmd for large files
-vim.b.cmp_source_buffer_enabled = false
+-- In lua/plugins/completion.lua
+sources = {
+  default = { "lsp", "path", "snippets" }, -- omit "buffer" if needed
+}
 ```
 
 ---

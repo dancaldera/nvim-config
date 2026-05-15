@@ -4,6 +4,16 @@
 
 local M = {}
 
+local function load_lazy_plugins(names)
+	local ok, lazy = pcall(require, "lazy")
+	if not ok then
+		return false
+	end
+
+	local success = pcall(lazy.load, { plugins = names })
+	return success
+end
+
 local function check_neovim_version(report)
 	report.start("Neovim version")
 
@@ -140,6 +150,8 @@ end
 local function check_lsp_servers(report)
 	report.start("LSP servers")
 
+	load_lazy_plugins({ "blink.cmp", "mason.nvim", "mason-lspconfig.nvim", "nvim-lspconfig" })
+
 	if not (vim.lsp and vim.lsp.config) then
 		report.error("vim.lsp.config API unavailable; requires Neovim 0.11+ with nvim-lspconfig.")
 		return false
@@ -200,21 +212,39 @@ end
 local function check_formatters(report)
 	report.start("Formatters (conform.nvim)")
 
+	load_lazy_plugins({ "conform.nvim" })
+
 	local ok, conform = pcall(require, "conform")
 	if not ok then
-		report.warn("conform.nvim not available; format-on-save disabled.")
+		report.warn("conform.nvim not available; manual formatting unavailable.")
 		return false
 	end
 
-	local formatters_by_ft = conform.list_all_formatters()
+	local formatters_by_ft = conform.formatters_by_ft or {}
 	local filetype_count = vim.tbl_count(formatters_by_ft)
 	local formatter_count = 0
+	local dynamic_count = 0
 
 	for _, formatters in pairs(formatters_by_ft) do
-		formatter_count = formatter_count + #formatters
+		if type(formatters) == "function" then
+			dynamic_count = dynamic_count + 1
+		elseif type(formatters) == "table" then
+			for _, formatter in ipairs(formatters) do
+				if type(formatter) == "string" then
+					formatter_count = formatter_count + 1
+				end
+			end
+		end
 	end
 
-	report.ok(string.format("Formatters configured: %d across %d filetypes", formatter_count, filetype_count))
+	report.ok(
+		string.format(
+			"Formatters configured: %d static entries and %d dynamic filetype resolvers across %d filetypes",
+			formatter_count,
+			dynamic_count,
+			filetype_count
+		)
+	)
 
 	local current_ft = vim.bo.filetype
 	if current_ft and current_ft ~= "" then
@@ -361,6 +391,8 @@ local function check_config_consistency(report)
 	require_contains("docs/KEYBINDINGS.md", keybindings_doc, "bufferline.nvim", "bufferline.nvim buffer manager")
 	require_contains("docs/KEYBINDINGS.md", keybindings_doc, "<leader>pv", "<leader>pv python venv mapping")
 	require_contains("docs/KEYBINDINGS.md", keybindings_doc, "<leader>hC", "<leader>hC consistency mapping")
+	forbid_contains("docs/KEYBINDINGS.md", keybindings_doc, "nvim-cmp", "removed nvim-cmp reference")
+	forbid_contains("docs/KEYBINDINGS.md", keybindings_doc, "Telescope", "removed Telescope reference")
 	forbid_contains("docs/KEYBINDINGS.md", keybindings_doc, "nvim-cokeline", "removed nvim-cokeline reference")
 	forbid_contains("docs/KEYBINDINGS.md", keybindings_doc, "Spectre", "removed Spectre reference")
 	forbid_contains("docs/KEYBINDINGS.md", keybindings_doc, "<leader>qs", "removed session mapping")
@@ -368,18 +400,29 @@ local function check_config_consistency(report)
 	forbid_contains("docs/KEYBINDINGS.md", keybindings_doc, "<leader>D", "removed stale diagnostics mapping")
 
 	require_contains("docs/ARCHITECTURE.md", architecture_doc, "bufferline", "bufferline architecture note")
-	require_contains("docs/ARCHITECTURE.md", architecture_doc, "nvim-tree", "nvim-tree architecture note")
+	require_contains("docs/ARCHITECTURE.md", architecture_doc, "neo-tree", "neo-tree architecture note")
+	require_contains("docs/ARCHITECTURE.md", architecture_doc, "picker.lua", "picker plugin group")
+	forbid_contains("docs/ARCHITECTURE.md", architecture_doc, "nvim-tree.lua", "old explorer file name")
+	forbid_contains("docs/ARCHITECTURE.md", architecture_doc, "telescope.lua", "old picker file name")
+	forbid_contains("docs/ARCHITECTURE.md", architecture_doc, "nvim-cmp", "removed nvim-cmp reference")
+	forbid_contains("docs/ARCHITECTURE.md", architecture_doc, "Telescope", "removed Telescope reference")
 	forbid_contains("docs/ARCHITECTURE.md", architecture_doc, "AGENTS.md", "nonexistent AGENTS.md file")
 
 	require_contains("docs/PLUGINS_REFERENCE.md", plugins_doc, "<leader>ee", "<leader>ee explorer mapping")
 	require_contains("docs/PLUGINS_REFERENCE.md", plugins_doc, "<leader>pv", "<leader>pv python mapping")
 	require_contains("docs/PLUGINS_REFERENCE.md", plugins_doc, "gR", "current LSP references mapping")
+	forbid_contains("docs/PLUGINS_REFERENCE.md", plugins_doc, "nvim-telescope", "removed Telescope plugin")
+	forbid_contains("docs/PLUGINS_REFERENCE.md", plugins_doc, "nvim-cmp", "removed nvim-cmp plugin")
+	forbid_contains("docs/PLUGINS_REFERENCE.md", plugins_doc, "LuaSnip", "removed LuaSnip plugin")
+	forbid_contains("docs/PLUGINS_REFERENCE.md", plugins_doc, "nvim-tree/nvim-tree.lua", "removed nvim-tree plugin")
 	forbid_contains("docs/PLUGINS_REFERENCE.md", plugins_doc, "| `<leader>e` |", "stale explorer key")
 	forbid_contains("docs/PLUGINS_REFERENCE.md", plugins_doc, "| `gr` |", "stale references key")
 	forbid_contains("docs/PLUGINS_REFERENCE.md", plugins_doc, "<leader>D", "stale type-definition key")
 
 	require_contains("docs/LSP_GUIDE.md", lsp_doc, "gR", "current references mapping")
 	require_contains("docs/LSP_GUIDE.md", lsp_doc, "gy", "current type definition mapping")
+	forbid_contains("docs/LSP_GUIDE.md", lsp_doc, "Telescope", "removed Telescope reference")
+	forbid_contains("docs/LSP_GUIDE.md", lsp_doc, "nvim-cmp", "removed nvim-cmp reference")
 	forbid_contains("docs/LSP_GUIDE.md", lsp_doc, "| `gr` |", "stale references key")
 	forbid_contains("docs/LSP_GUIDE.md", lsp_doc, "| `gt` |", "stale type definition key")
 

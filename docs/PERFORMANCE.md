@@ -68,9 +68,10 @@ Shows per-plugin loading times in interactive UI.
 **Method 3: Manual Timing**
 ```lua
 -- Add to init.lua
-local start = vim.loop.hrtime()
+local uv = vim.uv or vim.loop
+local start = uv.hrtime()
 -- ... code to measure ...
-print(string.format("Took: %.2fms", (vim.loop.hrtime() - start) / 1e6))
+print(string.format("Took: %.2fms", (uv.hrtime() - start) / 1e6))
 ```
 
 ### 2. Memory Profiling
@@ -122,7 +123,7 @@ vim.g.loaded_tarPlugin = 1
 vim.g.loaded_zip = 1
 vim.g.loaded_zipPlugin = 1
 vim.g.loaded_2html_plugin = 1
-vim.g.loaded_netrw = 1           -- Using nvim-tree instead
+vim.g.loaded_netrw = 1           -- Using neo-tree instead
 vim.g.loaded_netrwPlugin = 1
 vim.g.loaded_matchit = 1         -- Using Treesitter instead
 vim.g.loaded_matchparen = 1      -- Using vim-illuminate instead
@@ -135,7 +136,7 @@ vim.g.loaded_vimballPlugin = 1
 ```
 
 **Why:**
-- `netrw`: Replaced by nvim-tree (faster, better UI)
+- `netrw`: Replaced by neo-tree (faster, better UI)
 - `matchparen`: Replaced by vim-illuminate (LSP-aware)
 - Others: Rarely used, bloat startup
 
@@ -145,7 +146,7 @@ The current config now applies these disables during early init, before runtime 
 
 **Event-Based Loading**
 
-69 plugins use lazy loading triggers:
+Most plugins use lazy loading triggers:
 
 ```lua
 -- Load after UI renders
@@ -181,16 +182,7 @@ The current config now applies these disables during early init, before runtime 
 | File Explorer | `cmd = "..."` or `keys` |
 | Language-Specific | `ft = "..."` |
 
-### 3. Compiled Plugins (~50ms savings)
-
-**Telescope FZF Native**
-```lua
--- C-compiled fuzzy matcher (10x faster than Lua)
-{
-  "telescope-fzf-native.nvim",
-  build = "make",  -- Compiles on install
-}
-```
+### 3. Compiled Parsers
 
 **Treesitter Parsers**
 ```bash
@@ -198,7 +190,7 @@ The current config now applies these disables during early init, before runtime 
 ~/.local/share/nvim/lazy/nvim-treesitter/parser/
 ```
 
-**Why:** C code is 10-100x faster than Lua for compute-heavy operations.
+**Why:** Native parsers are much faster than pure-Lua parsing for syntax-heavy workloads.
 
 ### 4. Caching Strategies
 
@@ -269,21 +261,19 @@ VeryLazy (200ms)
 └── persistence.nvim
     ↓
 BufReadPre (when opening file)
-├── nvim-tree.lua
 ├── nvim-treesitter
 ├── gitsigns.nvim
-└── lsp-core.lua
+└── lsp.lua
     ↓
 BufReadPost (after file loaded)
 └── nvim-ufo (folding)
     ↓
 InsertEnter (when typing)
-├── nvim-cmp
 ├── completion.lua
-└── LuaSnip
+└── blink.cmp
     ↓
 LspAttach (LSP ready)
-├── lsp_signature.nvim
+├── nvim-navic
 └── LSP keybindings
 ```
 
@@ -321,10 +311,11 @@ LspAttach (LSP ready)
 
 **Pattern 4: Dependencies**
 ```lua
--- Load with parent plugin
+-- Load supporting plugins with their parent plugin
 {
-  "copilot-cmp",
-  dependencies = { "github/copilot.vim" },  -- Loads after copilot
+  "saghen/blink.cmp",
+  event = "InsertEnter",
+  dependencies = { "rafamadriz/friendly-snippets" },
 }
 ```
 
@@ -332,32 +323,20 @@ LspAttach (LSP ready)
 
 ## Plugin-Specific Optimizations
 
-### Telescope
+### Snacks Picker
 
-**FZF Native Sorting**
+`Snacks.picker` is enabled as part of `snacks.nvim` and uses fast external tools when available.
+
 ```lua
--- C-compiled fuzzy matching (10x faster)
-extensions = {
-  fzf = {
-    fuzzy = true,
-    override_generic_sorter = true,
-    override_file_sorter = true,
+{
+  "folke/snacks.nvim",
+  opts = {
+    picker = { enabled = true, ui_select = true },
   },
 }
 ```
 
-**File Ignores**
-```lua
--- Don't search node_modules, .git, etc.
-defaults = {
-  file_ignore_patterns = {
-    "node_modules",
-    ".git/",
-    "dist/",
-    "build/",
-  },
-}
-```
+Keep `rg` and `fd` installed for fast file and grep pickers.
 
 ### Treesitter
 
@@ -400,25 +379,17 @@ vim.diagnostic.config({
 })
 ```
 
-### nvim-cmp
+### blink.cmp
 
-**Completion Debounce**
-```lua
-performance = {
-  debounce = 100,  -- Wait 100ms before showing completion
-  throttle = 50,
-  fetching_timeout = 200,
-}
-```
+Completion loads on `InsertEnter` and uses LSP, path, snippet, and buffer sources.
 
-**Source Priority**
 ```lua
 sources = {
-  { name = "copilot", priority = 1000 },  -- AI first
-  { name = "nvim_lsp", priority = 900 },  -- LSP second
-  { name = "buffer", priority = 500, max_item_count = 5 },  -- Limit buffer items
+  default = { "lsp", "path", "snippets", "buffer" },
 }
 ```
+
+For very large files, omit the buffer source or add a file-size guard.
 
 ---
 
@@ -513,18 +484,9 @@ Repeat Step 1. Compare before/after.
 
 ### Startup Time by Plugin Count
 
-Based on this config's evolution:
+Plugin count alone is not a reliable performance measure because lazy-loading strategy, plugin setup work, and machine speed dominate results. Re-measure locally against the current `lazy-lock.json` before citing exact numbers.
 
-| Plugins | Startup Time | Memory |
-|---------|--------------|--------|
-| 0 (minimal) | 15ms | 15MB |
-| 10 | 25ms | 40MB |
-| 25 | 40ms | 80MB |
-| 50 | 60ms | 130MB |
-| **69 (current)** | **76ms** | **150MB** |
-| 100 | ~120ms | ~220MB |
-
-**Insight:** Lazy loading scales well - 69 plugins only 5x slower than minimal Neovim.
+**Insight:** Lazy loading scales well; track startup time with reproducible benchmarks rather than hand-maintained plugin-count tables.
 
 ### CPU Usage
 
@@ -616,11 +578,11 @@ diff before.txt after.txt
 
 ```
 □ Startup time <100ms (:Lazy profile)
-□ No plugins load on startup (lazy loading)
-□ FZF native compiled (telescope)
+□ Only intentional plugins load on startup
+□ `rg` and `fd` are installed for Snacks picker
 □ Treesitter incremental parsing enabled
-□ LSP initialization silent (no notifications)
-□ Completion debounced (100ms)
+□ LSP initialization quiet
+□ Completion loads on InsertEnter
 □ Builtins disabled (netrw, matchparen)
 □ Memory <300MB after 1 hour
 □ No network calls on startup

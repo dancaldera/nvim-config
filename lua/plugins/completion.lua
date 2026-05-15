@@ -30,7 +30,7 @@ return {
 		end,
 	},
 
-	-- Fast LSP/Snippet/Path/Buffer completion (replaces nvim-cmp + LuaSnip + lspkind)
+	-- Fast LSP/Snippet/Path/Buffer completion
 	{
 		"saghen/blink.cmp",
 		version = "1.*",

@@ -35,14 +35,15 @@ This configuration uses `bufferline.nvim` for buffer navigation and `mini.bufrem
 |-----|------|-------------|
 | `<S-h>` | Normal | Previous buffer |
 | `<S-l>` | Normal | Next buffer |
-| `<S-x>` | Normal | Close current buffer, or quit if last |
+| `<S-x>` | Normal | Close current buffer |
 | `<leader>bd` | Normal | Delete buffer |
 | `<leader>bD` | Normal | Force delete buffer |
 | `<leader>bp` | Normal | Pin/unpin buffer |
 | `<leader>bo` | Normal | Close other buffers |
 | `<leader>bl` | Normal | Close buffers to the right |
 | `<leader>bh` | Normal | Close buffers to the left |
-| `<leader>1` | Normal | Pick buffer to focus |
+| `<leader>bb` | Normal | Find open buffers |
+| `<leader>bv` | Normal | Pick buffer to focus |
 | `<A-,>` / `<A-.>` | Normal | Move buffer left/right |
 
 ## File Explorer
@@ -73,11 +74,11 @@ These mappings are available after an LSP attaches to the current buffer.
 
 | Key | Mode | Description |
 |-----|------|-------------|
-| `gd` | Normal | Go to definition (Telescope) |
+| `gd` | Normal | Go to definition (`Snacks.picker`) |
 | `gD` | Normal | Go to declaration |
-| `gi` | Normal | Go to implementation (Telescope) |
-| `gy` | Normal | Go to type definition (Telescope) |
-| `gR` | Normal | Show references (Telescope) |
+| `gi` | Normal | Go to implementation (`Snacks.picker`) |
+| `gy` | Normal | Go to type definition (`Snacks.picker`) |
+| `gR` | Normal | Show references (`Snacks.picker`) |
 | `K` | Normal | Hover documentation |
 | `<leader>ca` | Normal/Visual | Code actions |
 | `<leader>rn` | Normal | Rename symbol |
@@ -150,16 +151,14 @@ These mappings are available after an LSP attaches to the current buffer.
 | `<C-g>` | Insert | Accept suggestion |
 | `<C-x>` | Insert | Dismiss suggestion |
 
-### nvim-cmp
+### blink.cmp
 
 | Key | Mode | Description |
 |-----|------|-------------|
 | `<C-Space>` | Insert | Trigger completion |
 | `<C-k>` / `<C-j>` | Insert | Previous/next completion item |
 | `<Tab>` / `<S-Tab>` | Insert/Select | Next/previous item or snippet jump |
-| `<CR>` | Insert | Confirm selection |
-| `<C-e>` | Insert | Abort completion |
-| `<C-b>` / `<C-f>` | Insert | Scroll completion docs |
+| `<CR>` | Insert | Accept completion or fallback |
 
 ## Terminal & Dev Tools
 
@@ -170,17 +169,14 @@ These mappings are available after an LSP attaches to the current buffer.
 | `<C-[>` | Terminal | Exit terminal mode |
 | `<C-n>` | Terminal | Exit terminal mode (legacy alias) |
 | `<C-h/j/k/l>` | Terminal | Exit terminal mode and move to a window |
-| `<leader>tf` | Normal | Force floating terminal |
-| `<leader>th` | Normal | Force horizontal terminal |
-| `<leader>tv` | Normal | Force vertical terminal |
 | `<leader>tc` | Normal | Run custom terminal command |
 | `<leader>tk` | Normal/Terminal | Kill terminal |
 | `<leader>gl` | Normal | Open lazygit |
-| `<leader>lc` | Normal | Toggle Claude terminal |
-| `<leader>lG` | Normal | Toggle Gemini terminal |
-| `<leader>lx` | Normal | Toggle Codex terminal |
-| `<leader>lo` | Normal | Toggle Opencode terminal |
-| `<leader>la` | Normal | Toggle Copilot CLI terminal |
+| `<leader>lc` | Normal | Open Claude terminal |
+| `<leader>lG` | Normal | Open Gemini terminal |
+| `<leader>lx` | Normal | Open Codex terminal |
+| `<leader>lo` | Normal | Open Opencode terminal |
+| `<leader>la` | Normal | Open Copilot CLI terminal |
 
 ## Formatting, Linting, Python, Health
 

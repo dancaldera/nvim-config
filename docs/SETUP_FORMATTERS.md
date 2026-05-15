@@ -89,7 +89,7 @@ go install golang.org/x/tools/cmd/goimports@latest
 ```bash
 brew install fd
 ```
-**Benefit:** Faster Telescope file search
+**Benefit:** Faster `Snacks.picker` file search
 
 ### Tree-sitter CLI (Optional)
 ```bash

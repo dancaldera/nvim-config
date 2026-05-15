@@ -37,13 +37,14 @@ return {
 		},
 	},
 
-	-- Snacks.nvim (dashboard, notifier, lazygit only)
+	-- Snacks.nvim (dashboard, notifier, picker, lazygit)
 	{
 		"folke/snacks.nvim",
 		priority = 1000,
 		lazy = false,
 		opts = {
 			notifier = { enabled = true },
+			picker = { enabled = true, ui_select = true },
 			indent = { enabled = false },
 			image = { enabled = false },
 			dashboard = {
@@ -72,7 +73,13 @@ return {
 			},
 		},
 		config = function(_, opts)
-			require("snacks").setup(opts)
+			local snacks = require("snacks")
+			snacks.setup(opts)
+
+			-- Ensure Snacks owns vim.ui.select even when the picker module is loaded after setup.
+			if snacks.picker and snacks.picker.select then
+				vim.ui.select = snacks.picker.select
+			end
 
 			-- Reload files changed by AI agents (claude-code, codex, etc.)
 			vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter" }, {

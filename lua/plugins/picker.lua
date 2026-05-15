@@ -1,14 +1,11 @@
 -- ============================================================================
--- Picker Configuration (snacks.picker - replaces Telescope)
+-- Picker Configuration (snacks.picker)
 -- ============================================================================
 
 return {
-	-- snacks.picker keymaps (requires snacks.nvim with picker enabled)
+	-- snacks.picker keymaps (picker is enabled in dev-tools.lua)
 	{
 		"folke/snacks.nvim",
-		opts = {
-			picker = { enabled = true },
-		},
 		keys = {
 			{
 				"<leader>ff",
