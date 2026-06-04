@@ -7,15 +7,9 @@
   ],
   "workspace.checkThirdParty": false,
   "workspace.library": [
-    "$VIMRUNTIME/lua",
-    "${3rd}/luv/library"
+    "$VIMRUNTIME/lua"
   ],
   "diagnostics.globals": [
-    "vim",
-    "Snacks"
-  ],
-  "diagnostics.disable": [
-    "missing-fields"
-  ],
-  "format.enable": false
+    "vim"
+  ]
 }

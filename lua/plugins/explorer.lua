@@ -2,22 +2,12 @@
 -- File Explorer Configuration (nvim-tree.lua)
 -- ============================================================================
 
-local buffers = require("config.buffers")
-
-local function cleanup_startup_buffers()
-	buffers.switch_current_blank_to_real_buffer()
-	buffers.hide_blank_buffers(vim.api.nvim_get_current_buf())
-	buffers.hide_blank_if_no_real_buffers(vim.api.nvim_get_current_buf())
-end
-
 local function current_file_is_readable()
 	local path = vim.api.nvim_buf_get_name(0)
 	return path ~= "" and vim.fn.filereadable(path) == 1
 end
 
 local function toggle_explorer()
-	cleanup_startup_buffers()
-
 	local api = require("nvim-tree.api")
 	api.tree.toggle({
 		focus = true,
@@ -27,8 +17,6 @@ local function toggle_explorer()
 end
 
 local function reveal_current_file()
-	cleanup_startup_buffers()
-
 	local api = require("nvim-tree.api")
 	if current_file_is_readable() then
 		api.tree.find_file({
@@ -44,14 +32,6 @@ local function reveal_current_file()
 	end
 end
 
-local function close_explorer()
-	require("nvim-tree.api").tree.close()
-end
-
-local function refresh_explorer()
-	require("nvim-tree.api").tree.reload()
-end
-
 return {
 	"nvim-tree/nvim-tree.lua",
 	version = "*",
@@ -64,8 +44,8 @@ return {
 		{ "\\", toggle_explorer, desc = "Toggle file explorer" },
 		{ "<leader>ee", toggle_explorer, desc = "Toggle file explorer" },
 		{ "<leader>ef", reveal_current_file, desc = "Reveal current file in explorer" },
-		{ "<leader>ec", close_explorer, desc = "Close file explorer" },
-		{ "<leader>er", refresh_explorer, desc = "Refresh file explorer" },
+		{ "<leader>ec", "<cmd>NvimTreeClose<CR>", desc = "Close file explorer" },
+		{ "<leader>er", "<cmd>NvimTreeRefresh<CR>", desc = "Refresh file explorer" },
 		{ "<leader>eo", reveal_current_file, desc = "Focus file explorer" },
 		{
 			"<C-e>",
@@ -83,9 +63,6 @@ return {
 		require("nvim-tree").setup({
 			disable_netrw = true,
 			hijack_netrw = true,
-			-- Keep an IDE-like layout: tree as a sidebar, editor as the main pane.
-			-- The startup autocmd opens nvim-tree in a separate window and marks the
-			-- empty editor buffer unlisted so it does not appear as a [No Name] tab.
 			hijack_unnamed_buffer_when_opening = false,
 			sync_root_with_cwd = true,
 			respect_buf_cwd = true,

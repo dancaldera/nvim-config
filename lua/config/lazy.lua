@@ -22,7 +22,7 @@ require("lazy").setup({
 	checker = {
 		enabled = false,
 		notify = false,
-		frequency = 86400, -- Check daily for better performance
+		frequency = 86400,
 	},
 	change_detection = {
 		enabled = true,
@@ -33,14 +33,11 @@ require("lazy").setup({
 		border = "rounded",
 		backdrop = 60,
 	},
-	rocks = {
-		enabled = false, -- Disable luarocks support (not needed for current plugins)
-	},
 	performance = {
 		cache = {
 			enabled = true,
 		},
-		reset_packpath = true, -- Improves performance
+		reset_packpath = true,
 		rtp = {
 			disabled_plugins = {
 				"gzip",
@@ -55,14 +52,9 @@ require("lazy").setup({
 				"builtins",
 				"compiler",
 				"optwin",
-				-- Additional disabled plugins for performance
 				"spellfile",
 				"shada_plugin",
 			},
 		},
-	},
-	-- Enable profiling for performance monitoring
-	profiling = {
-		enabled = false, -- Set to true to debug performance
 	},
 })

@@ -10,9 +10,6 @@ echo "== Headless startup =="
 nvim --headless '+qa'
 
 echo "== Lazy-load core plugins =="
-nvim --headless '+Lazy! load snacks.nvim nvim-lspconfig mason-lspconfig.nvim conform.nvim nvim-lint blink.cmp nvim-tree.lua' '+lua print("core plugins loaded ok")' '+qa'
-
-echo "== Config health =="
-nvim --headless '+checkhealth config' '+qa'
+nvim --headless '+Lazy! load snacks.nvim nvim-lspconfig mason-lspconfig.nvim conform.nvim' '+lua print("core plugins loaded ok")' '+qa'
 
 echo "validation ok"

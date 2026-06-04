@@ -1,5 +1,4 @@
-startup.log
+*.log
 .DS_Store
 .nvimlog
-nvim.log
 .codex

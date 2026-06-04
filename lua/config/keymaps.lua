@@ -33,27 +33,6 @@ keymap.set("v", "<A-k>", ":m .-2<CR>==", { desc = "Move text up" })
 keymap.set("v", "<", "<gv", { desc = "Indent left and reselect" })
 keymap.set("v", ">", ">gv", { desc = "Indent right and reselect" })
 
--- Copy file location context for AI agents (visual mode)
-keymap.set("v", "<leader>cl", function()
-	local start_line = vim.fn.line("v")
-	local end_line = vim.fn.line(".")
-	local relative_path = vim.fn.expand("%:~:.")
-
-	-- Ensure start_line is the smaller number
-	if start_line > end_line then
-		start_line, end_line = end_line, start_line
-	end
-
-	-- Format for AI context: "file:path/to/file.lua:lines:start-end"
-	local location_info = string.format("%s:lines:%d-%d", relative_path, start_line, end_line)
-
-	-- Copy to system clipboard
-	vim.fn.setreg("+", location_info)
-
-	-- Optional: Also show a notification
-	vim.notify("Copied: " .. location_info, vim.log.levels.INFO)
-end, { desc = "Copy file location for AI context" })
-
 -- Search and replace
 keymap.set("n", "n", "nzzzv", { desc = "Next search result and center" })
 keymap.set("n", "N", "Nzzzv", { desc = "Previous search result and center" })
@@ -65,41 +44,15 @@ keymap.set("n", "<leader>q", "<cmd>q<CR>", { desc = "Quit" })
 -- Buffer navigation (bufferline.nvim)
 keymap.set("n", "<S-l>", "<cmd>BufferLineCycleNext<CR>", { desc = "Next buffer", silent = true })
 keymap.set("n", "<S-h>", "<cmd>BufferLineCyclePrev<CR>", { desc = "Previous buffer", silent = true })
-keymap.set("n", "<S-x>", function()
-	_G._smart_buf_close(false)
-end, { desc = "Close current buffer" })
+keymap.set("n", "<leader>bd", "<cmd>bdelete<CR>", { desc = "Close current buffer" })
 
--- Quick buffer access with Command+Control+number
-for i = 1, 9 do
-	keymap.set(
-		"n",
-		"<D-C-" .. i .. ">",
-		"<cmd>BufferLineGoToBuffer " .. i .. "<CR>",
-		{ desc = "Go to buffer " .. i, silent = true }
-	)
-end
-keymap.set("n", "<D-C-0>", "<cmd>BufferLineGoToBuffer -1<CR>", { desc = "Go to last buffer", silent = true })
-
--- Buffer reordering (move buffers left/right in tabline)
+-- Buffer reordering
 keymap.set("n", "<A-,>", "<cmd>BufferLineMovePrev<CR>", { desc = "Move buffer left", silent = true })
 keymap.set("n", "<A-.>", "<cmd>BufferLineMoveNext<CR>", { desc = "Move buffer right", silent = true })
 
--- Buffer picking and management
-keymap.set("n", "<leader>bb", function()
-	local ok, snacks = pcall(require, "snacks")
-	if ok and snacks.picker then
-		snacks.picker.buffers()
-	else
-		vim.cmd("ls")
-	end
-end, { desc = "Find open buffers", silent = true })
-keymap.set(
-	"n",
-	"<leader>bv",
-	"<cmd>BufferLinePick<CR>",
-	{ desc = "Visual pick buffer (letter overlay)", silent = true }
-)
-keymap.set("n", "<leader>ba", "<cmd>b#<CR>", { desc = "Alternate (last) buffer", silent = true })
+-- Buffer management
+keymap.set("n", "<leader>bv", "<cmd>BufferLinePick<CR>", { desc = "Visual pick buffer", silent = true })
+keymap.set("n", "<leader>ba", "<cmd>b#<CR>", { desc = "Alternate buffer", silent = true })
 keymap.set("n", "<leader>bp", "<cmd>BufferLineTogglePin<CR>", { desc = "Pin/unpin buffer", silent = true })
 keymap.set("n", "<leader>bo", "<cmd>BufferLineCloseOthers<CR>", { desc = "Close other buffers", silent = true })
 keymap.set("n", "<leader>bl", "<cmd>BufferLineCloseRight<CR>", { desc = "Close buffers to right", silent = true })
@@ -126,7 +79,7 @@ keymap.set("i", ".", ".<c-g>u")
 keymap.set("i", ";", ";<c-g>u")
 
 -- Better pasting
-keymap.set("x", "<leader>p", [["_dP]], { desc = "Paste without yanking" })
+keymap.set("x", "<leader>p", [[_dP]], { desc = "Paste without yanking" })
 
 -- Select all
 keymap.set("n", "<C-a>", "ggVG", { desc = "Select all" })
@@ -141,13 +94,3 @@ keymap.set("n", "<M-h>", "<cmd>vertical resize -2<CR>", { desc = "Decrease windo
 keymap.set("n", "<M-l>", "<cmd>vertical resize +2<CR>", { desc = "Increase window width" })
 keymap.set("n", "<M-j>", "<cmd>resize +2<CR>", { desc = "Increase window height" })
 keymap.set("n", "<M-k>", "<cmd>resize -2<CR>", { desc = "Decrease window height" })
-
--- Health and diagnostics
-keymap.set("n", "<leader>hc", "<cmd>lua require('config.health').check_health()<CR>", { desc = "Run health check" })
-keymap.set(
-	"n",
-	"<leader>hC",
-	"<cmd>lua require('config.health').check_config_consistency()<CR>",
-	{ desc = "Check config consistency" }
-)
-keymap.set("n", "<leader>hN", "<cmd>checkhealth<CR>", { desc = "Run Neovim health check" })

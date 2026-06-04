@@ -11,20 +11,12 @@ return {
 			"WhoIsSethDaniel/mason-tool-installer.nvim",
 		},
 		config = function()
-			local has_go = vim.fn.executable("go") == 1
 			local mason_tools = {
 				"prettier",
 				"stylua",
-				"eslint_d",
 				"shfmt",
 				"ruff",
-				"isort",
-				"black",
 			}
-
-			if has_go then
-				table.insert(mason_tools, "golangci-lint")
-			end
 
 			require("mason").setup({
 				ui = {
@@ -267,42 +259,9 @@ return {
 				},
 			})
 
-			-- Python (with venv detection)
+			-- Python
 			vim.lsp.config("pyright", {
 				capabilities = capabilities,
-				before_init = function(_, config)
-					local python_path = nil
-
-					-- Try swenv first
-					local ok, swenv_api = pcall(require, "swenv.api")
-					if ok then
-						local venv = swenv_api.get_current_venv()
-						if venv and venv.path then
-							local bin = venv.path .. "/bin/python"
-							if vim.fn.executable(bin) == 1 then
-								python_path = bin
-							end
-						end
-					end
-
-					-- Fallback: check common local venv paths
-					if not python_path then
-						local cwd = config.root_dir or vim.fn.getcwd()
-						for _, name in ipairs({ ".venv", "venv", ".env" }) do
-							local bin = cwd .. "/" .. name .. "/bin/python"
-							if vim.fn.executable(bin) == 1 then
-								python_path = bin
-								break
-							end
-						end
-					end
-
-					if python_path then
-						config.settings = config.settings or {}
-						config.settings.python = config.settings.python or {}
-						config.settings.python.pythonPath = python_path
-					end
-				end,
 				settings = {
 					python = {
 						analysis = {

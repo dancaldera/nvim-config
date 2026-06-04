@@ -6,33 +6,33 @@
 vim.api.nvim_create_autocmd("VimEnter", {
 	group = vim.api.nvim_create_augroup("StartupBufferCleanup", { clear = true }),
 	callback = function()
-		local ok, buffers = pcall(require, "config.buffers")
-		if not ok then
-			return
-		end
-
-		buffers.switch_current_blank_to_real_buffer()
-
 		local current = vim.api.nvim_get_current_buf()
-		if buffers.has_real_file_buffers(current) or buffers.is_empty_directory_buffer(current) then
-			buffers.hide_blank_buffers(current)
-			buffers.hide_blank_if_no_real_buffers(current)
-		end
+		local name = vim.api.nvim_buf_get_name(current)
 
-		vim.schedule(buffers.focus_file_explorer_if_no_file_buffers)
+		-- If current buffer is an empty [No Name] and there's a real file, switch to it
+		if name == "" and vim.bo[current].buftype == "" and vim.api.nvim_buf_line_count(current) == 1 then
+			local first_line = vim.api.nvim_buf_get_lines(current, 0, 1, false)[1] or ""
+			if first_line == "" then
+				for _, info in ipairs(vim.fn.getbufinfo({ buflisted = 1 })) do
+					if info.bufnr ~= current then
+						local other_name = vim.api.nvim_buf_get_name(info.bufnr)
+						if other_name ~= "" and vim.fn.filereadable(other_name) == 1 then
+							vim.api.nvim_win_set_buf(0, info.bufnr)
+							vim.bo[current].buflisted = false
+							break
+						end
+					end
+				end
+			end
+		end
 	end,
 })
 
--- Auto-save on focus lost (predictable, avoids writes on buffer switches)
+-- Auto-save on focus lost
 vim.api.nvim_create_autocmd({ "FocusLost" }, {
 	group = vim.api.nvim_create_augroup("AutoSave", { clear = true }),
 	pattern = "*",
 	callback = function()
-		-- Only save if:
-		-- 1. Buffer is modified
-		-- 2. Buffer is not readonly
-		-- 3. Buffer has a valid filename
-		-- 4. Buffer is a normal file (not special buffers like terminals, help, etc.)
 		if
 			vim.bo.modified
 			and not vim.bo.readonly

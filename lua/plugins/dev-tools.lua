@@ -1,42 +1,8 @@
 -- ============================================================================
--- Development Tools (snacks, todo-comments, projects, terminals)
+-- Development Tools (snacks)
 -- ============================================================================
 
 return {
-	-- TODO comments highlighting
-	{
-		"folke/todo-comments.nvim",
-		dependencies = { "nvim-lua/plenary.nvim" },
-		event = { "BufReadPost", "BufNewFile" },
-		opts = {
-			signs = true,
-			sign_priority = 8,
-		},
-		keys = {
-			{
-				"]t",
-				function()
-					require("todo-comments").jump_next()
-				end,
-				desc = "Next todo comment",
-			},
-			{
-				"[t",
-				function()
-					require("todo-comments").jump_prev()
-				end,
-				desc = "Previous todo comment",
-			},
-			{
-				"<leader>ft",
-				function()
-					Snacks.picker.todo_comments()
-				end,
-				desc = "Find todos",
-			},
-		},
-	},
-
 	-- Snacks.nvim (dashboard, notifier, picker, lazygit)
 	{
 		"folke/snacks.nvim",
@@ -76,12 +42,12 @@ return {
 			local snacks = require("snacks")
 			snacks.setup(opts)
 
-			-- Ensure Snacks owns vim.ui.select even when the picker module is loaded after setup.
+			-- Ensure Snacks owns vim.ui.select
 			if snacks.picker and snacks.picker.select then
 				vim.ui.select = snacks.picker.select
 			end
 
-			-- Reload files changed by AI agents (claude-code, codex, etc.)
+			-- Reload files changed by external tools
 			vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter" }, {
 				group = vim.api.nvim_create_augroup("auto_checktime", { clear = true }),
 				callback = function()
@@ -107,22 +73,6 @@ return {
 				vim.bo[bufnr].buflisted = true
 				vim.cmd.startinsert()
 			end
-
-			_G.open_cli_terminal = function(name, cmd)
-				vim.cmd.enew()
-				if cmd then
-					vim.cmd.terminal(cmd)
-				else
-					vim.cmd.terminal()
-				end
-				local bufnr = vim.api.nvim_get_current_buf()
-				pcall(vim.api.nvim_buf_set_name, bufnr, "terminal://" .. next_term_name(name))
-				vim.bo[bufnr].buflisted = true
-				vim.cmd.startinsert()
-			end
-
-			-- backward-compat alias
-			_G.toggle_cli_terminal = _G.open_cli_terminal
 		end,
 
 		keys = {
@@ -149,7 +99,12 @@ return {
 				function()
 					vim.ui.input({ prompt = "Command: " }, function(cmd)
 						if cmd and cmd ~= "" then
-							open_cli_terminal(cmd, cmd)
+							vim.cmd.enew()
+							vim.cmd.terminal(cmd)
+							local bufnr = vim.api.nvim_get_current_buf()
+							pcall(vim.api.nvim_buf_set_name, bufnr, "terminal://" .. cmd)
+							vim.bo[bufnr].buflisted = true
+							vim.cmd.startinsert()
 						end
 					end)
 				end,
@@ -181,88 +136,63 @@ return {
 				desc = "Lazygit",
 			},
 
-			-- AI & CLI tool terminals
+			-- Picker keymaps
 			{
-				"<leader>lc",
+				"<leader>ff",
 				function()
-					open_cli_terminal("claude", "claude")
+					Snacks.picker.files()
 				end,
-				desc = "Open Claude",
+				desc = "Fuzzy find files in cwd",
 			},
 			{
-				"<leader>lC",
+				"<leader>fr",
 				function()
-					open_cli_terminal("claude bypass", "claude --allow-dangerously-skip-permissions")
+					Snacks.picker.recent()
 				end,
-				desc = "Open Claude (bypass)",
+				desc = "Fuzzy find recent files",
 			},
 			{
-				"<leader>lG",
+				"<leader>fs",
 				function()
-					open_cli_terminal("gemini", "gemini")
+					Snacks.picker.grep()
 				end,
-				desc = "Open Gemini",
+				desc = "Find string in cwd",
 			},
 			{
-				"<leader>lx",
+				"<leader>fc",
 				function()
-					open_cli_terminal("codex", "codex")
+					Snacks.picker.grep_word()
 				end,
-				desc = "Open Codex",
+				desc = "Find string under cursor in cwd",
 			},
 			{
-				"<leader>lo",
+				"<leader>fb",
 				function()
-					open_cli_terminal("opencode", "opencode")
+					Snacks.picker.buffers()
 				end,
-				desc = "Open Opencode",
+				desc = "Find open buffers",
 			},
 			{
-				"<leader>la",
+				"<leader>fp",
 				function()
-					open_cli_terminal("copilot", "copilot")
+					Snacks.picker.projects()
 				end,
-				desc = "Open Copilot CLI",
-			},
-			-- GitHub account management
-			{
-				"<leader>ga",
-				function()
-					require("config.github").switch_account()
-				end,
-				desc = "Switch GitHub account",
+				desc = "Find projects",
 			},
 			{
-				"<leader>gt",
+				"<leader>fh",
 				function()
-					require("config.openai").test_api_key()
+					Snacks.picker.help()
 				end,
-				desc = "Test OpenAI API key",
+				desc = "Find help",
+			},
+			{
+				"<leader>fk",
+				function()
+					Snacks.picker.keymaps()
+				end,
+				desc = "Find keymaps",
 			},
 		},
-	},
-
-	-- Project management (auto-cd on open; picker moved to snacks)
-	{
-		"ahmedkhalf/project.nvim",
-		event = "VeryLazy",
-		opts = {
-			detection_methods = { "pattern" },
-			patterns = { ".git", "_darcs", ".hg", ".bzr", ".svn", "Makefile", "package.json", "go.mod" },
-			silent_chdir = true,
-			scope_chdir = "global",
-		},
-		config = function(_, opts)
-			local path = require("project_nvim.utils.path")
-			local uv = vim.uv or vim.loop
-
-			-- project.nvim checks paths with glob(), which treats directory names
-			-- containing [] as patterns and can raise E944 on BufEnter.
-			path.exists = function(pathname)
-				return uv.fs_stat(pathname) ~= nil
-			end
-
-			require("project_nvim").setup(opts)
-		end,
 	},
 }

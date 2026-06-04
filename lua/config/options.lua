@@ -91,7 +91,7 @@ opt.smoothscroll = true
 opt.lazyredraw = false
 opt.ttyfast = true
 
--- Folding (using nvim-ufo)
+-- Folding
 opt.foldcolumn = "0"
 opt.foldlevel = 99
 opt.foldlevelstart = 99
