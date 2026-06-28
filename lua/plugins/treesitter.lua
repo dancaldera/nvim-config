@@ -90,8 +90,9 @@ return {
 				-- Install parsers synchronously (only applied to `ensure_installed`)
 				sync_install = false,
 
-				-- Automatically install missing parsers when entering buffer
-				auto_install = true,
+				-- Do not auto-install parsers for arbitrary filetypes (fetches +
+				-- compiles from GitHub on open). ensure_installed above covers the stack.
+				auto_install = false,
 
 				-- Keep explicit defaults for LuaLS TSConfig compatibility.
 				ignore_install = {},

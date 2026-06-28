@@ -31,7 +31,7 @@ return {
 			require("mason-tool-installer").setup({
 				ensure_installed = mason_tools,
 				auto_update = false,
-				run_on_start = false,
+				run_on_start = true,
 			})
 		end,
 	},
@@ -58,9 +58,31 @@ return {
 		config = function()
 			local keymap = vim.keymap
 
+			-- Inlay hint presets (hoisted: rebuilt once, not on every LspAttach)
+			local inlay_hint_levels = {
+				{ name = "none", params = "none", types = false, vars = false, returns = false, enums = false },
+				{
+					name = "minimal",
+					params = "literals",
+					types = false,
+					vars = false,
+					returns = false,
+					enums = false,
+				},
+				{
+					name = "moderate",
+					params = "all",
+					types = false,
+					vars = false,
+					returns = true,
+					enums = true,
+				},
+				{ name = "complete", params = "all", types = true, vars = true, returns = true, enums = true },
+			}
+
 			-- Keymaps on LSP attach
 			vim.api.nvim_create_autocmd("LspAttach", {
-				group = vim.api.nvim_create_augroup("UserLspConfig", {}),
+				group = vim.api.nvim_create_augroup("UserLspConfig", { clear = true }),
 				callback = function(ev)
 					local opts = { buffer = ev.buf, silent = true }
 					local client = vim.lsp.get_client_by_id(ev.data.client_id)
@@ -106,26 +128,6 @@ return {
 					keymap.set("n", "K", vim.lsp.buf.hover, opts)
 
 					-- Inlay Hints Toggle (cycles: none -> minimal -> moderate -> complete)
-					local inlay_hint_levels = {
-						{ name = "none", params = "none", types = false, vars = false, returns = false, enums = false },
-						{
-							name = "minimal",
-							params = "literals",
-							types = false,
-							vars = false,
-							returns = false,
-							enums = false,
-						},
-						{
-							name = "moderate",
-							params = "all",
-							types = false,
-							vars = false,
-							returns = true,
-							enums = true,
-						},
-						{ name = "complete", params = "all", types = true, vars = true, returns = true, enums = true },
-					}
 					vim.b.inlay_hint_level = vim.b.inlay_hint_level or 2
 
 					local function set_inlay_hints(level)
@@ -191,10 +193,6 @@ return {
 
 			local capabilities = require("blink.cmp").get_lsp_capabilities()
 			local has_go = vim.fn.executable("go") == 1
-			capabilities.textDocument.foldingRange = {
-				dynamicRegistration = false,
-				lineFoldingOnly = true,
-			}
 
 			-- Servers with default config (capabilities only)
 			local simple_servers = {
@@ -210,7 +208,7 @@ return {
 			}
 
 			if has_go then
-				table.insert(simple_servers, 5, "gopls")
+				table.insert(simple_servers, "gopls")
 			end
 
 			for _, server in ipairs(simple_servers) do
@@ -289,13 +287,16 @@ return {
 			}
 
 			if has_go then
-				table.insert(ensure_servers, 8, "gopls")
+				table.insert(ensure_servers, "gopls")
 			end
 
 			require("mason-lspconfig").setup({
 				ensure_installed = ensure_servers,
-				automatic_installation = true,
 			})
+
+			-- Actually start the configured servers on matching filetypes.
+			-- vim.lsp.config() only registers; vim.lsp.enable() wires FileType autocmds.
+			vim.lsp.enable(ensure_servers)
 		end,
 	},
 }

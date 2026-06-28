@@ -104,7 +104,7 @@ return {
 			end, { desc = "Prev Warning" })
 
 			-- Enhanced diagnostic float
-			vim.keymap.set("n", "<leader>d", function()
+			vim.keymap.set("n", "<leader>dd", function()
 				vim.diagnostic.open_float(nil, {
 					scope = "line",
 					border = "rounded",

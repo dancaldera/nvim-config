@@ -89,7 +89,6 @@ opt.smoothscroll = true
 
 -- Performance
 opt.lazyredraw = false
-opt.ttyfast = true
 
 -- Folding
 opt.foldcolumn = "0"
@@ -105,7 +104,7 @@ opt.spell = false
 opt.spelllang = { "en_us" }
 
 -- Concealing
-opt.conceallevel = 0 -- show all characters by default (toggle render with <leader>jm)
+opt.conceallevel = 0 -- show all characters by default
 opt.concealcursor = ""
 
 -- Formatting

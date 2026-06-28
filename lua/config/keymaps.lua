@@ -59,8 +59,9 @@ keymap.set("n", "<leader>bl", "<cmd>BufferLineCloseRight<CR>", { desc = "Close b
 keymap.set("n", "<leader>bh", "<cmd>BufferLineCloseLeft<CR>", { desc = "Close buffers to left", silent = true })
 
 -- Terminal mode keybindings
-keymap.set("t", "<C-[>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
-keymap.set("t", "<C-n>", "<C-\\><C-n>", { desc = "Exit terminal mode (legacy alias)" })
+-- (<C-\><C-n> stays free as the standard terminal escape; <C-[>/<Esc> stays
+-- pass-through so nested apps like vim/less/REPLs receive it.)
+keymap.set("t", "<C-n>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 keymap.set("t", "<C-h>", "<C-\\><C-n><C-w>h", { desc = "Navigate to left window from terminal" })
 keymap.set("t", "<C-j>", "<C-\\><C-n><C-w>j", { desc = "Navigate to bottom window from terminal" })
 keymap.set("t", "<C-k>", "<C-\\><C-n><C-w>k", { desc = "Navigate to top window from terminal" })
@@ -74,9 +75,9 @@ keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Scroll down and center" })
 keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Scroll up and center" })
 
 -- Add undo break-points
-keymap.set("i", ",", ",<c-g>u")
-keymap.set("i", ".", ".<c-g>u")
-keymap.set("i", ";", ";<c-g>u")
+keymap.set("i", ",", ",<c-g>u", { desc = "Undo breakpoint" })
+keymap.set("i", ".", ".<c-g>u", { desc = "Undo breakpoint" })
+keymap.set("i", ";", ";<c-g>u", { desc = "Undo breakpoint" })
 
 -- Better pasting
 keymap.set("x", "<leader>p", [[_dP]], { desc = "Paste without yanking" })

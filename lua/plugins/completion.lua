@@ -6,7 +6,7 @@ return {
 	-- GitHub Copilot (official plugin - ghost text, independent of completion menu)
 	{
 		"github/copilot.vim",
-		event = { "BufReadPre", "BufNewFile" },
+		event = "InsertEnter",
 		cmd = "Copilot",
 		init = function()
 			local node = vim.fn.exepath("node")
@@ -14,9 +14,6 @@ return {
 				vim.g.copilot_node_command = node
 			end
 
-			-- Prefer the bundled language server so auth/session behavior
-			-- does not depend on npx resolving a different runtime per launch.
-			vim.g.copilot_version = false
 			vim.g.copilot_no_tab_map = true
 		end,
 		config = function()
@@ -41,6 +38,7 @@ return {
 		opts = {
 			keymap = {
 				preset = "default",
+				["<C-Space>"] = { "show", "show_documentation" },
 				["<C-k>"] = { "select_prev", "fallback" },
 				["<C-j>"] = { "select_next", "fallback" },
 				["<CR>"] = { "accept", "fallback" },

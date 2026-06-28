@@ -13,14 +13,12 @@ return {
 			local disabled_statusline_filetypes = {
 				NvimTree = true,
 				Trouble = true,
-				alpha = true,
 				dashboard = true,
 				help = true,
 				lazy = true,
 				mason = true,
 				notify = true,
 				qf = true,
-				toggleterm = true,
 				trouble = true,
 			}
 
@@ -101,7 +99,10 @@ return {
 				vim.b[args.buf].miniindentscope_disable = true
 			end
 
+			local group = vim.api.nvim_create_augroup("miniindentscope", { clear = true })
+
 			vim.api.nvim_create_autocmd("FileType", {
+				group = group,
 				pattern = {
 					"help",
 					"dashboard",
@@ -111,12 +112,12 @@ return {
 					"lazy",
 					"mason",
 					"notify",
-					"toggleterm",
 				},
 				callback = disable_indentscope,
 			})
 
 			vim.api.nvim_create_autocmd("TermOpen", {
+				group = group,
 				callback = disable_indentscope,
 			})
 		end,

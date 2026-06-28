@@ -110,7 +110,7 @@ return {
 					window_picker = {
 						enable = false,
 						exclude = {
-							filetype = { "notify", "lazy", "qf", "diff", "fugitive", "fugitiveblame", "NvimTree" },
+							filetype = { "notify", "lazy", "qf", "diff", "NvimTree" },
 							buftype = { "nofile", "terminal", "help" },
 						},
 					},

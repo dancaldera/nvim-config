@@ -25,7 +25,7 @@ return {
 					liquid = { "prettier" },
 					lua = { "stylua" },
 					python = { "ruff_format" },
-					rust = { "rustfmt", lsp_format = "fallback" },
+					rust = { "rustfmt" },
 					go = { "goimports", "gofmt" },
 					sh = { "shfmt" },
 					c = { "clang_format" },

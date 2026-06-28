@@ -39,16 +39,11 @@ return {
 			},
 		},
 		config = function(_, opts)
-			local snacks = require("snacks")
-			snacks.setup(opts)
+			require("snacks").setup(opts) -- opts.picker.ui_select = true wires vim.ui.select
 
-			-- Ensure Snacks owns vim.ui.select
-			if snacks.picker and snacks.picker.select then
-				vim.ui.select = snacks.picker.select
-			end
-
-			-- Reload files changed by external tools
-			vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter" }, {
+			-- Reload files changed by external tools (BufEnter dropped: it stats on
+			-- every buffer switch and stalls on network/SSH mounts)
+			vim.api.nvim_create_autocmd({ "FocusGained" }, {
 				group = vim.api.nvim_create_augroup("auto_checktime", { clear = true }),
 				callback = function()
 					if vim.bo.buftype ~= "terminal" then
@@ -60,17 +55,29 @@ return {
 
 		init = function()
 			local term_counts = {}
+			local main_term -- bufnr of the main terminal, so toggle can close it
 			local function next_term_name(name)
 				term_counts[name] = (term_counts[name] or 0) + 1
 				return name .. "-" .. term_counts[name]
 			end
 
 			_G.toggle_main_terminal = function()
+				-- Toggle off: currently focused on the main terminal -> close it
+				if
+					main_term
+					and vim.api.nvim_buf_is_valid(main_term)
+					and vim.api.nvim_get_current_buf() == main_term
+				then
+					vim.api.nvim_buf_delete(main_term, { force = true })
+					main_term = nil
+					return
+				end
 				vim.cmd.enew()
 				vim.cmd.terminal()
 				local bufnr = vim.api.nvim_get_current_buf()
 				pcall(vim.api.nvim_buf_set_name, bufnr, "terminal://" .. next_term_name("terminal"))
 				vim.bo[bufnr].buflisted = true
+				main_term = bufnr
 				vim.cmd.startinsert()
 			end
 		end,
@@ -91,7 +98,7 @@ return {
 					toggle_main_terminal()
 				end,
 				desc = "Open Terminal",
-				mode = { "n", "t" },
+				mode = { "n" },
 			},
 			-- Custom command terminal
 			{

@@ -4,7 +4,7 @@ Modular, fast Neovim setup for full-stack development. LSP, fuzzy finder, file e
 
 ## Requirements
 
-- Neovim `>= 0.10` (`0.11+` recommended)
+- Neovim `>= 0.11`
 - `git`
 - `rg` (ripgrep)
 
@@ -76,9 +76,9 @@ K            Hover docs
 
 ```text
 <leader>xx   Workspace diagnostics
-<leader>d    Line diagnostics
-]e / [e      Prev/next error
-]w / [w      Prev/next warning
+<leader>dd   Line diagnostics
+]e / [e      Next/prev error
+]w / [w      Next/prev warning
 ```
 
 ### Buffers
@@ -133,12 +133,11 @@ K            Hover docs
 jk           Exit insert mode
 <leader>y    Yank to system clipboard
 <leader>P    Paste from system clipboard
-s / S        Flash jump / Treesitter jump
 ```
 
 ## LSP Servers
 
-Auto-installed via Mason: `lua_ls`, `ts_ls`, `html`, `cssls`, `jsonls`, `yamlls`, `pyright`, `gopls`, `rust_analyzer`, `clangd`, `tailwindcss`, `bashls`, `emmet_ls`
+Auto-installed via Mason: `lua_ls`, `ts_ls`, `html`, `cssls`, `jsonls`, `yamlls`, `pyright`, `clangd`, `rust_analyzer`, `tailwindcss`, `bashls`, `emmet_ls`. (`gopls` is added only when `go` is on your `PATH`.)
 
 Auto-installed formatters: `prettier`, `stylua`, `shfmt`, `ruff`
 

@@ -21,8 +21,6 @@ require("config.autocmds")
 -- Plugin management
 require("config.lazy")
 
--- Project-local config support
-local project_config = vim.fn.getcwd() .. "/.nvim.lua"
-if vim.fn.filereadable(project_config) == 1 then
-	vim.cmd.source(project_config)
-end
+-- Project-local config support (secure: .nvim.lua / exrc files run only after
+-- a one-time `:trust` per directory; see :h exrc)
+vim.o.exrc = true
