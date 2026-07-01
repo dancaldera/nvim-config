@@ -60,6 +60,8 @@ return {
 		},
 	},
 	config = function()
+		require("nvim-web-devicons").setup({ default = true })
+
 		require("nvim-tree").setup({
 			disable_netrw = true,
 			hijack_netrw = true,
@@ -88,6 +90,18 @@ return {
 				group_empty = true,
 				root_folder_label = false,
 				highlight_git = "name",
+				icons = {
+					web_devicons = {
+						file = { enable = true, color = true },
+						folder = { enable = true, color = true },
+					},
+					show = {
+						file = true,
+						folder = true,
+						folder_arrow = true,
+						git = true,
+					},
+				},
 				indent_markers = {
 					enable = true,
 				},
