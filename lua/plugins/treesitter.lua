@@ -1,5 +1,5 @@
 -- ============================================================================
--- Treesitter Configuration (New API - Post-Rewrite)
+-- Treesitter Configuration (master compatibility branch)
 -- ============================================================================
 
 return {

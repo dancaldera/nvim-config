@@ -57,6 +57,8 @@ Leader key: `<Space>`
 <leader>ef   Reveal current file
 <leader>ec   Close explorer
 <leader>er   Refresh explorer
+<leader>eo   Focus explorer
+<C-e>        Toggle explorer/buffer focus
 \\           Toggle explorer
 ```
 
@@ -76,6 +78,11 @@ K            Hover docs
 
 ```text
 <leader>xx   Workspace diagnostics
+<leader>xX   Current-buffer diagnostics
+<leader>xs   Document symbols
+<leader>xl   LSP references
+<leader>xL   Location list
+<leader>xQ   Quickfix list
 <leader>dd   Line diagnostics
 ]e / [e      Next/prev error
 ]w / [w      Next/prev warning
@@ -122,7 +129,7 @@ K            Hover docs
 
 ```text
 <C-\>        Toggle terminal
-<leader>tt   Open terminal
+<leader>tt   Toggle terminal
 <leader>tc   Terminal (custom command)
 <leader>tk   Kill terminal
 ```
@@ -133,13 +140,14 @@ K            Hover docs
 jk           Exit insert mode
 <leader>y    Yank to system clipboard
 <leader>P    Paste from system clipboard
+gc / gcc     Comment selection/line (native Neovim)
 ```
 
 ## LSP Servers
 
 Auto-installed via Mason: `lua_ls`, `ts_ls`, `html`, `cssls`, `jsonls`, `yamlls`, `pyright`, `clangd`, `rust_analyzer`, `tailwindcss`, `bashls`, `emmet_ls`. (`gopls` is added only when `go` is on your `PATH`.)
 
-Auto-installed formatters: `prettier`, `stylua`, `shfmt`, `ruff`
+Auto-installed formatters: `prettier`, `stylua`, `shfmt`, `ruff`. (`goimports` is added only when `go` is on your `PATH`.)
 
 ## Maintenance
 

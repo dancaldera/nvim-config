@@ -2,8 +2,12 @@
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
--- Disable unused providers (silences warnings on macOS)
+-- Disable unused remote-plugin providers. Node-based tools such as Copilot and
+-- language servers invoke Node directly and do not need Neovim's Node provider.
 vim.g.loaded_python3_provider = 0
+vim.g.loaded_node_provider = 0
+vim.g.loaded_perl_provider = 0
+vim.g.loaded_ruby_provider = 0
 
 -- Disable built-in runtime plugins not covered by lazy.nvim's disabled_plugins list
 vim.g.loaded_logiPat = 1

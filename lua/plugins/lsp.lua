@@ -5,8 +5,8 @@
 return {
 	-- Mason - LSP/formatter/linter manager
 	{
-		"williamboman/mason.nvim",
-		cmd = { "Mason", "MasonInstall", "MasonUninstall", "MasonUpdate", "MasonLog" },
+		"mason-org/mason.nvim",
+		lazy = false, -- Mason adds its bin directory to PATH during setup
 		dependencies = {
 			"WhoIsSethDaniel/mason-tool-installer.nvim",
 		},
@@ -17,6 +17,9 @@ return {
 				"shfmt",
 				"ruff",
 			}
+			if vim.fn.executable("go") == 1 then
+				mason_tools[#mason_tools + 1] = "goimports"
+			end
 
 			require("mason").setup({
 				ui = {
@@ -32,6 +35,13 @@ return {
 				ensure_installed = mason_tools,
 				auto_update = false,
 				run_on_start = true,
+				start_delay = 3000,
+				debounce_hours = 24,
+				integrations = {
+					["mason-lspconfig"] = false,
+					["mason-null-ls"] = false,
+					["mason-nvim-dap"] = false,
+				},
 			})
 		end,
 	},
@@ -42,18 +52,15 @@ return {
 		event = { "BufReadPre", "BufNewFile" },
 		dependencies = {
 			"saghen/blink.cmp",
-			"williamboman/mason.nvim",
-			"williamboman/mason-lspconfig.nvim",
 			{
 				"folke/lazydev.nvim",
 				ft = "lua",
 				opts = {
 					library = {
-						{ path = "luvit-meta/library", words = { "vim%.uv" } },
+						{ path = "${3rd}/luv/library", words = { "vim%.uv" } },
 					},
 				},
 			},
-			{ "Bilal2453/luvit-meta", lazy = true },
 		},
 		config = function()
 			local keymap = vim.keymap
@@ -175,11 +182,12 @@ return {
 
 	-- LSP Server Configurations (Neovim 0.11+ native API)
 	{
-		"williamboman/mason-lspconfig.nvim",
+		"mason-org/mason-lspconfig.nvim",
 		event = { "BufReadPre", "BufNewFile" },
 		cmd = { "LspInstall", "LspUninstall" },
 		dependencies = {
-			"williamboman/mason.nvim",
+			"mason-org/mason.nvim",
+			"neovim/nvim-lspconfig",
 			"saghen/blink.cmp",
 		},
 		config = function()
@@ -193,27 +201,7 @@ return {
 
 			local capabilities = require("blink.cmp").get_lsp_capabilities()
 			local has_go = vim.fn.executable("go") == 1
-
-			-- Servers with default config (capabilities only)
-			local simple_servers = {
-				"html",
-				"cssls",
-				"jsonls",
-				"yamlls",
-				"clangd",
-				"rust_analyzer",
-				"tailwindcss",
-				"bashls",
-				"emmet_ls",
-			}
-
-			if has_go then
-				table.insert(simple_servers, "gopls")
-			end
-
-			for _, server in ipairs(simple_servers) do
-				vim.lsp.config(server, { capabilities = capabilities })
-			end
+			vim.lsp.config("*", { capabilities = capabilities })
 
 			-- Lua
 			vim.lsp.config("lua_ls", {
@@ -292,11 +280,8 @@ return {
 
 			require("mason-lspconfig").setup({
 				ensure_installed = ensure_servers,
+				automatic_enable = ensure_servers,
 			})
-
-			-- Actually start the configured servers on matching filetypes.
-			-- vim.lsp.config() only registers; vim.lsp.enable() wires FileType autocmds.
-			vim.lsp.enable(ensure_servers)
 		end,
 	},
 }

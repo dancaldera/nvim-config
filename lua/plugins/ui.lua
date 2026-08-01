@@ -6,20 +6,19 @@ return {
 	-- Statusline (lualine)
 	{
 		"nvim-lualine/lualine.nvim",
-		dependencies = { "nvim-tree/nvim-web-devicons" },
+		dependencies = { "nvim-mini/mini.nvim" },
 		event = "VeryLazy",
 		config = function()
 			local lazy_status = require("lazy.status")
 			local disabled_statusline_filetypes = {
-				NvimTree = true,
-				Trouble = true,
-				dashboard = true,
 				help = true,
 				lazy = true,
 				mason = true,
-				notify = true,
 				qf = true,
-				trouble = true,
+				snacks_dashboard = true,
+				snacks_notif_history = true,
+				snacks_picker_input = true,
+				snacks_picker_list = true,
 			}
 
 			local function is_normal_file_buffer(buf)
@@ -68,58 +67,9 @@ return {
 		"akinsho/bufferline.nvim",
 		version = "*",
 		event = { "BufAdd", "BufNewFile" },
-		dependencies = { "nvim-tree/nvim-web-devicons" },
+		dependencies = { "nvim-mini/mini.nvim" },
 		config = function()
-			require("bufferline").setup({
-				options = {
-					offsets = {
-						{
-							filetype = "NvimTree",
-							text = "File Explorer",
-							text_align = "center",
-							separator = true,
-						},
-					},
-				},
-			})
-		end,
-	},
-
-	-- Indentation scope indicator
-	{
-		"echasnovski/mini.indentscope",
-		version = false,
-		event = { "BufReadPre", "BufNewFile" },
-		opts = {
-			symbol = "│",
-			options = { try_as_border = true },
-		},
-		init = function()
-			local function disable_indentscope(args)
-				vim.b[args.buf].miniindentscope_disable = true
-			end
-
-			local group = vim.api.nvim_create_augroup("miniindentscope", { clear = true })
-
-			vim.api.nvim_create_autocmd("FileType", {
-				group = group,
-				pattern = {
-					"help",
-					"dashboard",
-					"NvimTree",
-					"Trouble",
-					"trouble",
-					"lazy",
-					"mason",
-					"notify",
-				},
-				callback = disable_indentscope,
-			})
-
-			vim.api.nvim_create_autocmd("TermOpen", {
-				group = group,
-				callback = disable_indentscope,
-			})
+			require("bufferline").setup()
 		end,
 	},
 }

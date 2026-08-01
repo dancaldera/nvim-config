@@ -4,7 +4,7 @@
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 ---@diagnostic disable-next-line: undefined-field
-if not (vim.uv or vim.loop).fs_stat(lazypath) then
+if not vim.uv.fs_stat(lazypath) then
 	vim.fn.system({
 		"git",
 		"clone",
@@ -21,22 +21,19 @@ require("lazy").setup({
 }, {
 	checker = {
 		enabled = false,
-		notify = false,
-		frequency = 86400,
 	},
 	change_detection = {
 		enabled = true,
 		notify = false,
 	},
-	install = {},
+	rocks = {
+		enabled = false,
+	},
 	ui = {
 		border = "rounded",
 		backdrop = 60,
 	},
 	performance = {
-		cache = {
-			enabled = true,
-		},
 		reset_packpath = true,
 		rtp = {
 			disabled_plugins = {
@@ -48,12 +45,6 @@ require("lazy").setup({
 				"tohtml",
 				"tutor",
 				"zipPlugin",
-				"rplugin",
-				"builtins",
-				"compiler",
-				"optwin",
-				"spellfile",
-				"shada_plugin",
 			},
 		},
 	},

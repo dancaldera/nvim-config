@@ -16,11 +16,15 @@ return {
 					typescript = { "prettier" },
 					javascriptreact = { "prettier" },
 					typescriptreact = { "prettier" },
+					vue = { "prettier" },
 					svelte = { "prettier" },
 					css = { "prettier" },
+					scss = { "prettier" },
 					html = { "prettier" },
 					json = { "prettier" },
 					yaml = { "prettier" },
+					markdown = { "prettier" },
+					["markdown.mdx"] = { "prettier" },
 					graphql = { "prettier" },
 					liquid = { "prettier" },
 					lua = { "stylua" },
@@ -38,7 +42,7 @@ return {
 				conform.format({
 					lsp_format = "fallback",
 					async = false,
-					timeout_ms = 1000,
+					timeout_ms = 3000,
 				})
 			end, { desc = "Format file or range (in visual mode)" })
 		end,

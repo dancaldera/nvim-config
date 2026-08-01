@@ -1,47 +1,36 @@
 -- ============================================================================
--- Editor Plugins (mini.pairs, mini.surround, mini.comment, which-key)
+-- Editor Plugins (mini.nvim, which-key)
 -- ============================================================================
 
 return {
-	-- Autopairs (Treesitter-aware)
+	-- Small editing primitives and icon compatibility in one dependency
 	{
-		"echasnovski/mini.pairs",
-		version = false,
-		event = "InsertEnter",
-		opts = {
-			modes = { insert = true, command = false, terminal = false },
-		},
-	},
-
-	-- Surround
-	{
-		"echasnovski/mini.surround",
+		"nvim-mini/mini.nvim",
 		version = false,
 		event = "VeryLazy",
-		opts = {
-			silent = true,
-		},
-	},
+		config = function()
+			require("mini.pairs").setup({
+				modes = { insert = true, command = false, terminal = false },
+			})
+			require("mini.surround").setup({ silent = true })
 
-	-- Comment (Treesitter-aware via built-in hooks)
-	{
-		"echasnovski/mini.comment",
-		version = false,
-		event = { "BufReadPre", "BufNewFile" },
-		dependencies = {
-			"JoosepAlviste/nvim-ts-context-commentstring",
-		},
-		opts = {
-			hooks = {
-				pre = function()
-					local ok, ts_comment = pcall(require, "ts_context_commentstring.internal")
-					if ok then
-						return ts_comment.calculate_commentstring() or vim.bo.commentstring
-					end
-					return vim.bo.commentstring
-				end,
-			},
-		},
+			local ai = require("mini.ai")
+			ai.setup({
+				n_lines = 500,
+				custom_textobjects = {
+					o = ai.gen_spec.treesitter({
+						a = { "@block.outer", "@conditional.outer", "@loop.outer" },
+						i = { "@block.inner", "@conditional.inner", "@loop.inner" },
+					}, {}),
+					f = ai.gen_spec.treesitter({ a = "@function.outer", i = "@function.inner" }, {}),
+					c = ai.gen_spec.treesitter({ a = "@class.outer", i = "@class.inner" }, {}),
+					t = { "<([%p%w]-)%f[^<%w][^<>]->.-</%1>", "^<.->().*()</[^/]->$" },
+				},
+			})
+
+			require("mini.icons").setup()
+			MiniIcons.mock_nvim_web_devicons()
+		end,
 	},
 
 	-- Which-key
@@ -63,30 +52,8 @@ return {
 				{ "<leader>r", group = "Rename/Restart" },
 				{ "<leader>s", group = "Split/Search" },
 				{ "<leader>t", group = "Terminal/Toggle" },
-				{ "<leader>x", group = "Trouble/Diagnostics" },
+				{ "<leader>x", group = "Diagnostics/Lists" },
 			})
-		end,
-	},
-
-	-- Enhanced text objects (function, class, block)
-	{
-		"echasnovski/mini.ai",
-		event = "VeryLazy",
-		version = false,
-		opts = function()
-			local ai = require("mini.ai")
-			return {
-				n_lines = 500,
-				custom_textobjects = {
-					o = ai.gen_spec.treesitter({
-						a = { "@block.outer", "@conditional.outer", "@loop.outer" },
-						i = { "@block.inner", "@conditional.inner", "@loop.inner" },
-					}, {}),
-					f = ai.gen_spec.treesitter({ a = "@function.outer", i = "@function.inner" }, {}),
-					c = ai.gen_spec.treesitter({ a = "@class.outer", i = "@class.inner" }, {}),
-					t = { "<([%p%w]-)%f[^<%w][^<>]->.-</%1>", "^<.->().*()</[^/]->$" },
-				},
-			}
 		end,
 	},
 }
