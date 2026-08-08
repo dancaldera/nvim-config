@@ -158,29 +158,12 @@ return {
 				ui_select = true,
 				sources = {
 					explorer = {
-						hidden = false,
-						ignored = false,
+						hidden = true,
+						ignored = true,
 						layout = {
 							preset = "sidebar",
 							preview = false,
 							layout = { width = 32, min_width = 28 },
-						},
-						win = {
-							list = {
-								keys = {
-									-- H shows *all* dotfiles, including gitignored ones like
-									-- .secrets.staging.env (which is both hidden+ignored).
-									-- Snacks filters hidden and ignored separately, so hidden alone
-									-- would still hide ignored dotfiles.
-									["H"] = function(picker)
-										local show = not picker.opts.hidden
-										picker.opts.hidden = show
-										picker.opts.ignored = show
-										picker.list:set_target()
-										picker:find()
-									end,
-								},
-							},
 						},
 					},
 				},
