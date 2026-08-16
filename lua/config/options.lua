@@ -76,8 +76,10 @@ opt.pumblend = 0 -- No popup transparency (avoids compositing overhead)
 opt.fileencoding = "utf-8"
 
 -- Command line
-opt.cmdheight = 1 -- Keep the bottom UI stable when cmdline/messages are active
-opt.showcmd = true
+opt.cmdheight = 0 -- Hide the idle command line; it appears while typing a command
+opt.showcmd = false -- Hide partial commands and Visual selection size
+opt.showmode = false -- mini.statusline already shows the current mode
+opt.shortmess:append("W") -- Hide "written" messages after saving
 opt.laststatus = 3 -- Global statusline
 opt.wildmode = "noselect,full" -- Don't auto-select first wildmenu match
 opt.wildoptions = "pum,fuzzy" -- Popup menu with fuzzy matching
