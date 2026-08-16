@@ -41,24 +41,38 @@ keymap.set("n", "N", "Nzzzv", { desc = "Previous search result and center" })
 keymap.set("n", "<leader>w", "<cmd>w<CR>", { desc = "Save file" })
 keymap.set("n", "<leader>q", "<cmd>q<CR>", { desc = "Quit" })
 
--- Buffer navigation (bufferline.nvim)
-keymap.set("n", "<S-l>", "<cmd>BufferLineCycleNext<CR>", { desc = "Next buffer", silent = true })
-keymap.set("n", "<S-h>", "<cmd>BufferLineCyclePrev<CR>", { desc = "Previous buffer", silent = true })
+-- Buffer navigation (native)
+keymap.set("n", "<S-l>", "<cmd>bnext<CR>", { desc = "Next buffer" })
+keymap.set("n", "<S-h>", "<cmd>bprev<CR>", { desc = "Previous buffer" })
 keymap.set("n", "<leader>bd", function()
 	Snacks.bufdelete()
 end, { desc = "Close current buffer" })
+keymap.set("n", "<leader>ba", "<cmd>b#<CR>", { desc = "Alternate buffer" })
 
--- Buffer reordering
-keymap.set("n", "<A-,>", "<cmd>BufferLineMovePrev<CR>", { desc = "Move buffer left", silent = true })
-keymap.set("n", "<A-.>", "<cmd>BufferLineMoveNext<CR>", { desc = "Move buffer right", silent = true })
+-- Close listed buffers relative to the current one ("all", "left", or "right")
+local function close_buffers(where)
+	local current = vim.api.nvim_get_current_buf()
+	for _, info in ipairs(vim.fn.getbufinfo({ buflisted = 1 })) do
+		if info.bufnr ~= current then
+			local close = where == "all"
+				or (where == "left" and info.bufnr < current)
+				or (where == "right" and info.bufnr > current)
+			if close then
+				vim.api.nvim_buf_delete(info.bufnr, { force = true })
+			end
+		end
+	end
+end
 
--- Buffer management
-keymap.set("n", "<leader>bv", "<cmd>BufferLinePick<CR>", { desc = "Visual pick buffer", silent = true })
-keymap.set("n", "<leader>ba", "<cmd>b#<CR>", { desc = "Alternate buffer", silent = true })
-keymap.set("n", "<leader>bp", "<cmd>BufferLineTogglePin<CR>", { desc = "Pin/unpin buffer", silent = true })
-keymap.set("n", "<leader>bo", "<cmd>BufferLineCloseOthers<CR>", { desc = "Close other buffers", silent = true })
-keymap.set("n", "<leader>bl", "<cmd>BufferLineCloseRight<CR>", { desc = "Close buffers to right", silent = true })
-keymap.set("n", "<leader>bh", "<cmd>BufferLineCloseLeft<CR>", { desc = "Close buffers to left", silent = true })
+keymap.set("n", "<leader>bo", function()
+	close_buffers("all")
+end, { desc = "Close other buffers" })
+keymap.set("n", "<leader>bl", function()
+	close_buffers("right")
+end, { desc = "Close buffers to right" })
+keymap.set("n", "<leader>bh", function()
+	close_buffers("left")
+end, { desc = "Close buffers to left" })
 
 -- Terminal mode keybindings
 -- (<C-\><C-n> stays free as the standard terminal escape; <C-[>/<Esc> stays
@@ -91,9 +105,3 @@ keymap.set("n", "<C-a>", "ggVG", { desc = "Select all" })
 keymap.set({ "n", "v" }, "<leader>y", '"+y', { desc = "Yank to system clipboard" })
 keymap.set({ "n", "v" }, "<leader>Y", '"+Y', { desc = "Yank line to system clipboard" })
 keymap.set({ "n", "v" }, "<leader>P", '"+p', { desc = "Paste from system clipboard" })
-
--- Better window resizing (Alt/Option + hjkl)
-keymap.set("n", "<M-h>", "<cmd>vertical resize -2<CR>", { desc = "Decrease window width" })
-keymap.set("n", "<M-l>", "<cmd>vertical resize +2<CR>", { desc = "Increase window width" })
-keymap.set("n", "<M-j>", "<cmd>resize +2<CR>", { desc = "Increase window height" })
-keymap.set("n", "<M-k>", "<cmd>resize -2<CR>", { desc = "Decrease window height" })

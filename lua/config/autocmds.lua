@@ -28,6 +28,16 @@ vim.api.nvim_create_autocmd("VimEnter", {
 	end,
 })
 
+-- Reload files changed outside of Neovim when the window regains focus
+vim.api.nvim_create_autocmd("FocusGained", {
+	group = vim.api.nvim_create_augroup("AutoChecktime", { clear = true }),
+	callback = function()
+		if vim.bo.buftype ~= "terminal" then
+			vim.cmd("silent! checktime")
+		end
+	end,
+})
+
 -- Auto-save on focus lost
 vim.api.nvim_create_autocmd({ "FocusLost" }, {
 	group = vim.api.nvim_create_augroup("AutoSave", { clear = true }),

@@ -2,18 +2,10 @@
 -- Development Tools (Snacks dashboard, explorer, diagnostics, picker, terminal)
 -- ============================================================================
 
-local function active_explorer()
-	return Snacks.picker.get({ source = "explorer" })[1]
-end
-
 local function snacks_picker(source, opts)
 	return function()
 		Snacks.picker[source](opts)
 	end
-end
-
-local function toggle_explorer()
-	Snacks.explorer()
 end
 
 local function reveal_current_file()
@@ -22,46 +14,6 @@ local function reveal_current_file()
 		Snacks.explorer.reveal({ file = path })
 	else
 		Snacks.explorer()
-	end
-end
-
-local function close_explorer()
-	for _, picker in ipairs(Snacks.picker.get({ source = "explorer" })) do
-		picker:close()
-	end
-end
-
-local function refresh_explorer()
-	local picker = active_explorer()
-	if picker then
-		picker:refresh()
-	else
-		Snacks.explorer()
-	end
-end
-
-local function focus_explorer()
-	local picker = active_explorer()
-	local win = picker and picker.list.win.win
-	if win and vim.api.nvim_win_is_valid(win) then
-		vim.api.nvim_set_current_win(win)
-	else
-		reveal_current_file()
-	end
-end
-
-local function toggle_explorer_focus()
-	local picker = active_explorer()
-	if not picker then
-		reveal_current_file()
-		return
-	end
-
-	local explorer_win = picker.list.win.win
-	if vim.api.nvim_get_current_win() == explorer_win and vim.api.nvim_win_is_valid(picker.main) then
-		vim.api.nvim_set_current_win(picker.main)
-	elseif vim.api.nvim_win_is_valid(explorer_win) then
-		vim.api.nvim_set_current_win(explorer_win)
 	end
 end
 
@@ -112,10 +64,6 @@ local function show_line_diagnostics()
 	})
 end
 
-local function toggle_terminal()
-	Snacks.terminal.toggle()
-end
-
 local function open_command_terminal()
 	vim.ui.input({ prompt = "Command: " }, function(command)
 		if command and command ~= "" then
@@ -135,10 +83,6 @@ local function kill_terminal()
 		vim.fn.jobstop(job_id)
 	end
 	Snacks.bufdelete({ buf = buf, force = true })
-end
-
-local function open_lazygit()
-	Snacks.lazygit()
 end
 
 return {
@@ -200,27 +144,24 @@ return {
 				},
 			},
 		},
-		config = function(_, opts)
-			require("snacks").setup(opts)
-
-			vim.api.nvim_create_autocmd("FocusGained", {
-				group = vim.api.nvim_create_augroup("auto_checktime", { clear = true }),
-				callback = function()
-					if vim.bo.buftype ~= "terminal" then
-						vim.cmd("silent! checktime")
-					end
-				end,
-			})
-		end,
 		keys = {
-			-- File explorer
-			{ "\\", toggle_explorer, desc = "Toggle file explorer" },
-			{ "<leader>ee", toggle_explorer, desc = "Toggle file explorer" },
+			-- File explorer (auto-refreshes via snacks' fs watcher; q/<esc> closes;
+			-- <C-h>/<C-l> and other window keys move focus)
+			{
+				"\\",
+				function()
+					Snacks.explorer()
+				end,
+				desc = "Toggle file explorer",
+			},
+			{
+				"<leader>ee",
+				function()
+					Snacks.explorer()
+				end,
+				desc = "Toggle file explorer",
+			},
 			{ "<leader>ef", reveal_current_file, desc = "Reveal current file in explorer" },
-			{ "<leader>ec", close_explorer, desc = "Close file explorer" },
-			{ "<leader>er", refresh_explorer, desc = "Refresh file explorer" },
-			{ "<leader>eo", focus_explorer, desc = "Focus file explorer" },
-			{ "<C-e>", toggle_explorer_focus, desc = "Toggle focus between explorer and buffer" },
 
 			-- Diagnostics and lists
 			{ "<leader>xx", snacks_picker("diagnostics"), desc = "Workspace diagnostics" },
@@ -247,13 +188,32 @@ return {
 			{ "<leader>dd", show_line_diagnostics, desc = "Show line diagnostics" },
 
 			-- Terminal
-			{ "<leader>tt", toggle_terminal, desc = "Toggle terminal", mode = { "n", "t" } },
-			{ "<C-\\>", toggle_terminal, desc = "Toggle terminal" },
+			{
+				"<leader>tt",
+				function()
+					Snacks.terminal.toggle()
+				end,
+				desc = "Toggle terminal",
+				mode = { "n", "t" },
+			},
+			{
+				"<C-\\>",
+				function()
+					Snacks.terminal.toggle()
+				end,
+				desc = "Toggle terminal",
+			},
 			{ "<leader>tc", open_command_terminal, desc = "Terminal (custom command)" },
 			{ "<leader>tk", kill_terminal, desc = "Kill terminal", mode = { "n", "t" } },
 
 			-- Git and picker
-			{ "<leader>gl", open_lazygit, desc = "Lazygit" },
+			{
+				"<leader>gl",
+				function()
+					Snacks.lazygit()
+				end,
+				desc = "Lazygit",
+			},
 			{ "<leader>ff", snacks_picker("files"), desc = "Fuzzy find files in cwd" },
 			{ "<leader>fr", snacks_picker("recent"), desc = "Fuzzy find recent files" },
 			{ "<leader>fs", snacks_picker("grep"), desc = "Find string in cwd" },

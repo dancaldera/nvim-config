@@ -1,52 +1,26 @@
 -- ============================================================================
--- LSP Configuration (Mason + Servers + Keymaps)
+-- LSP Configuration (native vim.lsp API + blink.cmp capabilities)
 -- ============================================================================
 
+-- Servers enabled when their executable is found on PATH (see README for the
+-- brew/npm install list). Missing servers are skipped silently.
+local servers = {
+	"lua_ls",
+	"ts_ls",
+	"html",
+	"cssls",
+	"jsonls",
+	"yamlls",
+	"pyright",
+	"clangd",
+	"rust_analyzer",
+	"tailwindcss",
+	"bashls",
+	"emmet_ls",
+	"gopls",
+}
+
 return {
-	-- Mason - LSP/formatter/linter manager
-	{
-		"mason-org/mason.nvim",
-		lazy = false, -- Mason adds its bin directory to PATH during setup
-		dependencies = {
-			"WhoIsSethDaniel/mason-tool-installer.nvim",
-		},
-		config = function()
-			local mason_tools = {
-				"prettier",
-				"stylua",
-				"shfmt",
-				"ruff",
-			}
-			if vim.fn.executable("go") == 1 then
-				mason_tools[#mason_tools + 1] = "goimports"
-			end
-
-			require("mason").setup({
-				ui = {
-					icons = {
-						package_installed = "✓",
-						package_pending = "➜",
-						package_uninstalled = "✗",
-					},
-				},
-			})
-
-			require("mason-tool-installer").setup({
-				ensure_installed = mason_tools,
-				auto_update = false,
-				run_on_start = true,
-				start_delay = 3000,
-				debounce_hours = 24,
-				integrations = {
-					["mason-lspconfig"] = false,
-					["mason-null-ls"] = false,
-					["mason-nvim-dap"] = false,
-				},
-			})
-		end,
-	},
-
-	-- LSP Configuration + Keymaps
 	{
 		"neovim/nvim-lspconfig",
 		event = { "BufReadPre", "BufNewFile" },
@@ -64,28 +38,6 @@ return {
 		},
 		config = function()
 			local keymap = vim.keymap
-
-			-- Inlay hint presets (hoisted: rebuilt once, not on every LspAttach)
-			local inlay_hint_levels = {
-				{ name = "none", params = "none", types = false, vars = false, returns = false, enums = false },
-				{
-					name = "minimal",
-					params = "literals",
-					types = false,
-					vars = false,
-					returns = false,
-					enums = false,
-				},
-				{
-					name = "moderate",
-					params = "all",
-					types = false,
-					vars = false,
-					returns = true,
-					enums = true,
-				},
-				{ name = "complete", params = "all", types = true, vars = true, returns = true, enums = true },
-			}
 
 			-- Keymaps on LSP attach
 			vim.api.nvim_create_autocmd("LspAttach", {
@@ -134,73 +86,21 @@ return {
 					opts.desc = "Show documentation for what is under cursor"
 					keymap.set("n", "K", vim.lsp.buf.hover, opts)
 
-					-- Inlay Hints Toggle (cycles: none -> minimal -> moderate -> complete)
-					vim.b.inlay_hint_level = vim.b.inlay_hint_level or 2
-
-					local function set_inlay_hints(level)
-						local cfg = inlay_hint_levels[level]
-						local clients = vim.lsp.get_clients({ bufnr = 0 })
-						for _, c in ipairs(clients) do
-							if c.name == "ts_ls" then
-								c.settings = c.settings or {}
-								for _, lang in ipairs({ "typescript", "javascript" }) do
-									c.settings[lang] = c.settings[lang] or {}
-									c.settings[lang].inlayHints = {
-										includeInlayParameterNameHints = cfg.params,
-										includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-										includeInlayFunctionParameterTypeHints = cfg.types,
-										includeInlayVariableTypeHints = cfg.vars,
-										includeInlayVariableTypeHintsWhenTypeMatchesName = false,
-										includeInlayPropertyDeclarationTypeHints = cfg.vars,
-										includeInlayFunctionLikeReturnTypeHints = cfg.returns,
-										includeInlayEnumMemberValueHints = cfg.enums,
-									}
-								end
-								c:notify("workspace/didChangeConfiguration", { settings = c.settings })
-							end
-						end
-						if cfg.params == "none" then
-							vim.lsp.inlay_hint.enable(false, { bufnr = 0 })
-						else
-							vim.lsp.inlay_hint.enable(true, { bufnr = 0 })
-						end
-						vim.notify("Inlay hints: " .. cfg.name, vim.log.levels.INFO)
-					end
-
-					opts.desc = "Cycle inlay hints (none/minimal/moderate/complete)"
+					opts.desc = "Toggle inlay hints"
 					keymap.set("n", "<leader>ti", function()
-						vim.b.inlay_hint_level = (vim.b.inlay_hint_level % 4) + 1
-						set_inlay_hints(vim.b.inlay_hint_level)
+						local bufnr = ev.buf
+						vim.lsp.inlay_hint.enable(
+							not vim.lsp.inlay_hint.is_enabled({ bufnr = bufnr }),
+							{ bufnr = bufnr }
+						)
 					end, opts)
 
 					opts.desc = "Restart LSP"
 					keymap.set("n", "<leader>rs", ":LspRestart<CR>", opts)
 				end,
 			})
-		end,
-	},
-
-	-- LSP Server Configurations (Neovim 0.11+ native API)
-	{
-		"mason-org/mason-lspconfig.nvim",
-		event = { "BufReadPre", "BufNewFile" },
-		cmd = { "LspInstall", "LspUninstall" },
-		dependencies = {
-			"mason-org/mason.nvim",
-			"neovim/nvim-lspconfig",
-			"saghen/blink.cmp",
-		},
-		config = function()
-			if not (vim.lsp and vim.lsp.config) then
-				vim.notify(
-					"Neovim 0.11+ is required for vim.lsp.config-based setup. Upgrade to enable LSP servers.",
-					vim.log.levels.ERROR
-				)
-				return
-			end
 
 			local capabilities = require("blink.cmp").get_lsp_capabilities()
-			local has_go = vim.fn.executable("go") == 1
 			vim.lsp.config("*", { capabilities = capabilities })
 
 			-- Lua
@@ -214,34 +114,22 @@ return {
 				},
 			})
 
-			-- TypeScript/JavaScript
+			-- TypeScript/JavaScript (parameter-name inlay hints for literals only)
+			local ts_inlay_hints = {
+				includeInlayParameterNameHints = "literals",
+				includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+				includeInlayFunctionParameterTypeHints = false,
+				includeInlayVariableTypeHints = false,
+				includeInlayVariableTypeHintsWhenTypeMatchesName = false,
+				includeInlayPropertyDeclarationTypeHints = false,
+				includeInlayFunctionLikeReturnTypeHints = false,
+				includeInlayEnumMemberValueHints = false,
+			}
 			vim.lsp.config("ts_ls", {
 				capabilities = capabilities,
 				settings = {
-					typescript = {
-						inlayHints = {
-							includeInlayParameterNameHints = "literals",
-							includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-							includeInlayFunctionParameterTypeHints = false,
-							includeInlayVariableTypeHints = false,
-							includeInlayVariableTypeHintsWhenTypeMatchesName = false,
-							includeInlayPropertyDeclarationTypeHints = false,
-							includeInlayFunctionLikeReturnTypeHints = false,
-							includeInlayEnumMemberValueHints = false,
-						},
-					},
-					javascript = {
-						inlayHints = {
-							includeInlayParameterNameHints = "literals",
-							includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-							includeInlayFunctionParameterTypeHints = false,
-							includeInlayVariableTypeHints = false,
-							includeInlayVariableTypeHintsWhenTypeMatchesName = false,
-							includeInlayPropertyDeclarationTypeHints = false,
-							includeInlayFunctionLikeReturnTypeHints = false,
-							includeInlayEnumMemberValueHints = false,
-						},
-					},
+					typescript = { inlayHints = ts_inlay_hints },
+					javascript = { inlayHints = ts_inlay_hints },
 				},
 			})
 
@@ -258,30 +146,13 @@ return {
 				},
 			})
 
-			-- Setup mason-lspconfig (auto-enable configured servers)
-			local ensure_servers = {
-				"lua_ls",
-				"ts_ls",
-				"html",
-				"cssls",
-				"jsonls",
-				"yamlls",
-				"pyright",
-				"clangd",
-				"rust_analyzer",
-				"tailwindcss",
-				"bashls",
-				"emmet_ls",
-			}
-
-			if has_go then
-				table.insert(ensure_servers, "gopls")
+			-- Enable the servers that are actually installed
+			for _, server in ipairs(servers) do
+				local cmd = vim.lsp.config[server].cmd
+				if type(cmd) == "table" and vim.fn.executable(cmd[1]) == 1 then
+					vim.lsp.enable(server)
+				end
 			end
-
-			require("mason-lspconfig").setup({
-				ensure_installed = ensure_servers,
-				automatic_enable = ensure_servers,
-			})
 		end,
 	},
 }

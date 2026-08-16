@@ -3,7 +3,7 @@
 -- ============================================================================
 
 return {
-	-- Small editing primitives and icon compatibility in one dependency
+	-- Small editing primitives, statusline, tabline, and icons in one dependency
 	{
 		"nvim-mini/mini.nvim",
 		version = false,
@@ -30,6 +30,58 @@ return {
 
 			require("mini.icons").setup()
 			MiniIcons.mock_nvim_web_devicons()
+
+			-- Statusline (replaces lualine; global via laststatus = 3 in options.lua)
+			local statusline = require("mini.statusline")
+			local lazy_status = require("lazy.status")
+			local hidden_statusline_filetypes = {
+				help = true,
+				lazy = true,
+				qf = true,
+				snacks_dashboard = true,
+				snacks_notif_history = true,
+				snacks_picker_input = true,
+				snacks_picker_list = true,
+			}
+
+			statusline.setup({
+				use_icons = true,
+				content = {
+					active = function()
+						if vim.bo.buftype ~= "" or hidden_statusline_filetypes[vim.bo.filetype] then
+							return ""
+						end
+						local lazy_updates = lazy_status.has_updates() and lazy_status.updates() or ""
+						return statusline.combine_groups({
+							{ hl = "MiniStatuslineMode", strings = { statusline.section_mode({ trunc_width = 120 }) } },
+							{
+								hl = "MiniStatuslineModeExtra",
+								strings = {
+									statusline.section_git({ trunc_width = 40 }),
+									statusline.section_diagnostics({ trunc_width = 75 }),
+								},
+							},
+							"%<",
+							{
+								hl = "MiniStatuslineFilename",
+								strings = { statusline.section_filename({ trunc_width = 140 }) },
+							},
+							"%=",
+							{ strings = { lazy_updates } },
+							{ strings = { statusline.section_fileinfo({ trunc_width = 999 }) } },
+							{
+								hl = "MiniStatuslineLocation",
+								strings = { statusline.section_location({ trunc_width = 999 }) },
+							},
+						})
+					end,
+				},
+			})
+
+			-- Buffer tabline (replaces bufferline.nvim)
+			require("mini.tabline").setup({
+				show_icons = true,
+			})
 		end,
 	},
 

@@ -1,5 +1,5 @@
 -- ============================================================================
--- Treesitter Configuration (master compatibility branch)
+-- Treesitter Configuration
 -- ============================================================================
 
 return {
@@ -12,10 +12,10 @@ return {
 			"windwp/nvim-ts-autotag",
 		},
 		config = function()
-			-- Neovim 0.12's runtime markdown injections query is safer than the
-			-- older nvim-treesitter variant that uses #set-lang-from-info-string!.
-			-- Force the runtime-style query to avoid bad injected-node metadata
-			-- reaching vim.treesitter.get_node_text()/get_range().
+			-- nvim-treesitter's markdown injections query is incompatible with
+			-- the Neovim 0.12 runtime (node:range() nil crash in query_predicates /
+			-- decoration providers; nvim-treesitter#8618). Force the runtime-style
+			-- query until that is fixed upstream.
 			vim.treesitter.query.set(
 				"markdown",
 				"injections",
@@ -47,12 +47,6 @@ return {
   (#set! injection.language "markdown_inline"))
 ]]
 			)
-
-			-- Neovim 0.12.1 can crash in the decoration provider when the bash
-			-- parser hands invalid range data back to the highlighter. Keep shell
-			-- syntax on the built-in regex highlighter until the runtime/parser
-			-- combination is fixed upstream.
-			local bash_ts_workaround = vim.fn.has("nvim-0.12") == 1 and { "bash" } or {}
 
 			---@type TSConfig
 			local opts = {
@@ -101,14 +95,11 @@ return {
 				-- Enable syntax highlighting
 				highlight = {
 					enable = true,
-					disable = bash_ts_workaround,
-					additional_vim_regex_highlighting = bash_ts_workaround,
 				},
 
 				-- Enable indentation
 				indent = {
 					enable = true,
-					disable = bash_ts_workaround,
 				},
 
 				-- Enable incremental selection

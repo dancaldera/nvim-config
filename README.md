@@ -10,9 +10,9 @@ Modular, fast Neovim setup for full-stack development. LSP, fuzzy finder, file e
 
 Optional, depending on your languages:
 
-- `node`
-- `go`
-- `rust`
+- `node` (Copilot, emmet-ls)
+- `go` (also provides `gofmt`/`goimports`)
+- `rust` (provides `rustfmt`)
 - `lazygit`
 
 ## Install
@@ -20,22 +20,47 @@ Optional, depending on your languages:
 ```bash
 mv ~/.config/nvim ~/.config/nvim.backup
 git clone <repo-url> ~/.config/nvim
-nvim
 ```
 
-Plugins and Mason-managed tools install on first launch.
+Plugins install on first launch. LSP servers and formatters are regular CLI tools installed via Homebrew/npm (no Mason):
+
+```bash
+brew install lua-language-server typescript-language-server vscode-langservers-extracted \
+  yaml-language-server pyright rust-analyzer tailwindcss-language-server \
+  bash-language-server gopls prettier stylua shfmt ruff
+npm install -g emmet-ls
+```
+
+`clangd` and `clang_format` ship with the Xcode Command Line Tools. Servers that are not installed are skipped silently — only add the ones for languages you use.
+
+## Layout
+
+```text
+init.lua                 entry point (leader, providers)
+lua/config/options.lua   settings
+lua/config/keymaps.lua   global keymaps
+lua/config/autocmds.lua  autocommands (autosave, checktime, …)
+lua/config/lazy.lua      lazy.nvim setup
+lua/plugins/*.lua        one file per concern:
+  editor.lua             mini.nvim (pairs/surround/ai/statusline/tabline/icons), which-key
+  dev-tools.lua          snacks.nvim (picker, explorer, terminal, dashboard, notifier, indent)
+  lsp.lua                LSP servers (native vim.lsp API) + keymaps on LspAttach
+  completion.lua         blink.cmp + copilot.vim
+  formatting.lua         conform.nvim
+  git.lua                gitsigns.nvim
+  treesitter.lua         nvim-treesitter + nvim-ts-autotag
+```
 
 ## Verify
 
 ```vim
 :checkhealth
 :Lazy
-:Mason
 ```
 
 ## Common Keys
 
-Leader key: `<Space>`
+Leader key: `<Space>`. Prefix groups are labeled by which-key; press the prefix and wait to see all bindings.
 
 ### File & Search
 
@@ -44,7 +69,7 @@ Leader key: `<Space>`
 <leader>fr   Recent files
 <leader>fs   Live grep
 <leader>fc   Find word under cursor
-<leader>fb   Find open buffers
+<leader>fb   Find open buffers (also serves as buffer picker)
 <leader>fp   Find projects
 <leader>fh   Find help
 <leader>fk   Find keymaps
@@ -53,24 +78,26 @@ Leader key: `<Space>`
 ### File Explorer
 
 ```text
+\            Toggle explorer
 <leader>ee   Toggle explorer
 <leader>ef   Reveal current file
-<leader>ec   Close explorer
-<leader>er   Refresh explorer
-<leader>eo   Focus explorer
-<C-e>        Toggle explorer/buffer focus
-\\           Toggle explorer
 ```
+
+The explorer auto-refreshes on file-system events (`watch = true`). Close it with `q`/`<Esc>` and move focus with the normal window keys (`<C-h>/<C-l>`).
 
 ### LSP & Code
 
 ```text
 gd           Go to definition
+gD           Go to declaration
+gy           Go to type definition
+gi           Go to implementation
 gR           Show references
 K            Hover docs
-<leader>ca   Code actions
+<leader>ca   Code actions (normal + visual)
 <leader>rn   Rename symbol
 <leader>cf   Format file/selection
+<leader>ti   Toggle inlay hints
 <leader>rs   Restart LSP
 ```
 
@@ -79,11 +106,14 @@ K            Hover docs
 ```text
 <leader>xx   Workspace diagnostics
 <leader>xX   Current-buffer diagnostics
+<leader>de   Errors only
+<leader>dw   Warnings only
+<leader>dd   Line diagnostics (float)
+<leader>xc   Copy diagnostics to clipboard
 <leader>xs   Document symbols
 <leader>xl   LSP references
 <leader>xL   Location list
 <leader>xQ   Quickfix list
-<leader>dd   Line diagnostics
 ]e / [e      Next/prev error
 ]w / [w      Next/prev warning
 ```
@@ -93,36 +123,57 @@ K            Hover docs
 ```text
 <S-h> / <S-l>   Prev/next buffer
 <leader>bd      Close buffer
-<leader>bp      Pin buffer
+<leader>ba      Alternate buffer
 <leader>bo      Close other buffers
+<leader>bl      Close buffers to right
+<leader>bh      Close buffers to left
 ```
 
-### Windows
+### Windows & Splits
 
 ```text
 <leader>sv   Split vertical
 <leader>sh   Split horizontal
 <leader>sx   Close split
 <leader>se   Equalize splits
-<C-h/j/k/l>  Navigate windows
+<C-h/j/k/l>  Navigate windows (works from terminal mode too; <C-n> exits terminal mode)
+<C-Arrows>   Resize windows
 ```
 
 ### Git
 
 ```text
 ]c / [c         Next/prev hunk
-<leader>hs      Stage hunk
+<leader>hs      Stage hunk (normal + visual)
+<leader>hr      Reset hunk (normal + visual)
+<leader>hS      Stage buffer
+<leader>hu      Undo stage hunk
+<leader>hR      Reset buffer
 <leader>hp      Preview hunk
+<leader>hb      Blame line (full)
+<leader>hd      Diff this / <leader>hD diff against HEAD~
 <leader>gb      Toggle inline blame
+<leader>gd      Toggle deleted lines
+ih              Git hunk text object (operator/pending + visual)
 <leader>gl      Open lazygit
 ```
 
-### Completion
+### Completion & Copilot
 
 ```text
 <C-Space>    Trigger completion
 <CR>         Confirm selection
 <Tab>        Next item / snippet jump
+<C-j>/<C-k>  Next/prev item
+<C-g>        Accept Copilot suggestion (insert mode)
+<C-x>        Dismiss Copilot suggestion (insert mode)
+```
+
+### Treesitter
+
+```text
+<C-space>    Start/grow incremental selection
+<BS>         Shrink incremental selection
 ```
 
 ### Terminal
@@ -138,16 +189,29 @@ K            Hover docs
 
 ```text
 jk           Exit insert mode
+<leader>w    Save file
+<leader>q    Quit
 <leader>y    Yank to system clipboard
+<leader>Y    Yank line to system clipboard
 <leader>P    Paste from system clipboard
+<leader>p    Paste without yanking (visual)
+<A-j>/<A-k>  Move selection down/up (visual)
+<C-a>        Select all
+n / N        Next/prev search match, centered
+<C-d>/<C-u>  Half-page jump, centered
+J            Join lines, cursor stays put
+< / >        Indent selection and reselect (visual)
+, . ;        Undo breakpoints in insert mode
 gc / gcc     Comment selection/line (native Neovim)
 ```
 
 ## LSP Servers
 
-Auto-installed via Mason: `lua_ls`, `ts_ls`, `html`, `cssls`, `jsonls`, `yamlls`, `pyright`, `clangd`, `rust_analyzer`, `tailwindcss`, `bashls`, `emmet_ls`. (`gopls` is added only when `go` is on your `PATH`.)
+Configured in `lua/plugins/lsp.lua` via the native `vim.lsp.config`/`vim.lsp.enable` API: `lua_ls`, `ts_ls`, `html`, `cssls`, `jsonls`, `yamlls`, `pyright`, `clangd`, `rust_analyzer`, `tailwindcss`, `bashls`, `emmet_ls`, `gopls`. Each is enabled only when its executable is on `PATH`, so missing tools never error.
 
-Auto-installed formatters: `prettier`, `stylua`, `shfmt`, `ruff`. (`goimports` is added only when `go` is on your `PATH`.)
+## Formatters
+
+`lua/plugins/formatting.lua` (conform.nvim) maps filetypes to: `prettier` (JS/TS/HTML/CSS/JSON/YAML/MD and friends), `stylua` (Lua), `ruff_format` (Python), `rustfmt`, `goimports`/`gofmt` (Go), `shfmt`, `clang_format` (C/C++). Formatting falls back to LSP when no formatter is configured; bound to `<leader>cf`.
 
 ## Maintenance
 
@@ -157,6 +221,5 @@ Auto-installed formatters: `prettier`, `stylua`, `shfmt`, `ruff`. (`goimports` i
 
 ```vim
 :Lazy update
-:MasonUpdate
 :TSUpdate
 ```
