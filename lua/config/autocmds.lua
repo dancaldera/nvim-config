@@ -2,27 +2,17 @@
 -- Autocmds (additions on top of LazyVim defaults)
 -- ============================================================================
 
--- Clean stale startup buffers restored from old sessions or directory launches.
+-- Drop startup directory buffers (`nvim <dir>` with netrw disabled leaves the
+-- directory itself as a buffer). Left in place, focusing its window arms
+-- neo-tree's netrw hijack, whose debounced callback then swaps the next file
+-- opened from the tree for a fresh empty buffer. Plain `nvim` is untouched
+-- (no directory buffers), so the dashboard still claims buffer 1.
 vim.api.nvim_create_autocmd("VimEnter", {
 	group = vim.api.nvim_create_augroup("StartupBufferCleanup", { clear = true }),
 	callback = function()
-		local current = vim.api.nvim_get_current_buf()
-		local name = vim.api.nvim_buf_get_name(current)
-
-		-- If current buffer is an empty [No Name] and there's a real file, switch to it
-		if name == "" and vim.bo[current].buftype == "" and vim.api.nvim_buf_line_count(current) == 1 then
-			local first_line = vim.api.nvim_buf_get_lines(current, 0, 1, false)[1] or ""
-			if first_line == "" then
-				for _, info in ipairs(vim.fn.getbufinfo({ buflisted = 1 })) do
-					if info.bufnr ~= current then
-						local other_name = vim.api.nvim_buf_get_name(info.bufnr)
-						if other_name ~= "" and vim.fn.filereadable(other_name) == 1 then
-							vim.api.nvim_win_set_buf(0, info.bufnr)
-							vim.bo[current].buflisted = false
-							break
-						end
-					end
-				end
+		for _, info in ipairs(vim.fn.getbufinfo({ buflisted = 1 })) do
+			if vim.fn.isdirectory(vim.api.nvim_buf_get_name(info.bufnr)) == 1 then
+				pcall(vim.api.nvim_buf_delete, info.bufnr, { force = true })
 			end
 		end
 	end,

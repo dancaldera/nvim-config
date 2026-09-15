@@ -49,7 +49,9 @@ opt.guicursor = "n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20,a:blinkon0"
 
 -- Appearance
 opt.termguicolors = true
-opt.background = "dark"
+-- Follow the OS / terminal light-vs-dark setting (see lua/config/theme_detect.lua).
+-- Falls back to "dark" when nothing reports a value. Override with $NVIM_BACKGROUND.
+opt.background = require("config.theme_detect").get()
 opt.signcolumn = "yes"
 
 -- Backspace

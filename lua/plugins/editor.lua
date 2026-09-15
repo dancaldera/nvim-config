@@ -115,7 +115,10 @@ return {
 				callback = function()
 					for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
 						local config = vim.api.nvim_win_get_config(win)
-						if config.relative ~= "" and vim.bo[vim.api.nvim_win_get_buf(win)].filetype == "snacks_dashboard" then
+						if
+							config.relative ~= ""
+							and vim.bo[vim.api.nvim_win_get_buf(win)].filetype == "snacks_dashboard"
+						then
 							pcall(vim.api.nvim_win_close, win, true)
 						end
 					end
