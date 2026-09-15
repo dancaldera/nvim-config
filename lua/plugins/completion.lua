@@ -1,5 +1,5 @@
 -- ============================================================================
--- Completion Configuration (blink.cmp + copilot.vim)
+-- Completion (blink.cmp via LazyVim + copilot.vim)
 -- ============================================================================
 
 return {
@@ -27,14 +27,9 @@ return {
 		end,
 	},
 
-	-- Fast LSP/Snippet/Path/Buffer completion
+	-- blink.cmp tweaks on top of the LazyVim defaults
 	{
 		"saghen/blink.cmp",
-		version = "1.*",
-		event = "InsertEnter",
-		dependencies = {
-			"rafamadriz/friendly-snippets",
-		},
 		opts = {
 			keymap = {
 				preset = "default",
@@ -45,17 +40,10 @@ return {
 				["<Tab>"] = { "select_next", "snippet_forward", "fallback" },
 				["<S-Tab>"] = { "select_prev", "snippet_backward", "fallback" },
 			},
-			appearance = {
-				nerd_font_variant = "mono",
-			},
 			completion = {
 				documentation = { auto_show = true },
 				menu = { auto_show = true },
 			},
-			sources = {
-				default = { "lsp", "path", "snippets", "buffer" },
-			},
-			snippets = { preset = "default" },
 		},
 	},
 }

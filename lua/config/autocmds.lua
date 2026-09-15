@@ -1,5 +1,5 @@
 -- ============================================================================
--- Auto Commands Configuration
+-- Autocmds (additions on top of LazyVim defaults)
 -- ============================================================================
 
 -- Clean stale startup buffers restored from old sessions or directory launches.

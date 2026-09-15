@@ -1,5 +1,5 @@
 -- ============================================================================
--- Lazy.nvim Plugin Manager Setup
+-- Lazy.nvim bootstrap + LazyVim distribution setup
 -- ============================================================================
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -16,11 +16,25 @@ if not vim.uv.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+-- Leader keys must be set before lazy.nvim boots.
+vim.g.mapleader = " "
+vim.g.maplocalleader = " "
+
 require("lazy").setup({
-	{ import = "plugins" },
-}, {
+	spec = {
+		-- LazyVim distribution (core plugins, defaults, utilities)
+		{ "LazyVim/LazyVim", import = "lazyvim.plugins", opts = { news = { lazyvim = false } } },
+		-- Your plugin specs (auto-imported from lua/plugins/)
+		{ import = "plugins" },
+	},
+	defaults = {
+		lazy = true,
+		version = false,
+	},
+	install = { colorscheme = { "habamax" } },
 	checker = {
-		enabled = false,
+		enabled = true,
+		notify = false,
 	},
 	change_detection = {
 		enabled = true,

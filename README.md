@@ -4,9 +4,10 @@ Modular, fast Neovim setup for full-stack development. LSP, fuzzy finder, file e
 
 ## Requirements
 
-- Neovim `>= 0.11`
+- Neovim `>= 0.12`
 - `git`
 - `rg` (ripgrep)
+- `tree-sitter` CLI (`brew install tree-sitter-cli`; needed to compile parsers)
 
 Optional, depending on your languages:
 
@@ -27,7 +28,7 @@ Plugins install on first launch. LSP servers and formatters are regular CLI tool
 ```bash
 brew install lua-language-server typescript-language-server vscode-langservers-extracted \
   yaml-language-server pyright rust-analyzer tailwindcss-language-server \
-  bash-language-server gopls prettier stylua shfmt ruff
+  bash-language-server gopls prettier stylua shfmt ruff tree-sitter-cli
 npm install -g emmet-ls
 ```
 
@@ -43,12 +44,12 @@ lua/config/autocmds.lua  autocommands (autosave, checktime, …)
 lua/config/lazy.lua      lazy.nvim setup
 lua/plugins/*.lua        one file per concern:
   editor.lua             mini.nvim (pairs/surround/ai/statusline/tabline/icons), which-key
-  dev-tools.lua          snacks.nvim (picker, explorer, terminal, dashboard, notifier, indent)
+  dev-tools.lua          snacks.nvim (picker, terminal, dashboard, notifier, indent)
   lsp.lua                LSP servers (native vim.lsp API) + keymaps on LspAttach
   completion.lua         blink.cmp + copilot.vim
   formatting.lua         conform.nvim
   git.lua                gitsigns.nvim
-  treesitter.lua         nvim-treesitter + nvim-ts-autotag
+  treesitter.lua         nvim-treesitter (main) + nvim-ts-autotag
 ```
 
 ## Verify
@@ -83,7 +84,7 @@ Leader key: `<Space>`. Prefix groups are labeled by which-key; press the prefix 
 <leader>ef   Reveal current file
 ```
 
-The explorer auto-refreshes on file-system events (`watch = true`). Close it with `q`/`<Esc>` and move focus with the normal window keys (`<C-h>/<C-l>`).
+Neo-tree provides the sidebar explorer (filesystem, buffers, and git status sources); the sidebar opens automatically at startup and has focus. Dotfiles and gitignored files are hidden by default; press `H` in the tree to show hidden dotfiles. The tree follows the current file and auto-refreshes on file-system events. Files opened from the tree use the native buffer behavior (open in the last window, no forced splits), and the startup dashboard closes automatically so the opened file is visible. Close it with `q` and move focus with the normal window keys (`<C-h>/<C-l>`).
 
 ### LSP & Code
 
@@ -147,13 +148,13 @@ K            Hover docs
 <leader>hs      Stage hunk (normal + visual)
 <leader>hr      Reset hunk (normal + visual)
 <leader>hS      Stage buffer
-<leader>hu      Undo stage hunk
 <leader>hR      Reset buffer
 <leader>hp      Preview hunk
 <leader>hb      Blame line (full)
 <leader>hd      Diff this / <leader>hD diff against HEAD~
 <leader>gb      Toggle inline blame
-<leader>gd      Toggle deleted lines
+<leader>gd      Preview hunk inline
+                (<leader>hs unstages when on a staged hunk)
 ih              Git hunk text object (operator/pending + visual)
 <leader>gl      Open lazygit
 ```

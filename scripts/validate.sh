@@ -3,23 +3,38 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
+# NOTE: an E5108 error inside a `+lua` argument does NOT make nvim exit
+# non-zero, so every check wraps its asserts in pcall and calls `cquit 1` on
+# failure; otherwise `set -e` could never abort this suite.
+# `+cmd` arguments also run BEFORE VimEnter fires, so the startup check hooks
+# VimEnter itself and quits from inside (never via a trailing `+qa`).
+
 echo "== Lua syntax =="
-nvim --headless '+lua for _, f in ipairs(vim.fn.glob("lua/**/*.lua", false, true)) do local ok, err = loadfile(f); if not ok then error(f .. ": " .. err) end end; print("lua syntax ok")' '+qa'
+nvim --headless '+lua local ok, err = pcall(function() for _, f in ipairs(vim.fn.glob("lua/**/*.lua", false, true)) do local load_ok, load_err = loadfile(f); if not load_ok then error(f .. ": " .. load_err) end end end); if not ok then print(err) vim.cmd("cquit 1") else print("lua syntax ok") vim.cmd("qa") end'
 echo
 
-echo "== Headless startup =="
-nvim --headless '+qa'
+echo "== Headless startup (sidebar auto-open) =="
+nvim --headless '+lua vim.defer_fn(function() print("startup check timed out") vim.cmd("cquit 1") end, 15000); vim.api.nvim_create_autocmd("VimEnter", { once = true, callback = function() vim.schedule(function() local wt = function() for _, w in ipairs(vim.api.nvim_list_wins()) do if vim.bo[vim.api.nvim_win_get_buf(w)].filetype == "neo-tree" then return true end end end; if vim.wait(5000, wt, 50) then local focused = vim.wait(2000, function() return vim.bo[vim.api.nvim_win_get_buf(0)].filetype == "neo-tree" end, 50); if focused then print("startup sidebar ok (focused)") vim.cmd("qa") else print("sidebar opened but does not have focus") vim.cmd("cquit 1") end else print("sidebar did not auto-open at startup") vim.cmd("cquit 1") end end) end })'
+echo
 
 echo "== Lazy-load core plugins =="
-nvim --headless '+Lazy! load snacks.nvim mini.nvim nvim-lspconfig conform.nvim which-key.nvim gitsigns.nvim' '+lua print("core plugins loaded ok")' '+qa'
+nvim --headless '+Lazy! load snacks.nvim nvim-lspconfig conform.nvim which-key.nvim gitsigns.nvim blink.cmp' '+lua print("core plugins loaded ok")' '+qa'
 echo
 
 echo "== Explorer integration =="
-nvim --headless init.lua '+lua local picker = Snacks.explorer.reveal({ file = vim.fn.fnamemodify("init.lua", ":p") }); assert(picker, "explorer did not open"); vim.wait(300, function() return #Snacks.picker.get({ source = "explorer" }) == 1 end); local active = Snacks.picker.get({ source = "explorer" })[1]; assert(active, "explorer is not active"); active:refresh(); active:close(); print("explorer ok")' '+qa'
+nvim --headless init.lua '+lua local ok, err = pcall(function() local function neotree_win() for _, w in ipairs(vim.api.nvim_list_wins()) do if vim.bo[vim.api.nvim_win_get_buf(w)].filetype == "neo-tree" then return w end end end; require("neo-tree.command").execute({ action = "show", reveal = true, source = "filesystem" }); assert(vim.wait(5000, neotree_win, 100), "neo-tree window did not open"); local win = neotree_win(); local function tree_text() return table.concat(vim.api.nvim_buf_get_lines(vim.api.nvim_win_get_buf(win), 0, -1, false), "\n") end; assert(vim.wait(5000, function() return tree_text():find("init.lua", 1, true) end, 100), "current file not revealed in explorer"); local cfg = require("neo-tree").config; assert(cfg.filesystem.follow_current_file.enabled, "follow_current_file is disabled"); assert(cfg.filesystem.use_libuv_file_watcher, "file watcher is disabled"); assert(cfg.filesystem.window.mappings.H == "toggle_hidden", "hidden toggle mapping missing"); assert(cfg.filesystem.filtered_items.hide_dotfiles, "dotfiles are not hidden by default"); assert(cfg.filesystem.filtered_items.hide_gitignored, "gitignored files are not hidden by default"); require("neo-tree.command").execute({ toggle = true, source = "filesystem" }); assert(vim.wait(5000, function() return neotree_win() == nil end, 100), "toggle flag did not close the tree (keymap path regression)"); local sn_ok, sn = pcall(require, "snacks"); assert(not sn_ok or type(sn.config.explorer) ~= "table" or sn.config.explorer.enabled == false, "snacks.explorer must stay disabled"); end); if not ok then print(err) vim.cmd("cquit 1") else print("neo-tree reveal + toggle ok") vim.cmd("qa") end'
+echo
+
+echo "== Explorer filtered items integration =="
+nvim --headless '+lua local ok, err = pcall(function() local dir = vim.fn.tempname(); vim.fn.mkdir(dir, "p"); vim.fn.writefile({}, dir .. "/visible.txt"); vim.fn.writefile({}, dir .. "/.fixture_dotfile"); require("neo-tree.command").execute({ action = "show", dir = dir, source = "filesystem" }); local function neotree_win() for _, w in ipairs(vim.api.nvim_list_wins()) do if vim.bo[vim.api.nvim_win_get_buf(w)].filetype == "neo-tree" then return w end end end; assert(vim.wait(5000, neotree_win, 100), "neo-tree window did not open"); local win = neotree_win(); local function tree_text() return table.concat(vim.api.nvim_buf_get_lines(vim.api.nvim_win_get_buf(win), 0, -1, false), "\n") end; assert(vim.wait(5000, function() return tree_text():find("visible.txt", 1, true) end, 100), "visible file missing from tree"); assert(not tree_text():find(".fixture_dotfile", 1, true), "dotfile should be hidden initially"); local state = require("neo-tree.sources.manager").get_state("filesystem"); require("neo-tree.sources.filesystem.commands").toggle_hidden(state); assert(vim.wait(5000, function() return tree_text():find(".fixture_dotfile", 1, true) end, 100), "dotfile not shown after H toggle"); end); if not ok then print(err) vim.cmd("cquit 1") else print("neo-tree filtered items ok") vim.cmd("qa") end'
+echo
+
+echo "== Native open from tree =="
+nvim --headless '+lua local ok, err = pcall(function() require("neo-tree.command").execute({ action = "show", source = "filesystem" }); local function neotree_win() for _, w in ipairs(vim.api.nvim_list_wins()) do if vim.bo[vim.api.nvim_win_get_buf(w)].filetype == "neo-tree" then return w end end end; assert(vim.wait(5000, neotree_win, 100), "tree did not open"); local cfg = require("neo-tree").config; assert(cfg.window.mappings["<cr>"] == "open", "<cr> is not the native open command"); local row; assert(vim.wait(5000, function() local lines = vim.api.nvim_buf_get_lines(vim.api.nvim_win_get_buf(neotree_win()), 0, -1, false); for i, l in ipairs(lines) do if l:find("README.md", 1, true) then row = i return true end end return false end, 100), "README.md node not found in tree"); local win = neotree_win(); vim.api.nvim_set_current_win(win); vim.api.nvim_win_set_cursor(win, { row, 0 }); local dashbuf = vim.api.nvim_create_buf(false, true); vim.bo[dashbuf].filetype = "snacks_dashboard"; local dashwin = vim.api.nvim_open_win(dashbuf, false, { relative = "editor", width = 10, height = 5, row = 2, col = 2 }); local state = require("neo-tree.sources.manager").get_state("filesystem"); require("neo-tree.sources.filesystem.commands").open(state); assert(vim.wait(5000, function() return vim.fn.expand("%:t") == "README.md" end, 100), "file did not open natively from tree"); assert(not vim.api.nvim_win_is_valid(dashwin), "dashboard float did not close after opening a file"); assert(vim.fn.winnr("$") == 2, "unexpected window count after native open"); assert(neotree_win(), "tree window disappeared after open"); end); if not ok then print(err) vim.cmd("cquit 1") else print("native open from tree ok") vim.cmd("qa") end'
 echo
 
 echo "== Lua LSP integration =="
-nvim --headless init.lua '+lua local attached = vim.wait(8000, function() return #vim.lsp.get_clients({ bufnr = 0 }) > 0 end, 100); assert(attached, "lua_ls did not attach (is it installed? see README)"); local names = {}; for _, client in ipairs(vim.lsp.get_clients({ bufnr = 0 })) do names[#names + 1] = client.name end; table.sort(names); assert(vim.deep_equal(names, { "lua_ls" }), "unexpected Lua clients: " .. vim.inspect(names)); assert(vim.fn.executable("stylua") == 1, "stylua missing from PATH"); print("LSP ok: " .. table.concat(names, ", "))' '+qa'
+nvim --headless init.lua '+lua local ok, err = pcall(function() local attached = vim.wait(8000, function() return #vim.lsp.get_clients({ bufnr = 0 }) > 0 end, 100); assert(attached, "lua_ls did not attach (is it installed? see README)"); local names = {}; for _, client in ipairs(vim.lsp.get_clients({ bufnr = 0 })) do names[#names + 1] = client.name end; table.sort(names); assert(vim.deep_equal(names, { "lua_ls" }), "unexpected Lua clients: " .. vim.inspect(names)); assert(vim.fn.executable("stylua") == 1, "stylua missing from PATH"); print("LSP ok: " .. table.concat(names, ", ")) end); if not ok then print(err) vim.cmd("cquit 1") else vim.cmd("qa") end'
 echo
 
 echo "validation ok"

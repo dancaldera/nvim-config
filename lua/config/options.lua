@@ -1,10 +1,25 @@
 -- ============================================================================
--- Basic Neovim Options
+-- Options (overrides on top of LazyVim defaults)
 -- ============================================================================
+
+-- Disable unused remote-plugin providers. Node-based tools such as Copilot and
+-- language servers invoke Node directly and do not need Neovim's Node provider.
+vim.g.loaded_python3_provider = 0
+vim.g.loaded_node_provider = 0
+vim.g.loaded_perl_provider = 0
+vim.g.loaded_ruby_provider = 0
+
+-- Disable built-in runtime plugins not covered by lazy.nvim's disabled_plugins list
+vim.g.loaded_logiPat = 1
+vim.g.loaded_rrhelper = 1
+vim.g.loaded_getscript = 1
+vim.g.loaded_getscriptPlugin = 1
+vim.g.loaded_vimball = 1
+vim.g.loaded_vimballPlugin = 1
 
 local opt = vim.opt
 
--- Line numbers
+-- Line numbers (relative numbers off)
 opt.number = true
 opt.relativenumber = false
 
@@ -61,7 +76,6 @@ opt.swapfile = false
 
 -- Undo
 opt.undofile = true
-opt.undodir = vim.fn.stdpath("data") .. "/undo"
 
 -- Update time
 opt.updatetime = 250
@@ -78,7 +92,7 @@ opt.fileencoding = "utf-8"
 -- Command line
 opt.cmdheight = 0 -- Hide the idle command line; it appears while typing a command
 opt.showcmd = false -- Hide partial commands and Visual selection size
-opt.showmode = false -- mini.statusline already shows the current mode
+opt.showmode = false -- statusline already shows the current mode
 opt.shortmess:append("W") -- Hide "written" messages after saving
 opt.laststatus = 3 -- Global statusline
 opt.wildmode = "noselect,full" -- Don't auto-select first wildmenu match
@@ -112,5 +126,13 @@ opt.concealcursor = ""
 -- Formatting
 opt.formatoptions = "jcroqlnt"
 
+-- Autoformat is off by default; toggle per buffer with <leader>uf,
+-- run manually with <leader>cf.
+vim.g.autoformat = false
+
 -- Session options
 opt.sessionoptions = { "buffers", "curdir", "winsize", "help", "globals", "skiprtp", "folds" }
+
+-- Project-local config support (secure: .nvim.lua / exrc files run only after
+-- a one-time `:trust` per directory; see :h exrc)
+vim.o.exrc = true

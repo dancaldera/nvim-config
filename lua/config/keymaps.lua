@@ -1,5 +1,5 @@
 -- ============================================================================
--- Key Mappings
+-- Key Mappings (additions on top of LazyVim defaults)
 -- ============================================================================
 
 local keymap = vim.keymap
@@ -26,8 +26,8 @@ keymap.set("n", "<C-Left>", ":vertical resize -2<CR>", { desc = "Decrease window
 keymap.set("n", "<C-Right>", ":vertical resize +2<CR>", { desc = "Increase window width" })
 
 -- Move text up and down
-keymap.set("v", "<A-j>", ":m .+1<CR>==", { desc = "Move text down" })
-keymap.set("v", "<A-k>", ":m .-2<CR>==", { desc = "Move text up" })
+keymap.set("v", "<A-j>", ":m '>+1<CR>gv=gv", { desc = "Move selection down" })
+keymap.set("v", "<A-k>", ":m '<-2<CR>gv=gv", { desc = "Move selection up" })
 
 -- Stay in indent mode
 keymap.set("v", "<", "<gv", { desc = "Indent left and reselect" })
@@ -44,28 +44,32 @@ keymap.set("n", "<leader>q", "<cmd>q<CR>", { desc = "Quit" })
 -- Buffer navigation (native)
 keymap.set("n", "<S-l>", "<cmd>bnext<CR>", { desc = "Next buffer" })
 keymap.set("n", "<S-h>", "<cmd>bprev<CR>", { desc = "Previous buffer" })
-keymap.set("n", "<leader>bd", function()
-	Snacks.bufdelete()
-end, { desc = "Close current buffer" })
 keymap.set("n", "<leader>ba", "<cmd>b#<CR>", { desc = "Alternate buffer" })
 
--- Close listed buffers relative to the current one ("all", "left", or "right")
+-- Close listed buffers relative to tabline order ("left" or "right")
 local function close_buffers(where)
 	local current = vim.api.nvim_get_current_buf()
-	for _, info in ipairs(vim.fn.getbufinfo({ buflisted = 1 })) do
-		if info.bufnr ~= current then
-			local close = where == "all"
-				or (where == "left" and info.bufnr < current)
-				or (where == "right" and info.bufnr > current)
-			if close then
-				vim.api.nvim_buf_delete(info.bufnr, { force = true })
-			end
+	local listed = vim.fn.getbufinfo({ buflisted = 1 })
+	local current_idx
+	for i, info in ipairs(listed) do
+		if info.bufnr == current then
+			current_idx = i
+			break
+		end
+	end
+	if not current_idx then
+		return
+	end
+
+	for i, info in ipairs(listed) do
+		if (where == "left" and i < current_idx) or (where == "right" and i > current_idx) then
+			Snacks.bufdelete({ buf = info.bufnr })
 		end
 	end
 end
 
 keymap.set("n", "<leader>bo", function()
-	close_buffers("all")
+	Snacks.bufdelete.other()
 end, { desc = "Close other buffers" })
 keymap.set("n", "<leader>bl", function()
 	close_buffers("right")
@@ -96,7 +100,7 @@ keymap.set("i", ".", ".<c-g>u", { desc = "Undo breakpoint" })
 keymap.set("i", ";", ";<c-g>u", { desc = "Undo breakpoint" })
 
 -- Better pasting
-keymap.set("x", "<leader>p", [[_dP]], { desc = "Paste without yanking" })
+keymap.set("x", "<leader>p", '"_dP', { desc = "Paste without yanking" })
 
 -- Select all
 keymap.set("n", "<C-a>", "ggVG", { desc = "Select all" })
