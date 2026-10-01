@@ -59,6 +59,14 @@ lua/plugins/*.lua        one file per concern:
 :Lazy
 ```
 
+## Theme
+
+The colorscheme follows the system or terminal light/dark setting. Dark mode
+keeps transparent editor backgrounds; light mode uses opaque editor, sidebar,
+and floating-window backgrounds. Use `:ThemeToggle` to switch temporarily or
+`:ThemeDetect` to resume following the system setting. Set
+`NVIM_BACKGROUND=light` or `NVIM_BACKGROUND=dark` to choose a mode at startup.
+
 ## Common Keys
 
 Leader key: `<Space>`. Prefix groups are labeled by which-key; press the prefix and wait to see all bindings.

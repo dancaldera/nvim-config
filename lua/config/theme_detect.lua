@@ -207,17 +207,48 @@ function M.tokyonight_style(bg)
 	return bg == "light" and "day" or "night"
 end
 
+---Build the complete tokyonight configuration for a detected background.
+---@param bg? "light"|"dark"
+---@return table
+function M.tokyonight_options(bg)
+	bg = bg or M.get()
+	local transparent = bg == "dark"
+	return {
+		style = M.tokyonight_style(bg),
+		transparent = transparent,
+		terminal_colors = true,
+		styles = {
+			comments = { italic = true },
+			keywords = { italic = true },
+			functions = {},
+			variables = {},
+			sidebars = transparent and "transparent" or "dark",
+			floats = transparent and "transparent" or "dark",
+		},
+		lualine_bold = true,
+	}
+end
+
 -- Apply background + colorscheme. Safe to call before plugins load (sets
 -- &background only) and after (also swaps the colorscheme when needed).
 function M.apply()
 	local bg = M.get()
+	local cs = M.colorscheme(bg)
+	local changed = vim.o.background ~= bg or vim.g.colors_name ~= cs
+	if changed then
+		-- tokyonight isn't on the rtp until lazy.nvim loads it; pcall keeps
+		-- early startup (options.lua) quiet and the watcher switches later.
+		-- Set options before changing 'background': TokyoNight can reload itself
+		-- on that option and must see the new transparency setting on that pass.
+		local ok, tokyonight = pcall(require, "tokyonight")
+		if ok then
+			tokyonight.setup(M.tokyonight_options(bg))
+		end
+	end
 	if vim.o.background ~= bg then
 		vim.o.background = bg
 	end
-	local cs = M.colorscheme(bg)
 	if vim.g.colors_name ~= cs then
-		-- tokyonight isn't on the rtp until lazy.nvim loads it; pcall keeps
-		-- early startup (options.lua) quiet and the watcher switches later.
 		pcall(vim.cmd, "colorscheme " .. cs)
 	end
 	return bg

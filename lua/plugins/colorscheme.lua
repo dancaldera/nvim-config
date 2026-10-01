@@ -2,7 +2,7 @@
 -- Colorscheme: tokyonight, following the OS / terminal light-vs-dark setting
 -- ============================================================================
 -- Dark  -> tokyonight-night (with transparency)
--- Light -> tokyonight-day   (with transparency)
+-- Light -> tokyonight-day   (with opaque backgrounds)
 
 local theme_detect = require("config.theme_detect")
 
@@ -12,20 +12,7 @@ return {
 		lazy = false,
 		priority = 1000,
 		opts = function()
-			return {
-				style = theme_detect.tokyonight_style(),
-				transparent = true,
-				terminal_colors = true,
-				styles = {
-					comments = { italic = true },
-					keywords = { italic = true },
-					functions = {},
-					variables = {},
-					sidebars = "transparent",
-					floats = "transparent",
-				},
-				lualine_bold = true,
-			}
+			return theme_detect.tokyonight_options()
 		end,
 	},
 	{ "LazyVim/LazyVim", opts = { colorscheme = theme_detect.colorscheme() } },
